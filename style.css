@@ -326,6 +326,7 @@ a:hover
   scrollbar-width: none;
   padding: 0 50px;
   box-sizing: border-box;
+  pointer-events: none;
 }
 
 #project-container {

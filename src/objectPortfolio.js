@@ -27,6 +27,9 @@ export default class ObjectPortfolio
         this.voxels = [];
         this.voxelizedMesh = null;
 
+        this.voxelStartAnimationOver = false;
+        this.voxelAnimationInitialized = false;  
+
         this.objectMethod = objectMethod;
         this.jsonPath = jsonPath;
         this.glbPath = glbPath;

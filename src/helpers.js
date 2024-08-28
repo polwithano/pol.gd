@@ -166,12 +166,17 @@ function GenericProjectData()
     return projectData;
 }
 
-function AnimateVoxels(voxelizedMesh) 
+function AnimateVoxels(objectPortfolio) 
 {
-    const timeline = gsap.timeline(); 
+    const timeline = gsap.timeline({
+        onComplete: () => {
+            objectPortfolio.voxelStartAnimationOver = true; 
+        }
+    });
+    const voxelizedMesh = objectPortfolio.voxelizedMesh; 
     const voxelCount = voxelizedMesh.count;
 
-    voxelizedMesh.position.y += 15; 
+    voxelizedMesh.position.y += 12; 
  
     for (let i = 0; i < voxelCount; i++) 
     {
@@ -183,12 +188,12 @@ function AnimateVoxels(voxelizedMesh)
         position.setFromMatrixPosition(matrix);
         originalPosition.setFromMatrixPosition(matrix); 
 
-        originalPosition.y -= 15; 
+        originalPosition.y -= 12; 
 
         timeline.to(position, {
             y: originalPosition.y,
-            duration: 0.025,
-            ease: "power2.inOut",
+            duration: 0.5,
+            ease: "expo.inOut",
             onUpdate: () => {
                 matrix.setPosition(position);
                 voxelizedMesh.setMatrixAt(i, matrix); 
@@ -199,7 +204,7 @@ function AnimateVoxels(voxelizedMesh)
                 voxelizedMesh.setMatrixAt(i, matrix); 
                 voxelizedMesh.instanceMatrix.needsUpdate = true; 
             }
-        }, i * 0.001);
+        }, (i / 16) * 0.1);
     }
 }
 

@@ -18,7 +18,7 @@ const worldStepValue = 1/60;
 const defaultParams = 
 {
     gridSize: .2,
-    modelSize: 10,
+    modelSize: 6,
     boxSize : .2,
     boxRoundness: .025
 };
@@ -106,8 +106,8 @@ export default class EnginePortfolio extends Engine
     {
         super.InitializeGame(); 
 
-        this.camera.position.set(0, 0, 10); // Adjust the position as needed
-        this.camera.lookAt(0, 0, 0);
+        this.camera.position.set(0, 1, 10); // Adjust the position as needed
+        this.camera.lookAt(0, 1, 0);
 
         this.controls.mouseButtons = 
         {
@@ -153,10 +153,10 @@ export default class EnginePortfolio extends Engine
 
                     //this.scene.add(this.currentPFObject.originalMesh);
                     this.shadowPlane = Helpers.CreateShadowPlane(this.currentPFObject.MinY());
+                    Helpers.AnimateVoxels(this.currentPFObject);
+
                     this.scene.add(this.shadowPlane);
                     this.scene.add(this.currentPFObject.voxelizedMesh);
-
-                    Helpers.AnimateVoxels(this.currentPFObject.voxelizedMesh);
 
                     this.InitializeHTML(); 
                     this.RenderProjectPage(this.currentPFObject.projectData); 
@@ -448,6 +448,7 @@ export default class EnginePortfolio extends Engine
                 // Clean up old object
                 this.ClearPortfolioObject();
                 this.currentPFObject = this.nextPFObject;
+                this.currentPFObject.voxelStartAnimationOver = true; 
                 this.InitializeHTML(); 
                 this.canSwitchObject = true; 
             }
@@ -537,30 +538,63 @@ export default class EnginePortfolio extends Engine
     GameLoop() 
     {
         super.GameLoop();
-
         this.world.step(worldStepValue);
 
-        // Calculate the angle based on time
-        const time = this.clock.getElapsedTime();
-        const angle = time * 0.1; // Adjust the rotation speed by changing the multiplier
+        this.AnimateVoxelizedMesh();
 
-        // Rotate the camera around the origin (0, 0, 0)
-        const center = new THREE.Vector3(0, 0, 0);
-        const radius = 10; // Distance from the center point
-        //this.RotateCameraAroundPoint(center, radius, angle);
-
-        this.renderer.render(this.scene, this.camera);  
-        
-        //if (this.composer != null) this.composer.render();  
+        this.renderer.render(this.scene, this.camera);    
     }
 
-    RotateCameraAroundPoint(point, radius, angle) 
+    AnimateVoxelizedMesh() 
     {
-        this.camera.position.x = point.x + radius * Math.cos(angle);
-        this.camera.position.z = point.z + radius * Math.sin(angle);
-        this.camera.lookAt(point);
-    }
+        if (this.currentPFObject != null && 
+            this.currentPFObject.voxelStartAnimationOver === true && 
+            this.currentPFObject.voxelAnimationInitialized === false) 
+        {
+            this.currentPFObject.voxelAnimationInitialized = true; 
+    
+            // Log initial position and rotation
+            console.log("Initial Position:", this.currentPFObject.voxelizedMesh.position);
+            console.log("Initial Rotation:", this.currentPFObject.voxelizedMesh.rotation);
+    
+            const timeline = gsap.timeline({
+                repeat: -1,  // Repeat indefinitely
+                yoyo: true,  // Reverses the animation each time it repeats
+                ease: "power1.inOut",  // Smoother easing
+                onStart: () => {
+                    console.log("Animation Start - Position:", this.currentPFObject.voxelizedMesh.position);
+                },
+                onComplete: () => {
+                    console.log("Animation Complete - Position:", this.currentPFObject.voxelizedMesh.position);
+                }
+            });
+    
+            // Continuous rotation animation
+            timeline.to(this.currentPFObject.voxelizedMesh.rotation, {
+                y: "+=" + Math.PI * 2, // Rotate 360 degrees around the Y axis
+                duration: 32,  // Duration of one full rotation
+                ease: "none",  // Linear rotation
+                onUpdate: () => {
+                    // Force update of rotation
+                    this.currentPFObject.voxelizedMesh.rotation.y += 0; 
+                    this.currentPFObject.voxelizedMesh.instanceMatrix.needsUpdate = true;
+                }
+            }, .33); // Start immediately after 1 second
 
+            // Continuous rotation animation
+            timeline.to(this.currentPFObject.voxelizedMesh.position, {
+                y: "+=" + 1,
+                duration: 16,
+                ease: "elastic.out",  // Linear rotation
+                onUpdate: () => {
+                    // Force update of rotation
+                    this.currentPFObject.voxelizedMesh.rotation.y += 0; 
+                    this.currentPFObject.voxelizedMesh.instanceMatrix.needsUpdate = true;
+                }
+            }, .33); // Start immediately after 1 second
+        }
+    }
+    
     RenderProjectPage(projectData) 
     {
         const container = document.getElementById('project-container');
