@@ -26,24 +26,36 @@
   color: white;
 }
 
-#desktop-nav .nav-links {
+.nav-links {
   display: flex;
-  gap: 20px; /* Space between nav items */
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-#desktop-nav .nav-links a {
-  color: rgb(139, 139, 139);
-  text-decoration: none;
-  font-size: 22px;
+/* Individual nav links */
+.nav-links li {
+  margin-left: -30px;
 }
 
-#desktop-nav .nav-links a:hover {
-  color: rgb(255, 255, 255);
-  text-decoration: underline;
-  text-underline-offset: 1rem;
+/* Basic link styling */
+.nav-link {
+  text-decoration: none;
+  padding: 8px 12px;
+  color: #818181;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+/* Default background for nav links */
+.nav-link:hover {
+  background-color: #000000;
+}
+
+/* Active state (the toggle effect) */
+.nav-link.active {
+  background-color: #333;
+  color: #fff;
 }
 
 
@@ -574,3 +586,12 @@ a:hover
 }
 /* COPYRIGHT */
 
+/* ANIMATION */ 
+@keyframes breathing {
+  0%, 100% {
+    background-color: rgba(0, 0, 0, 0.4); /* Initial background color with opacity */
+  }
+  50% {
+    background-color: rgba(0, 0, 0, 0.8); /* Darker background color at peak of the animation */
+  }
+}

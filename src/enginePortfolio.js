@@ -125,6 +125,8 @@ export default class EnginePortfolio extends Engine
         this.canvas.width = 512;
         this.canvas.height = 512;
 
+        Helpers.CreateCarouselDots(projectDataPathArray.length, this.currentProjectIndex);
+
         if (this.useJsonData) 
         {
             try 
@@ -135,10 +137,9 @@ export default class EnginePortfolio extends Engine
                 await this.currentPFObject.load();
         
                 // Ensure that the meshes are not null
-                if (this.currentPFObject.originalMesh && this.currentPFObject.voxelizedMesh) 
+                if (this.currentPFObject.voxelizedMesh) 
                 {
-                    this.shadowPlane = Helpers.CreateShadowPlane(this.currentPFObject.MinY());
-        
+                    /*
                     this.clippingPlane1 = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
                     this.clippingPlane1.constant = this.currentPFObject.MaxY();
                     this.clippingPlane2 = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
@@ -146,13 +147,16 @@ export default class EnginePortfolio extends Engine
         
                     Helpers.AddClippingPlaneToMaterials(this.currentPFObject.originalMesh, this.clippingPlane1);
                     Helpers.AddClippingPlaneToMaterials(this.currentPFObject.voxelizedMesh, this.clippingPlane2);
-        
+                    */
                     this.gradientTexture = Helpers.CreateGradientTexture(this.currentPFObject.metadata, this.context, this.canvas);
                     this.scene.background = this.gradientTexture;
-        
-                    this.scene.add(this.currentPFObject.voxelizedMesh);
-                    this.scene.add(this.currentPFObject.originalMesh);
+
+                    //this.scene.add(this.currentPFObject.originalMesh);
+                    this.shadowPlane = Helpers.CreateShadowPlane(this.currentPFObject.MinY());
                     this.scene.add(this.shadowPlane);
+                    this.scene.add(this.currentPFObject.voxelizedMesh);
+
+                    Helpers.AnimateVoxels(this.currentPFObject.voxelizedMesh);
 
                     this.InitializeHTML(); 
                     this.RenderProjectPage(this.currentPFObject.projectData); 
@@ -194,8 +198,6 @@ export default class EnginePortfolio extends Engine
 
     InitializeHTML() 
     {
-        Helpers.CreateCarouselDots(projectDataPathArray.length, this.currentProjectIndex);
-
         const portfolioMetadata = this.currentPFObject.metadataPorfolio;
         const metadata = this.currentPFObject.metadata; 
 
@@ -423,6 +425,8 @@ export default class EnginePortfolio extends Engine
         const positionOffset = direction * window.innerWidth * 0.05; 
         this.nextPFObject.voxelizedMesh.position.x = positionOffset; 
         this.scene.add(this.nextPFObject.voxelizedMesh); 
+
+        Helpers.UpdateCarouselDots(this.currentProjectIndex); 
 
         gsap.to(this.currentPFObject.voxelizedMesh.position, {
             x: -positionOffset, // Move the current object out of the screen

@@ -1,4 +1,5 @@
 import * as THREE from 'three'; 
+import gsap from 'gsap';
 
 function CloneMeshMaterials(mesh) 
 {
@@ -106,6 +107,19 @@ function CreateCarouselDots(projectCount, currentProjectIndex)
     }
 }
 
+function UpdateCarouselDots(currentProjectIndex) 
+{
+    const dots = document.querySelectorAll('#carousel-dots .dot'); // Select all existing dots
+
+    dots.forEach((dot, index) => {
+        dot.classList.remove('active'); // Remove active class from all dots
+        if (index === currentProjectIndex) 
+        {
+            dot.classList.add('active'); // Add active class to the current dot
+        }
+    });
+}
+
 function GenericProjectData() 
 {
     const projectData = 
@@ -152,4 +166,41 @@ function GenericProjectData()
     return projectData;
 }
 
-export default {CloneMeshMaterials, AddClippingPlaneToMaterials, CreateGradientTexture, FetchCurrentGradientColors, CreateShadowPlane, CreateCarouselDots, GenericProjectData}; 
+function AnimateVoxels(voxelizedMesh) 
+{
+    const timeline = gsap.timeline(); 
+    const voxelCount = voxelizedMesh.count;
+
+    voxelizedMesh.position.y += 20; 
+ 
+    for (let i = 0; i < voxelCount; i++) 
+    {
+        let matrix = new THREE.Matrix4; 
+        let position = new THREE.Vector3; 
+        let originalPosition = new THREE.Vector3; 
+
+        voxelizedMesh.getMatrixAt(i, matrix); 
+        position.setFromMatrixPosition(matrix);
+        originalPosition.setFromMatrixPosition(matrix); 
+
+        originalPosition.y -= 20; 
+
+        timeline.to(position, {
+            y: originalPosition.y,
+            duration: 2,
+            ease: "power2.inOut",
+            onUpdate: () => {
+                matrix.setPosition(position);
+                voxelizedMesh.setMatrixAt(i, matrix); 
+                voxelizedMesh.instanceMatrix.needsUpdate = true;  
+            },
+            onComplete: () => {
+                matrix.setPosition(position); 
+                voxelizedMesh.setMatrixAt(i, matrix); 
+                voxelizedMesh.instanceMatrix.needsUpdate = true; 
+            }
+        }, i * 0.1);
+    }
+}
+
+export default {AnimateVoxels, CloneMeshMaterials, AddClippingPlaneToMaterials, CreateGradientTexture, FetchCurrentGradientColors, CreateShadowPlane, CreateCarouselDots, UpdateCarouselDots, GenericProjectData}; 
