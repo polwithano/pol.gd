@@ -171,7 +171,7 @@ function AnimateVoxels(voxelizedMesh)
     const timeline = gsap.timeline(); 
     const voxelCount = voxelizedMesh.count;
 
-    voxelizedMesh.position.y += 20; 
+    voxelizedMesh.position.y += 15; 
  
     for (let i = 0; i < voxelCount; i++) 
     {
@@ -183,11 +183,11 @@ function AnimateVoxels(voxelizedMesh)
         position.setFromMatrixPosition(matrix);
         originalPosition.setFromMatrixPosition(matrix); 
 
-        originalPosition.y -= 20; 
+        originalPosition.y -= 15; 
 
         timeline.to(position, {
             y: originalPosition.y,
-            duration: 2,
+            duration: 0.025,
             ease: "power2.inOut",
             onUpdate: () => {
                 matrix.setPosition(position);
@@ -199,7 +199,7 @@ function AnimateVoxels(voxelizedMesh)
                 voxelizedMesh.setMatrixAt(i, matrix); 
                 voxelizedMesh.instanceMatrix.needsUpdate = true; 
             }
-        }, i * 0.1);
+        }, i * 0.001);
     }
 }
 

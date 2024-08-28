@@ -27,11 +27,11 @@ const usesJson = true;
 const glbPath = "../meshes/Spaceship.glb";
 const projectDataPathArray = 
 [
-    '../voxel/Spaceship_data.json',
-    '../voxel/Spaceship_data.json',
-    '../voxel/Spaceship_data.json',
-    '../voxel/Spaceship_data.json',
-    '../voxel/Spaceship_data.json',
+    '../data/Spaceship_data.json',
+    '../data/Spaceship_data.json',
+    '../data/Spaceship_data.json',
+    '../data/Spaceship_data.json',
+    '../data/Spaceship_data.json',
 ]
 
 export default class EnginePortfolio extends Engine 
