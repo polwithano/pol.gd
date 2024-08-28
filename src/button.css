@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+button {
+    width: 48px; /* Adjust the button width as needed */
+    height: 48px; /* Keep the button square */
+    background: none; /* Remove background */
+    border: none;
+    font-size: 32px; /* Adjust the font size for bigger icons */
+    cursor: pointer;
+    outline: none;
+    padding: 0; /* Remove any padding */
+    color: white; /* Set default icon color to white */
+    transition: color 0.3s ease, transform 0.3s ease; /* Add smooth transitions */
+}
+  
+button:hover {
+    color: #cccccc; /* Change icon color to slightly darker on hover */
+    transform: scale(1.25); /* Scale up by 5% on hover */
+}
+
+.button-group.bottom-center {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center; /* Center the elements horizontally */
+    align-items: center; /* Center the elements vertically */
+    gap: 10px;
+}
+
+.button-group.bottom-left
+{
+    position: fixed;
+    bottom: 20px;
+    left: 20px; /* Adjust the left distance as needed */
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.button-group.bottom-right 
+{
+    position: fixed;
+    bottom: 20px;
+    right: 20px; /* Adjust the right distance as needed */
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}

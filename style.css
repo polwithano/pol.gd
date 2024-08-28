@@ -1,0 +1,576 @@
+/* Header that contains the navigation */
+#desktop-header {
+  position: fixed;
+  font-family: "Poppins", sans-serif;  
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Dark background with some transparency */
+  z-index: 10000; /* Make sure it stays on top of the Three.js canvas */
+  backdrop-filter: blur(5px); /* Optional: adds a blur effect to the background */
+  -webkit-backdrop-filter: blur(5px); /* Safari support */
+}
+
+/* Navigation within the header */
+#desktop-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px; /* Adds some spacing around the nav items */
+  height: 80px; /* Adjust based on your design */
+}
+
+#desktop-nav .logo {
+  font-size: 30px;
+  font-weight: bold;
+  color: white;
+}
+
+#desktop-nav .nav-links {
+  display: flex;
+  gap: 20px; /* Space between nav items */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#desktop-nav .nav-links a {
+  color: rgb(139, 139, 139);
+  text-decoration: none;
+  font-size: 22px;
+}
+
+#desktop-nav .nav-links a:hover {
+  color: rgb(255, 255, 255);
+  text-decoration: underline;
+  text-underline-offset: 1rem;
+}
+
+
+canvas 
+{
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+}
+
+canvas#bg
+{
+    position: fixed; 
+    top: 0; 
+    left: 0;
+    z-index: -1; /* Set only the "bg" canvas to be behind everything else */
+}
+
+#canvas-container 
+{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.icons {
+  margin-top: 20px;
+}
+
+.icons a {
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+.icons img {
+  width: 30px;
+  height: 30px;
+}
+
+/* Center the left arrow vertically and place it on the left side with a 5% margin */
+#prev-button 
+{
+  position: fixed;
+  top: 50%;
+  left: 2%;
+  transform: translateY(-5%);
+  z-index: 1; /* Adjust the z-index as needed */
+}
+
+/* Center the right arrow vertically and place it on the right side with a 5% margin */
+#next-button 
+{
+  position: fixed;
+  top: 50%;
+  right: 2%;
+  transform: translateY(-5%);
+  z-index: 1; /* Adjust the z-index as needed */
+}
+
+/* Add transition for hover effect to the prev/next buttons */
+#prev-button:hover, #next-button:hover 
+{
+  color: #cccccc; /* Change icon color to slightly darker on hover */
+  transform: scale(1.25); /* Scale up by 25% on hover */
+}
+
+/* UI */
+
+/* GENERAL */
+body 
+{
+  font-family: "Poppins", sans-serif;  
+  color: white; 
+}
+
+html 
+{
+  scroll-behavior: smooth;
+}
+
+p 
+{
+  color: rgb(85, 85, 85); 
+}
+
+/* TRANSITIONS */
+a, .btn 
+{
+  transition: all 300ms ease;
+}
+
+/* DESKTOP NAV */
+nav, .nav-links 
+{
+  display: flex;
+}
+
+nav 
+{
+  justify-content: space-around;
+  align-items: center;
+  height: 17vh;
+}
+
+.nav-links 
+{
+  gap: 2rem; 
+  list-style: none;
+  font-size: 1.5rem; 
+}
+
+a 
+{
+  text-decoration: none;
+  text-decoration-color: black;
+}
+
+a:hover 
+{
+  color: rgb(255, 255, 255);
+  text-decoration: underline;
+  text-decoration-color: white; 
+}
+
+.logo 
+{
+  font-size: 2rem; 
+}
+
+.logo:hover 
+{
+  cursor: default;
+}
+
+#darkOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2); /* Slightly more transparent */
+  pointer-events: none; /* Allows interaction with underlying elements */
+  opacity: 0; /* Start with it hidden */
+  z-index: 999; /* Ensure it covers everything */
+  transition: opacity 0.3s ease-out; /* Smooth transition effect */
+  backdrop-filter: blur(15px) saturate(180%); /* Apply a stronger blur and saturation */
+  -webkit-backdrop-filter: blur(15px) saturate(180%); /* Safari support */
+}
+
+/* PORTFOLIO PROJECT INFO */
+#portfolio-info {
+  font-family: "Montserrat", sans-serif;  
+  color: rgb(255, 255, 255); 
+  position: absolute;
+  top: 135px; /* Adjusts the distance from the top of the canvas */
+  left: 0;
+  right: 0;
+  max-width: 66%; /* Sets a maximum width for the container */
+  margin: 0 auto; /* Centers the container horizontally */
+  display: flex;
+  flex-direction: column; /* Stacks the rows vertically */
+  gap: 10px; /* Adds spacing between the rows */
+  pointer-events: none; /* Allows clicks to pass through */
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between; /* Positions content at the extreme ends */
+  width: 100%;
+}
+
+#project-name, #company-name {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
+  pointer-events: auto; /* Allows interaction with the text */
+}
+
+#project-year, #author-name {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0;
+  pointer-events: auto; /* Allows interaction with the text */
+  text-align: right;
+}
+
+/* Smaller font for company name and author name */
+#company-name, #author-name {
+  font-size: 24px;
+  font-weight: normal;
+}
+
+#project-year, #project-name 
+{
+  background-color: rgba(0, 0, 0, 0.2); /* Background with transparency */
+  padding: 4px 10px; /* Padding around the text */
+  border-radius: 5px; /* Rounded corners */
+}
+
+#company-name
+{
+  padding: 0px 10px; /* Padding around the text */
+}
+
+#author-name
+{
+  padding: 0px 10px; /* Padding around the text */
+}
+
+#project-description {
+  position: absolute;
+  color: white;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 18px;
+  display: inline-block;
+  max-width: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 6px 10px;
+  border-radius: 5px;
+  transition: width 0.5s ease, height 0.5s ease 0.5s, background-color 0.3s ease; /* Smooth transitions */
+  z-index: 999;
+  pointer-events: auto;
+  line-height: 1.4; /* Adjusts line height for better readability */
+}
+
+#project-description.hovered {
+  width: calc(100%); /* Leave space for the horizontal padding */
+  height: calc(100% - 100px); /* Leave space for header and carousel dots */
+  top: 100px; /* Start below the header */
+  left: 50%;
+  bottom: auto; /* Prevent stretching to the bottom */
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.9); /* Darker background */
+  display: flex;
+  flex-direction: column; /* Align items vertically */
+  justify-content: flex-start; /* Align items at the top */
+  align-items: center; /* Center items horizontally */
+  z-index: 999; /* Ensure it stays on top */
+  font-size: 0px; /* Increase text size on hover */
+  transition: width 0.3s ease, height 0.3s ease 0.3s, background-color 0.3s ease, font-size 0.3s ease; /* Smooth transitions */
+  padding: 20px; /* Add padding for spacing */
+  border-radius: 0px;
+}
+
+/* Additional styles to ensure text is centered vertically and horizontally */
+#project-description p {
+  margin: 0;
+  padding: 0;
+  font-size: 24px; /* Larger font size when hovered */
+  text-align: center; /* Center text */
+  line-height: 1.4;
+}
+/* PORTFOLIO PROJECT INFO */
+
+/* PORTFOLIO PROJECT CONTENT */
+#project-wrapper {
+  position: relative;
+  height: calc(100% - 200px); /* Adjust this height based on the header and carousel dots height */
+  top: 100px; 
+  width: 100%;
+  overflow: auto; /* Hide overflow */
+  scrollbar-width: none;
+  padding: 0 50px;
+  box-sizing: border-box;
+}
+
+#project-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  color: white;
+  padding: 20px 10px; /* Adjust margins for top and bottom */
+  display: flex;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transition: all 0.5s ease; /* Smooth transition */
+  z-index: 9; /* Keep it below project description */
+  opacity: 0; /* Start hidden */
+  pointer-events: none; /* Prevent interaction */
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+#project-container.visible {
+  opacity: 1; /* Make content visible */
+  pointer-events: auto; /* Allow interaction */
+  z-index: 999;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Project Header */
+.project-header {
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+  justify-content: center; /* Center items vertically if needed */
+  margin-bottom: 50px;
+}
+
+.project-title {
+  font-size: 34px;
+  font-weight: bold;
+  margin-bottom: 1px; /* Space between title and tagline */
+}
+
+.project-tagline {
+  font-size: 18px;
+  font-weight: 200;
+  color: #666;
+}
+
+/* Content Sections */
+.content-section {
+  display: flex;
+  flex-wrap: wrap; /* Wrap content on smaller screens */
+  align-items: flex-start; /* Align items to the top */
+  justify-content: center; /* Center items horizontally */
+  margin-bottom: 60px;
+  width: 100%;
+  max-width: 80%; /* Ensure it doesn’t stretch too wide */
+  gap: 20px; /* Space between image and paragraph */
+}
+
+.content-image {
+  max-width: 40%;
+  max-width: 200px;
+  border-radius: 8px;
+}
+
+.content-paragraph {
+  flex: 1;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #c4c4c4;
+}
+
+/* Handle alternating image positions */
+.content-section .left {
+  order: -1; /* Image appears first */
+}
+
+.content-section .right {
+  order: 1; /* Image appears last */
+}
+
+/* Video Section */
+.video-section {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.content-video {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+/* Download Section */
+.download-section {
+  text-align: center;
+  margin-top: -40px;
+}
+
+.download-button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 18px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.download-button:hover {
+  background-color: #0056b3;
+}
+/* PORTFOLIO PROJECT CONTENT */
+
+
+/* Media Query for Desktop */
+@media only screen and (min-width: 768px) {
+  #portfolio-info {
+    max-width: 66%;
+  }
+
+  #project-name, #company-name {
+    font-size: 28px; /* Larger font size for desktop */
+  }
+
+  #project-year, #author-name {
+    font-size: 28px; /* Larger font size for desktop */
+  }
+
+  #company-name, #author-name {
+    font-size: 22px; /* Slightly larger for desktop */
+  }
+
+  #project-description 
+  {
+    font-size: 18px; 
+  }
+}
+
+/* Media Query for Mobile */
+@media only screen and (max-width: 767px) {
+  #portfolio-info {
+    max-width: 85%;
+  }
+
+  #project-name, #company-name {
+    font-size: 20px; /* Smaller font size for mobile */
+  }
+
+  #project-year, #author-name {
+    font-size: 20px; /* Smaller font size for mobile */
+  }
+
+  #company-name, #author-name {
+    font-size: 14px; /* Smaller for mobile */
+  }
+
+  #project-description 
+  {
+    font-size: 14px; 
+  }
+}
+
+
+/* CAROUSEL */ 
+#carousel-dots {
+  position: absolute;
+  bottom: 36px; /* Adjust this value to control how far from the bottom the dots are placed */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; /* Adjust the gap between the dots */
+  z-index: 1000;
+}
+
+.dot {
+  height: 10px;
+  width: 10px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 5px;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  height: 14px;
+  width: 14px;
+  background-color: #ffffff;
+}
+/* CAROUSEL */ 
+
+#arrow-down {
+  position: absolute;
+  color: white;
+  font-size: 24px; /* Adjust size of the arrow */
+  top: calc(100% - 140px); /* Positions it above the project description */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 998;
+  cursor: pointer;
+  pointer-events: auto; /* Allows interaction with the arrow */
+  transition: transform 0.2s ease-in-out; /* Adds a hover effect */
+}
+
+#arrow-down:hover {
+  transform: translateX(-50%) translateY(5px); /* Slight downward movement on hover */
+}
+
+/* COPYRIGHT */
+#copyright {
+  position: fixed; /* Fixes the position relative to the viewport */
+  bottom: 5px; /* Distance from the bottom of the screen */
+  right: 5px; /* Distance from the right side of the screen */
+  font-size: 12px; /* Font size */
+  color: #ffffff; /* Text color */
+  background-color: rgba(0, 0, 0, 0.2); /* Optional: Background with transparency */
+  padding: 5px 8px; /* Padding around the text */
+  border-radius: 5px; /* Rounded corners */
+  z-index: 1000; /* Ensure it stays above most elements */
+  pointer-events: none; /* Prevents it from blocking clicks on other elements */
+}
+
+#copyright-model {
+  position: fixed; /* Fixes the position relative to the viewport */
+  bottom: 30px; /* Distance from the bottom of the screen */
+  right: 5px; /* Distance from the right side of the screen */
+  font-size: 12px; /* Font size */
+  color: #ffffff; /* Text color */
+  background-color: rgba(0, 0, 0, 0.2); /* Optional: Background with transparency */
+  padding: 5px 8px; /* Padding around the text */
+  border-radius: 5px; /* Rounded corners */
+  z-index: 1000; /* Ensure it stays above most elements */
+  pointer-events: none; /* Prevents it from blocking clicks on other elements */
+}
+
+@media only screen and (max-width: 767px) {
+  #copyright {
+    font-size: 10px; /* Smaller font size for mobile */
+    padding: 3px 8px; /* Adjusted padding for mobile */
+  }
+  #copyright-model {
+    font-size: 10px; /* Smaller font size for mobile */
+    padding: 3px 8px; /* Adjusted padding for mobile */
+    bottom: 25px
+  }
+}
+/* COPYRIGHT */
+
