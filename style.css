@@ -1,3 +1,20 @@
+@font-face {
+  font-family: '0xProto Nerd Font Mono';
+  src: url('fonts/0xProtoNFM-Regular.eot');
+  src: url('fonts/0xProtoNFM-Regular.eot?#iefix') format('embedded-opentype'),
+      url('fonts/0xProtoNFM-Regular.woff2') format('woff2'),
+      url('fonts/0xProtoNFM-Regular.woff') format('woff'),
+      url('fonts/0xProtoNFM-Regular.ttf') format('truetype'),
+      url('fonts/0xProtoNFM-Regular.svg#0xProtoNFM-Regular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --menu-container-width: 300px; /* Set this to the width of your menu container */
+}
+
 /* Header that contains the navigation */
 #desktop-header {
   position: fixed;
@@ -49,7 +66,9 @@
 
 /* Default background for nav links */
 .nav-link:hover {
-  background-color: #000000;
+  color: whitesmoke;
+  text-decoration: underline;
+  text-underline-position: 10px;
 }
 
 /* Active state (the toggle effect) */
@@ -57,7 +76,6 @@
   background-color: #333;
   color: #fff;
 }
-
 
 canvas 
 {
@@ -68,20 +86,22 @@ canvas
 
 canvas#bg
 {
+    image-rendering: pixelated;
     position: fixed; 
     top: 0; 
     left: 0;
     z-index: -1; /* Set only the "bg" canvas to be behind everything else */
 }
 
-#canvas-container 
-{
+#canvas-container {
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
+  left: var(--menu-container-width); /* Position the canvas container to the right of the menu container */
+  width: calc(100% - var(--menu-container-width)); /* Ensure canvas container does not exceed available width */
   height: 100%;
   z-index: -1;
+  background-color: #000; /* Optional: Set a background color for visibility */
+  box-sizing: border-box; /* Ensure padding and border are included in the width and height calculations */
 }
 
 .icons {
@@ -210,7 +230,7 @@ a:hover
 
 /* PORTFOLIO PROJECT INFO */
 #portfolio-info {
-  font-family: "Montserrat", sans-serif;  
+  font-family: '0xProto Nerd Font Mono'; 
   color: rgb(255, 255, 255); 
   position: absolute;
   top: 135px; /* Adjusts the distance from the top of the canvas */
@@ -222,6 +242,35 @@ a:hover
   flex-direction: column; /* Stacks the rows vertically */
   gap: 10px; /* Adds spacing between the rows */
   pointer-events: none; /* Allows clicks to pass through */
+}
+
+/* Container for the portfolio icons */
+#portfolio-icons {
+  position: fixed;
+  right: 16px; /* Adjust as needed to create space from the right edge */
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%); /* Adjust vertical centering */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center icons horizontally */
+  z-index: 10; /* Ensure it appears above other content */
+}
+
+.icon {
+  margin: 4px 0; /* Space between icons */
+  text-align: center; /* Center text below icons */
+}
+
+.icon p {
+  font-family: '0xProto Nerd Font Mono';
+  font-size: 12px;
+  color: whitesmoke; 
+  margin-top: -4px;
+}
+
+.icon-img {
+  width: 48px; /* Adjust size of icons */
+  height: 48px; /* Adjust size of icons */
 }
 
 .info-row {
@@ -253,7 +302,7 @@ a:hover
 
 #project-year, #project-name 
 {
-  background-color: rgba(0, 0, 0, 0.2); /* Background with transparency */
+  background-color: rgba(0, 0, 0, 0.75); /* Background with transparency */
   padding: 4px 10px; /* Padding around the text */
   border-radius: 5px; /* Rounded corners */
 }
@@ -269,6 +318,7 @@ a:hover
 }
 
 #project-description {
+  font-family: '0xProto Nerd Font Mono'; 
   position: absolute;
   color: white;
   bottom: 50px;
@@ -278,7 +328,7 @@ a:hover
   font-size: 18px;
   display: inline-block;
   max-width: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.75);
   padding: 6px 10px;
   border-radius: 5px;
   transition: width 0.5s ease, height 0.5s ease 0.5s, background-color 0.3s ease; /* Smooth transitions */
@@ -391,7 +441,7 @@ a:hover
   justify-content: center; /* Center items horizontally */
   margin-bottom: 60px;
   width: 100%;
-  max-width: 80%; /* Ensure it doesn’t stretch too wide */
+  max-width: 90%; /* Ensure it doesn’t stretch too wide */
   gap: 20px; /* Space between image and paragraph */
 }
 
@@ -546,6 +596,176 @@ a:hover
 #arrow-down:hover {
   transform: translateX(-50%) translateY(5px); /* Slight downward movement on hover */
 }
+
+/* General Menu Container Styles */
+.menu-container {
+  font-family: '0xProto Nerd Font Mono';
+  position: absolute;
+  width: var(--menu-container-width);
+  height: calc(100% - 100px);
+  top: 100px; /* Adjusted for header */
+  left: 0;
+  background-color: #333;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.sub-menu-container {
+  width: calc(100% - 2px); 
+  border: 1px solid #666666;
+  padding-bottom: 4px; 
+}
+
+/* Title Block */
+.menu-title {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: right;
+}
+
+.menu-title h2 {
+  margin-bottom: 10px;
+  font-size: 1.5em;
+}
+
+.menu-toggle {
+  display: flex;
+  justify-content: right;
+}
+
+.toggle-button {
+  font-family: '0xProto Nerd Font Mono';
+  background-color: transparent;
+  color: rgb(155, 155, 155);
+  padding-top: 10px;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  margin: 0 5px;
+  flex: 1;
+}
+
+.toggle-button.active {
+  text-decoration: underline;
+  color: white; 
+  text-underline-offset: 18px;
+  text-decoration-thickness: 2px;
+  text-decoration-color: whitesmoke;
+}
+
+.toggle-button:hover 
+{
+  text-decoration: underline;
+  text-underline-offset: 18px;
+  text-decoration-thickness: 2px;
+  text-decoration-color: rgb(211, 211, 211);
+  color: rgb(211, 211, 211);
+}
+
+/* Search and Language Block */
+.menu-search-language {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px; 
+}
+
+.search-bar {
+  display: flex;
+  align-items: left;
+  flex-grow: 1;
+}
+
+.search-bar input {
+  font-family: '0xProto Nerd Font Mono';
+  width: 80%;
+  padding: 5px;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  margin-right: 5px;
+}
+
+.search-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  margin-top: 4px;
+}
+
+.folder-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.language-dropdown select {
+  font-family: '0xProto Nerd Font Mono';
+  padding: 5px;
+  background-color: #444;
+  color: #fff;
+  border: none;
+}
+
+/* Folder and Arrow Styling */
+.explorer {
+  margin-top: 10px;
+  margin-left: 10px;
+  min-height: 713px;
+}
+
+.explorer-header {
+  margin-bottom: 10px;
+}
+
+.explorer h1 
+{
+  font-size: 12px;
+  font-weight: 100;
+  color: whitesmoke;
+}
+
+.folder {
+  margin-bottom: 10px;
+}
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 100;
+  margin-bottom: 12px;
+}
+
+.arrow {
+  margin-right: 8px;
+  transition: transform 0.3s ease;
+}
+
+.folder-header.open .arrow {
+  transform: rotate(90deg);
+}
+
+/* Hide the folder contents by default */
+.folder-content {
+  display: none;
+  margin-left: 20px;
+  margin-top: 4px;
+}
+
+.project {
+  list-style-type: square;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.project:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* FOLDER MENU */
 
 /* COPYRIGHT */
 #copyright {

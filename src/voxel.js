@@ -133,7 +133,7 @@ async function LoadVoxelData(json)
     RecreateInstancedVoxelMesh(instancedMesh, voxels); 
 
     instancedMesh.castShadow = true; 
-    instancedMesh.receiveShadow = true; 
+    instancedMesh.receiveShadow = false; 
 
     return instancedMesh; 
 } 
@@ -162,7 +162,7 @@ function IsInsideMesh(params, raycaster, position, direction, mesh)
 
 function GetVoxelGeometry(params, length) 
 {
-    let voxelGeometry = new RoundedBoxGeometry(params.boxSize, params.boxSize, params.boxSize, 2, params.boxRoundness);
+    let voxelGeometry = new RoundedBoxGeometry(params.boxSize, params.boxSize, params.boxSize, 2, 0);
     let voxelMaterial = new THREE.MeshStandardMaterial({ 
         flatShading: true,
         emissive: new THREE.Color(0x000000), // default emissive color

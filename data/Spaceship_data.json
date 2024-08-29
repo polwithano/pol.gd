@@ -4,15 +4,15 @@
     "author": "Google Poly",
     "originalMeshFolder": "../meshes/",
     "originalMeshPath": "../meshes/Spaceship.glb",
-    "gradientStart": "#F0C27B",
-    "gradientEnd": "#4B1248"
+    "gradientStart": "#243B55",
+    "gradientEnd": "#141E30"
   },
   "portfolioMetadata": {
     "projectName": "Stellar Pulse",
     "companyName": "Isart Digital",
     "yearStart": "2019",
     "yearEnd": "2024",
-    "tasks": "GD • LD • 3D modeling",
+    "tasks": "GD • LD • 3D modeling",
     "description": "Where Beat Saber meet Just Dance!"
   },
   "params": {

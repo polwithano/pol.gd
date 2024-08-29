@@ -196,15 +196,16 @@ function AnimateVoxels(objectPortfolio)
             ease: "expo.inOut",
             onUpdate: () => {
                 matrix.setPosition(position);
-                voxelizedMesh.setMatrixAt(i, matrix); 
-                voxelizedMesh.instanceMatrix.needsUpdate = true;  
+                voxelizedMesh.setMatrixAt(i, matrix);   
+                voxelizedMesh.needsUpdate = true; 
             },
             onComplete: () => {
                 matrix.setPosition(position); 
                 voxelizedMesh.setMatrixAt(i, matrix); 
                 voxelizedMesh.instanceMatrix.needsUpdate = true; 
+                voxelizedMesh.needsUpdate = true; 
             }
-        }, (i / 16) * 0.1);
+        }, (i / 256) * 0.1);
     }
 }
 

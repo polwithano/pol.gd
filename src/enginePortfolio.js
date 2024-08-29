@@ -87,11 +87,51 @@ export default class EnginePortfolio extends Engine
         this.composer.addPass(bloomPass);
 
         this.camera = new THREE.PerspectiveCamera(
-            70,
+            80,
             window.innerWidth / window.innerHeight,
             0.1,
             100000
         );
+        
+        this.dummyCamera = new THREE.OrthographicCamera(
+            window.innerWidth / - 2, 
+            window.innerWidth / 2, 
+            window.innerHeight / 2, 
+            window.innerHeight / - 2,
+            - 10000, 
+            10000
+        );
+        this.dummyCamera.position.z = 1; 
+        this.dummyScene = new THREE.Scene(); 
+
+        this.rtTexture = new THREE.WebGLRenderTarget( 
+            window.innerWidth / 4 , //resolution x
+            window.innerHeight / 4, //resolution y
+            { 
+              minFilter: THREE.LinearFilter, 
+              magFilter: THREE.NearestFilter, 
+              format: THREE.RGBFormat 
+            });
+        this.uniforms = {
+            tDiffuse: { value: this.rtTexture.texture },
+            iResolution:  { value: new THREE.Vector3() },
+          };
+        this.materialScreen = new THREE.ShaderMaterial( {
+
+            uniforms: this.uniforms, // rtTexture = material from perspective camera
+            vertexShader: document.getElementById( 'vertexShader' ).textContent,
+            fragmentShader: document.getElementById( 'fragment_shader_screen' ).textContent,
+            depthWrite: false
+        
+        });
+        this.renderPlane = new THREE.PlaneGeometry( window.innerWidth, window.innerHeight );
+        let quad = new THREE.Mesh(this.renderPlane, this.materialScreen);
+        quad.position.z = -100; 
+        this.dummyScene.add(quad); 
+
+        this.renderer.setClearColor(0xffd7a6)
+        this.renderer.setSize( window.innerWidth, window.innerHeight );
+        this.renderer.autoClear = false;
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     }
@@ -154,6 +194,8 @@ export default class EnginePortfolio extends Engine
                     //this.scene.add(this.currentPFObject.originalMesh);
                     this.shadowPlane = Helpers.CreateShadowPlane(this.currentPFObject.MinY());
                     Helpers.AnimateVoxels(this.currentPFObject);
+
+                    this.currentPFObject.voxelizedMesh.position.x += 2; 
 
                     this.scene.add(this.shadowPlane);
                     this.scene.add(this.currentPFObject.voxelizedMesh);
@@ -257,13 +299,22 @@ export default class EnginePortfolio extends Engine
             projectContainer.classList.add('visible');
             projectContainer.classList.remove('hidden'); 
         });
-
+    
         projectContainer.addEventListener('mouseleave', () => {
             projectDescription.classList.remove('hovered');
             projectContainer.classList.remove('visible');
             projectContainer.classList.add('hidden');
         });
-    }
+    
+        document.querySelectorAll('.folder-header').forEach(header => {
+            header.addEventListener('click', (event) => {
+                const target = event.target.closest('.folder-header');
+                const folderId = target.getAttribute('data-folder-id');
+                console.log(`Folder ID: ${folderId}`);
+                this.ToggleFolder(folderId);
+            });
+        });
+    }    
 
     // Method to update voxelization with new params
     UpdateVoxelization() 
@@ -542,7 +593,12 @@ export default class EnginePortfolio extends Engine
 
         this.AnimateVoxelizedMesh();
 
-        this.renderer.render(this.scene, this.camera);    
+        this.renderer.setRenderTarget(this.rtTexture); 
+        this.renderer.clear();  
+        this.renderer.render(this.scene, this.camera); 
+        this.renderer.setRenderTarget(null);
+        this.renderer.clear(); 
+        this.renderer.render(this.dummyScene, this.dummyCamera);   
     }
 
     AnimateVoxelizedMesh() 
@@ -572,12 +628,12 @@ export default class EnginePortfolio extends Engine
             // Continuous rotation animation
             timeline.to(this.currentPFObject.voxelizedMesh.rotation, {
                 y: "+=" + Math.PI * 2, // Rotate 360 degrees around the Y axis
-                duration: 32,  // Duration of one full rotation
+                duration: 16,  // Duration of one full rotation
                 ease: "none",  // Linear rotation
                 onUpdate: () => {
                     // Force update of rotation
                     this.currentPFObject.voxelizedMesh.rotation.y += 0; 
-                    this.currentPFObject.voxelizedMesh.instanceMatrix.needsUpdate = true;
+                    this.currentPFObject.voxelizedMesh.needsUpdate = true;
                 }
             }, .33); // Start immediately after 1 second
 
@@ -589,9 +645,9 @@ export default class EnginePortfolio extends Engine
                 onUpdate: () => {
                     // Force update of rotation
                     this.currentPFObject.voxelizedMesh.rotation.y += 0; 
-                    this.currentPFObject.voxelizedMesh.instanceMatrix.needsUpdate = true;
+                    this.currentPFObject.voxelizedMesh.needsUpdate = true;
                 }
-            }, .33); // Start immediately after 1 second
+            }, .1); // Start immediately after .1 second
         }
     }
     
@@ -645,5 +701,37 @@ export default class EnginePortfolio extends Engine
     
         // Show the container
         container.classList.remove('hidden');
+    }
+
+    ToggleFolder(folderId) 
+    {
+        console.log('Received Folder ID:', folderId);  // Debugging output
+    
+        if (!folderId) {
+            console.warn('folderId is null or undefined');  // Extra warning if folderId is null
+            return;
+        }
+
+        const folderContent = document.getElementById(folderId);
+        const folderHeader = document.querySelector(`[data-folder-id="${folderId}"]`);
+
+        if (folderContent) 
+        {
+            if (folderContent.style.display === "none" || folderContent.style.display === "") 
+            {
+                folderHeader.classList.add('open');  
+                folderContent.style.display = "block";
+            } 
+            else 
+            {
+                folderHeader.classList.remove('open');  
+                folderContent.style.display = "none";
+            }
+            console.log('Toggled folder content:', folderContent);  // Debugging output
+        } 
+        else 
+        {
+            console.warn('No element found with ID:', folderId);  // Warn if no element is found
+        }
     }
 }
