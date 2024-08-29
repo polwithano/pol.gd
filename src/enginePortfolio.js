@@ -75,8 +75,8 @@ export default class EnginePortfolio extends Engine
         super.InitializeThreeJS(); 
 
         this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.renderer.localClippingEnabled = true;
+        this.renderer.shadowMap.type = THREE.BasicShadowMap;
+        this.renderer.localClippingEnabled = true; 
 
         // Create the composer for post-processing
         this.composer = new EffectComposer(this.renderer);
@@ -103,14 +103,13 @@ export default class EnginePortfolio extends Engine
         );
         this.dummyCamera.position.z = 1; 
         this.dummyScene = new THREE.Scene(); 
-
         this.rtTexture = new THREE.WebGLRenderTarget( 
-            window.innerWidth / 4 , //resolution x
+            window.innerWidth / 4, //resolution x
             window.innerHeight / 4, //resolution y
             { 
               minFilter: THREE.LinearFilter, 
               magFilter: THREE.NearestFilter, 
-              format: THREE.RGBFormat 
+              format: THREE.RGBAFormat 
             });
         this.uniforms = {
             tDiffuse: { value: this.rtTexture.texture },
@@ -129,7 +128,6 @@ export default class EnginePortfolio extends Engine
         quad.position.z = -100; 
         this.dummyScene.add(quad); 
 
-        this.renderer.setClearColor(0xffd7a6)
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.autoClear = false;
 
@@ -175,6 +173,9 @@ export default class EnginePortfolio extends Engine
                 
                 // Load the object asynchronously
                 await this.currentPFObject.load();
+
+                this.gradientTexture = Helpers.CreateGradientTexture(this.currentPFObject.metadata, this.context, this.canvas);
+                this.scene.background = this.gradientTexture; 
         
                 // Ensure that the meshes are not null
                 if (this.currentPFObject.voxelizedMesh) 
@@ -188,8 +189,6 @@ export default class EnginePortfolio extends Engine
                     Helpers.AddClippingPlaneToMaterials(this.currentPFObject.originalMesh, this.clippingPlane1);
                     Helpers.AddClippingPlaneToMaterials(this.currentPFObject.voxelizedMesh, this.clippingPlane2);
                     */
-                    this.gradientTexture = Helpers.CreateGradientTexture(this.currentPFObject.metadata, this.context, this.canvas);
-                    this.scene.background = this.gradientTexture;
 
                     //this.scene.add(this.currentPFObject.originalMesh);
                     this.shadowPlane = Helpers.CreateShadowPlane(this.currentPFObject.MinY());
@@ -593,12 +592,15 @@ export default class EnginePortfolio extends Engine
 
         this.AnimateVoxelizedMesh();
 
+        // 2. Render the voxelized objects at lower resolution
         this.renderer.setRenderTarget(this.rtTexture); 
         this.renderer.clear();  
-        this.renderer.render(this.scene, this.camera); 
-        this.renderer.setRenderTarget(null);
-        this.renderer.clear(); 
-        this.renderer.render(this.dummyScene, this.dummyCamera);   
+        this.renderer.render(this.scene, this.camera);
+
+        // 3. Composite the low-res voxelized render on top of the high-res background
+        this.renderer.setRenderTarget(null); // render to the screen
+        this.renderer.clearDepth(); // clear depth buffer so voxel render is not occluded by background
+        this.renderer.render(this.dummyScene, this.dummyCamera);  
     }
 
     AnimateVoxelizedMesh() 

@@ -63,8 +63,6 @@ export default class ObjectPortfolio
 
         this.voxelizedMesh.castShadow = true;
         this.voxelizedMesh.receiveShadow = false;
-        this.originalMesh.castShadow = true;
-        this.originalMesh.receiveShadow = true;
     }
 
     async LoadJsonData(json) 

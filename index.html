@@ -147,10 +147,11 @@
         
         varying vec2 vUv;
         
-        void main() {
+        void main() 
+        {
             // Simplified: directly sample the texture
             vec4 color = texture2D(tDiffuse, vUv);
-            gl_FragColor = color;
+            gl_FragColor = vec4(pow(color.rgb, vec3(1.0 / 2.2)), color.a);
         }
     </script>
     <script id="vertexShader" type="x-shader/x-vertex">

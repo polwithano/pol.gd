@@ -77,9 +77,6 @@ async function VoxelizeMesh(paramsInput, mesh) {
 
     console.log('Mesh instantiated:', instancedMesh);
 
-    instancedMesh.castShadow = true;
-    instancedMesh.receiveShadow = false;
-
     if (!localVoxels.length || !instancedMesh) {
         console.error('Voxelization failed or returned empty data.');
         return null;
@@ -146,6 +143,9 @@ function ProcessMeshes(mesh, meshes)
         {
             child.material.side = THREE.DoubleSide;
             child.geometry.computeBoundsTree();
+            const { map } = obj.material;
+            map.minFilter = THREE.LinearFilter;
+            map.magFilter = THREE.NearestFilter;
             meshes.push(child);
         }
     });
@@ -162,7 +162,7 @@ function IsInsideMesh(params, raycaster, position, direction, mesh)
 
 function GetVoxelGeometry(params, length) 
 {
-    let voxelGeometry = new RoundedBoxGeometry(params.boxSize, params.boxSize, params.boxSize, 2, 0);
+    let voxelGeometry = new THREE.BoxGeometry(params.boxSize, params.boxSize, params.boxSize);
     let voxelMaterial = new THREE.MeshStandardMaterial({ 
         flatShading: true,
         emissive: new THREE.Color(0x000000), // default emissive color
