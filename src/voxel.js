@@ -129,9 +129,6 @@ async function LoadVoxelData(json)
     const instancedMesh = GetVoxelGeometry(params, voxels.length); 
     RecreateInstancedVoxelMesh(instancedMesh, voxels); 
 
-    instancedMesh.castShadow = true; 
-    instancedMesh.receiveShadow = false; 
-
     return instancedMesh; 
 } 
 
@@ -143,9 +140,6 @@ function ProcessMeshes(mesh, meshes)
         {
             child.material.side = THREE.DoubleSide;
             child.geometry.computeBoundsTree();
-            const { map } = obj.material;
-            map.minFilter = THREE.LinearFilter;
-            map.magFilter = THREE.NearestFilter;
             meshes.push(child);
         }
     });
@@ -163,10 +157,8 @@ function IsInsideMesh(params, raycaster, position, direction, mesh)
 function GetVoxelGeometry(params, length) 
 {
     let voxelGeometry = new THREE.BoxGeometry(params.boxSize, params.boxSize, params.boxSize);
-    let voxelMaterial = new THREE.MeshStandardMaterial({ 
-        flatShading: true,
-        emissive: new THREE.Color(0x000000), // default emissive color
-        emissiveIntensity: 1 // adjust as needed
+    let voxelMaterial = new THREE.MeshToonMaterial({ 
+        fog: false,
     });
     voxelGeometry.computeBoundsTree(); 
 

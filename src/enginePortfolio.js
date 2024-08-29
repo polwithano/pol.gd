@@ -13,18 +13,25 @@ import Voxel from './voxel';
 import ObjectPortfolio from './objectPortfolio';
 
 /* ENGINE STATES CONST */
-const worldStepValue = 1/60; 
+const worldStepValue = 1/60;
+const DEFAULT_RENDER_SCALE = 1; 
+const LOFI_RENDER_SCALE = 1;  
+
+// Define the parameters for the camera's orbit
+const orbitRadius = 8;  // Distance from the object
+const orbitSpeed = .1; // Speed of the rotation
+const orbitHeight = 1;   // Height of the camera relative to the object
 
 const defaultParams = 
 {
-    gridSize: .2,
-    modelSize: 6,
-    boxSize : .2,
+    gridSize: .1,
+    modelSize: 10,
+    boxSize : .1,
     boxRoundness: .025
 };
 
 const usesJson = true; 
-const glbPath = "../meshes/Spaceship.glb";
+const glbPath = "../meshes/Airplane.glb";
 const projectDataPathArray = 
 [
     '../data/Spaceship_data.json',
@@ -52,6 +59,8 @@ export default class EnginePortfolio extends Engine
         this.currentProjectIndex = 0; 
         this.canSwitchObject = true; 
         this.useJsonData = usesJson;  
+        this.canRotateCamera = true; 
+        this.animationStartTime = 0; 
 
         this.defaultJsonPath = projectDataPathArray[this.currentProjectIndex]; 
 
@@ -75,7 +84,8 @@ export default class EnginePortfolio extends Engine
         super.InitializeThreeJS(); 
 
         this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.BasicShadowMap;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.shadowMap.soft = false; 
         this.renderer.localClippingEnabled = true; 
 
         // Create the composer for post-processing
@@ -89,7 +99,7 @@ export default class EnginePortfolio extends Engine
         this.camera = new THREE.PerspectiveCamera(
             80,
             window.innerWidth / window.innerHeight,
-            0.1,
+            0.0001,
             100000
         );
         
@@ -104,8 +114,8 @@ export default class EnginePortfolio extends Engine
         this.dummyCamera.position.z = 1; 
         this.dummyScene = new THREE.Scene(); 
         this.rtTexture = new THREE.WebGLRenderTarget( 
-            window.innerWidth / 4, //resolution x
-            window.innerHeight / 4, //resolution y
+            Math.floor(window.innerWidth / LOFI_RENDER_SCALE), //resolution x
+            Math.floor(window.innerHeight / LOFI_RENDER_SCALE), //resolution y
             { 
               minFilter: THREE.LinearFilter, 
               magFilter: THREE.NearestFilter, 
@@ -129,7 +139,7 @@ export default class EnginePortfolio extends Engine
         this.dummyScene.add(quad); 
 
         this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.renderer.autoClear = false;
+        this.renderer.autoClear = true;
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     }
@@ -152,11 +162,31 @@ export default class EnginePortfolio extends Engine
             MIDDLE: THREE.MOUSE.ROTATE
         }
 
-        var ambientLight = new THREE.DirectionalLight(0xFFFFFF, 3);
-        ambientLight.position.set(10, 10, 10); 
-        ambientLight.castShadow = true; 
+        // Directional light setup
+        this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        this.directionalLight.position.set(10, 10, 10); 
 
-        this.scene.add(ambientLight);
+        // Enable shadows
+        this.directionalLight.castShadow = true;
+
+        // Configure shadow map size for better resolution
+        this.directionalLight.shadow.mapSize.width = 2048;
+        this.directionalLight.shadow.mapSize.height = 2048;
+
+        // Adjust shadow bias to minimize artifacts
+        this.directionalLight.shadow.bias = -0.005; // Start with a small negative value
+        this.directionalLight.shadow.normalBias = 0.02;  // Adjust based on your model
+
+        // Adjust shadow camera settings for more precise shadows
+        this.directionalLight.shadow.camera.near = 10;
+        this.directionalLight.shadow.camera.far = 100;
+        this.directionalLight.shadow.camera.left = -20;
+        this.directionalLight.shadow.camera.right = 20;
+        this.directionalLight.shadow.camera.top = 20;
+        this.directionalLight.shadow.camera.bottom = -20;
+
+        // Add the light to the scene
+        this.scene.add(this.directionalLight);
 
         this.canvas = document.createElement('canvas');
         this.context = this.canvas.getContext('2d', {willReadFrequently: true});
@@ -192,9 +222,9 @@ export default class EnginePortfolio extends Engine
 
                     //this.scene.add(this.currentPFObject.originalMesh);
                     this.shadowPlane = Helpers.CreateShadowPlane(this.currentPFObject.MinY());
-                    Helpers.AnimateVoxels(this.currentPFObject);
 
-                    this.currentPFObject.voxelizedMesh.position.x += 2; 
+                    Helpers.AnimateVoxels(this.currentPFObject, 5);
+                    this.InitializeCamera(); 
 
                     this.scene.add(this.shadowPlane);
                     this.scene.add(this.currentPFObject.voxelizedMesh);
@@ -460,56 +490,69 @@ export default class EnginePortfolio extends Engine
     }
 
     async SwitchObject(direction, duration) 
-    {        
+    {
         this.canSwitchObject = false; 
-
+        this.canRotateCamera = false; 
+    
+        // Load the next portfolio object
         this.nextPFObject = new ObjectPortfolio("Load", projectDataPathArray[this.currentProjectIndex]);
         await this.nextPFObject.load();
-
+    
         const currentMetadata = this.currentPFObject.metadata; 
         const newMetadata = this.nextPFObject.metadata;  
         const currentGradient = {start: currentMetadata.gradientStart, end: currentMetadata.gradientEnd};
         const newGradient = {start: newMetadata.gradientStart, end: newMetadata.gradientEnd};
-        this.SmoothGradientTransition(currentGradient, newGradient, duration * 1000);
+        this.SmoothGradientTransition(currentGradient, newGradient, duration);
+    
+        // Calculate the camera's left and right direction vectors
+        const cameraDirection = new THREE.Vector3();
+        this.camera.getWorldDirection(cameraDirection);
+        
+        // Calculate the perpendicular direction (left or right)
+        let perpendicularDirection = this.camera.position.clone();
+        perpendicularDirection.applyAxisAngle(this.camera.up, direction * Math.PI / 2);
 
-        const positionOffset = direction * window.innerWidth * 0.05; 
-        this.nextPFObject.voxelizedMesh.position.x = positionOffset; 
-        this.scene.add(this.nextPFObject.voxelizedMesh); 
+        // Calculate spawn position for the new object (a bit to the left or right of the current object)
+        const spawnDistance = window.innerWidth * 0.1;
+        const spawnPosition = perpendicularDirection.multiplyScalar(spawnDistance);
 
-        Helpers.UpdateCarouselDots(this.currentProjectIndex); 
-
+        // Set initial position of the new object
+        this.nextPFObject.voxelizedMesh.position.copy(spawnPosition);
+        this.scene.add(this.nextPFObject.voxelizedMesh);
+    
+        // Animate the current object out of the scene
         gsap.to(this.currentPFObject.voxelizedMesh.position, {
-            x: -positionOffset, // Move the current object out of the screen
-            duration: duration, 
-            ease: "power2.inOut"
-        });
-
-        gsap.to(this.currentPFObject.originalMesh.position, {
-            x: -positionOffset, // Move the current object out of the screen
+            x: -spawnPosition.x,
+            z: -spawnPosition.z,
             duration: duration, 
             ease: "power2.inOut"
         });
     
+        // Animate the new object into the center of the scene
         gsap.to(this.nextPFObject.voxelizedMesh.position, {
-            x: 0, // Move the new object to the center
+            x: 0, y: 0, z: 0,
             duration: duration,
             ease: "power2.inOut",
             onComplete: () => {
-                // Clean up old object
+                // Clean up old object and finalize the switch
                 this.ClearPortfolioObject();
                 this.currentPFObject = this.nextPFObject;
                 this.currentPFObject.voxelStartAnimationOver = true; 
                 this.InitializeHTML(); 
-                this.canSwitchObject = true; 
+                this.canSwitchObject = true;
+                this.canRotateCamera = true; 
+                Helpers.UpdateCarouselDots(this.currentProjectIndex);  
             }
         });
-
+    
+        // Update shadow plane (if necessary)
         gsap.to(this.shadowPlane.position, {
-                y: this.nextPFObject.MinY(),
-                duration: duration,
-                ease: "power2.inOut"
-        }); 
-    }    
+            y: this.nextPFObject.MinY(),
+            duration: duration,
+            ease: "power2.inOut"
+        });
+    }
+    
     // #endregion 
 
     ClearPortfolioObject() 
@@ -521,8 +564,9 @@ export default class EnginePortfolio extends Engine
         }
     }
     
-    SmoothGradientTransition(oldGradient, newGradient, duration = 500) 
+    SmoothGradientTransition(oldGradient, newGradient, duration = 0.5) 
     {
+        duration *= 1000; 
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         canvas.width = 512;
@@ -591,6 +635,8 @@ export default class EnginePortfolio extends Engine
         this.world.step(worldStepValue);
 
         this.AnimateVoxelizedMesh();
+        this.AnimateCamera(); 
+        this.renderer.shadowMap.needsUpdate = true;
 
         // 2. Render the voxelized objects at lower resolution
         this.renderer.setRenderTarget(this.rtTexture); 
@@ -605,6 +651,8 @@ export default class EnginePortfolio extends Engine
 
     AnimateVoxelizedMesh() 
     {
+        if (this.gravityEnabled) return; 
+
         if (this.currentPFObject != null && 
             this.currentPFObject.voxelStartAnimationOver === true && 
             this.currentPFObject.voxelAnimationInitialized === false) 
@@ -618,7 +666,7 @@ export default class EnginePortfolio extends Engine
             const timeline = gsap.timeline({
                 repeat: -1,  // Repeat indefinitely
                 yoyo: true,  // Reverses the animation each time it repeats
-                ease: "power1.inOut",  // Smoother easing
+                ease: "none",  // Smoother easing
                 onStart: () => {
                     console.log("Animation Start - Position:", this.currentPFObject.voxelizedMesh.position);
                 },
@@ -626,33 +674,56 @@ export default class EnginePortfolio extends Engine
                     console.log("Animation Complete - Position:", this.currentPFObject.voxelizedMesh.position);
                 }
             });
-    
-            // Continuous rotation animation
-            timeline.to(this.currentPFObject.voxelizedMesh.rotation, {
-                y: "+=" + Math.PI * 2, // Rotate 360 degrees around the Y axis
-                duration: 16,  // Duration of one full rotation
-                ease: "none",  // Linear rotation
-                onUpdate: () => {
-                    // Force update of rotation
-                    this.currentPFObject.voxelizedMesh.rotation.y += 0; 
-                    this.currentPFObject.voxelizedMesh.needsUpdate = true;
-                }
-            }, .33); // Start immediately after 1 second
 
             // Continuous rotation animation
             timeline.to(this.currentPFObject.voxelizedMesh.position, {
                 y: "+=" + 1,
-                duration: 16,
-                ease: "elastic.out",  // Linear rotation
+                duration: 8,
+                ease: "linear",  // Linear rotation
                 onUpdate: () => {
                     // Force update of rotation
-                    this.currentPFObject.voxelizedMesh.rotation.y += 0; 
+                    this.currentPFObject.voxelizedMesh.rotation.y += 0;
+                    this.currentPFObject.voxelizedMesh.updateMatrixWorld(true); 
                     this.currentPFObject.voxelizedMesh.needsUpdate = true;
                 }
             }, .1); // Start immediately after .1 second
         }
     }
+
+    InitializeCamera() {
+        if (this.currentPFObject != null) {
+            const x = orbitRadius * Math.sin((this.animationStartTime) * orbitSpeed);
+            const z = orbitRadius * Math.cos((this.animationStartTime) * orbitSpeed);
     
+            // Set the camera's initial position
+            this.camera.position.set(x, orbitHeight, z);
+    
+            // Set the camera to look at the initial position of the target object
+            this.camera.lookAt(this.currentPFObject.voxelizedMesh.position.x, this.currentPFObject.MaxY() / 2, this.currentPFObject.voxelizedMesh.position.z);
+        }
+    }
+
+    AnimateCamera() {
+        if (this.currentPFObject != null &&
+            this.currentPFObject.voxelStartAnimationOver === true &&
+            this.canRotateCamera)
+        {
+            this.animationStartTime += this.clock.getDelta(); 
+            // Calculate elapsed time since the animation started
+            const elapsedTime = (this.animationStartTime) * orbitSpeed;
+
+            // Calculate the new camera position based on elapsed time
+            const x = orbitRadius * Math.sin(-elapsedTime);
+            const z = orbitRadius * Math.cos(-elapsedTime);
+
+            // Set the camera's position
+            this.camera.position.set(x, orbitHeight, z);
+
+            // Set the camera to look at the initial position of the target object
+            this.camera.lookAt(this.currentPFObject.voxelizedMesh.position.x, this.currentPFObject.MaxY() / 2, this.currentPFObject.voxelizedMesh.position.z);
+        }
+    }
+
     RenderProjectPage(projectData) 
     {
         const container = document.getElementById('project-container');

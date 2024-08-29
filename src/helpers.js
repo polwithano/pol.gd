@@ -79,8 +79,8 @@ function FetchCurrentGradientColors(context, canvas)
 
 function CreateShadowPlane(yPosition) 
 {
-    const planeGeometry = new THREE.PlaneGeometry(1000, 1000); // Ensure the plane is large enough
-    const planeMaterial = new THREE.ShadowMaterial({opacity: 0.5}); // Invisible but receives shadows
+    const planeGeometry = new THREE.PlaneGeometry(100, 100); // Ensure the plane is large enough
+    const planeMaterial = new THREE.ShadowMaterial({opacity: 0.8}); // Invisible but receives shadows
     const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 
     plane.rotation.x = -Math.PI / 2; 
@@ -166,17 +166,17 @@ function GenericProjectData()
     return projectData;
 }
 
-function AnimateVoxels(objectPortfolio) 
+function AnimateVoxels(objectPortfolio, offset) 
 {
     const timeline = gsap.timeline({
-        onComplete: () => {
+        onComplete: () => { 
             objectPortfolio.voxelStartAnimationOver = true; 
         }
     });
     const voxelizedMesh = objectPortfolio.voxelizedMesh; 
     const voxelCount = voxelizedMesh.count;
 
-    voxelizedMesh.position.y += 12; 
+    voxelizedMesh.position.y += offset; 
  
     for (let i = 0; i < voxelCount; i++) 
     {
@@ -188,7 +188,7 @@ function AnimateVoxels(objectPortfolio)
         position.setFromMatrixPosition(matrix);
         originalPosition.setFromMatrixPosition(matrix); 
 
-        originalPosition.y -= 12; 
+        originalPosition.y -= offset; 
 
         timeline.to(position, {
             y: originalPosition.y,
