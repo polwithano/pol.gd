@@ -34,7 +34,7 @@ const usesJson = true;
 const glbPath = "../meshes/Airplane.glb";
 const projectDataPathArray = 
 [
-    '../data/Spaceship_data.json',
+    '../data/Airplane_data.json',
     '../data/Spaceship_data.json',
     '../data/Spaceship_data.json',
     '../data/Spaceship_data.json',
@@ -98,16 +98,16 @@ export default class EnginePortfolio extends Engine
 
         this.camera = new THREE.PerspectiveCamera(
             80,
-            window.innerWidth / window.innerHeight,
+            2,
             0.0001,
             100000
         );
         
         this.dummyCamera = new THREE.OrthographicCamera(
-            window.innerWidth / - 2, 
-            window.innerWidth / 2, 
-            window.innerHeight / 2, 
-            window.innerHeight / - 2,
+            window.innerWidth  / -2, 
+            window.innerWidth   / 2, 
+            window.innerHeight  / 2, 
+            window.innerHeight / -2,
             - 10000, 
             10000
         );
@@ -154,7 +154,7 @@ export default class EnginePortfolio extends Engine
     {
         super.InitializeGame(); 
 
-        this.camera.position.set(0, 1, 10); // Adjust the position as needed
+        this.camera.position.set(0, 1, 0); // Adjust the position as needed
         this.camera.lookAt(0, 1, 0);
 
         this.controls.mouseButtons = 
@@ -223,11 +223,16 @@ export default class EnginePortfolio extends Engine
                     //this.scene.add(this.currentPFObject.originalMesh);
                     this.shadowPlane = Helpers.CreateShadowPlane(this.currentPFObject.MinY());
 
-                    Helpers.AnimateVoxels(this.currentPFObject, 5);
+                    this.currentPFObject.voxelizedMesh.position.x = 0;
+                    this.currentPFObject.voxelizedMesh.position.z = 0; 
+
+                    Helpers.AnimateVoxels(this.currentPFObject, 20);
                     this.InitializeCamera(); 
 
                     this.scene.add(this.shadowPlane);
-                    this.scene.add(this.currentPFObject.voxelizedMesh);
+                    //this.scene.add(this.currentPFObject.voxelizedMesh);
+
+                    this.scene.add(new THREE.AxesHelper(10)); 
 
                     this.InitializeHTML(); 
                     this.RenderProjectPage(this.currentPFObject.projectData); 
@@ -274,7 +279,7 @@ export default class EnginePortfolio extends Engine
 
         document.getElementById('project-name').textContent = portfolioMetadata.projectName;
         document.getElementById('company-name').textContent = portfolioMetadata.companyName;
-        document.getElementById('author-name').textContent = portfolioMetadata.yearStart;
+        document.getElementById('author-name').textContent = portfolioMetadata.yearString;
         document.getElementById('project-year').textContent = portfolioMetadata.tasks;
         document.getElementById('project-description').textContent = portfolioMetadata.description;
         document.getElementById('copyright-model').textContent = "© Model • " + metadata.author; 
@@ -303,10 +308,10 @@ export default class EnginePortfolio extends Engine
         {
             projectName: "projectName", 
             companyName: "companyName",
-            yearStart: "2023",
-            yearEnd: "2024", 
-            tasks: "Game Design", 
-            description: "A short description of the project. Maximum number of characters: 64"
+            yearString: "1970",
+            yearID: "1970", 
+            tasks: "tasksList", 
+            description: "A short description of the project."
         }
 
         const projectData = Helpers.GenericProjectData(); 
@@ -541,6 +546,7 @@ export default class EnginePortfolio extends Engine
                 this.InitializeHTML(); 
                 this.canSwitchObject = true;
                 this.canRotateCamera = true; 
+                this.animationStartTime = 0; 
                 Helpers.UpdateCarouselDots(this.currentProjectIndex);  
             }
         });

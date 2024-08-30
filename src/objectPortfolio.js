@@ -123,10 +123,30 @@ export default class ObjectPortfolio
         if (!this.voxels || !this.params) return 0;
         return Math.min(...this.voxels.map(v => v.position.y)) - this.params.boxSize / 2;
     }
+
+    MinX() {
+        if (!this.voxels || !this.params) return 0;
+        return Math.min(...this.voxels.map(v => v.position.x)) - this.params.boxSize / 2;
+    }
+
+    MinZ() {
+        if (!this.voxels || !this.params) return 0;
+        return Math.min(...this.voxels.map(v => v.position.z)) + this.params.boxSize / 2;
+    }
     
     MaxY() {
         if (!this.voxels || !this.params) return 0;
         return Math.max(...this.voxels.map(v => v.position.y)) + this.params.boxSize / 2;
+    }
+
+    MaxX() {
+        if (!this.voxels || !this.params) return 0;
+        return Math.max(...this.voxels.map(v => v.position.x)) + this.params.boxSize / 2;
+    }
+
+    MaxZ() {
+        if (!this.voxels || !this.params) return 0;
+        return Math.max(...this.voxels.map(v => v.position.z)) + this.params.boxSize / 2;
     }
     
     VoxelHeight() {

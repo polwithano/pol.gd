@@ -62,6 +62,8 @@ export default class Engine
     GameLoop() 
     {
         if (!this.isRunning) return; 
+        this.HandleWindowResize(); 
+
         this.animationFrameID = requestAnimationFrame(() => this.GameLoop());
 
         if (this.toggleDebug) this.cannonDebugger.update();
@@ -135,12 +137,21 @@ export default class Engine
 
     HandleWindowResize() 
     {
-        const newWidth = window.innerWidth;
-        const newHeight = window.innerHeight;
+        const canvas = this.renderer.domElement; 
+        const width = canvas.clientWidth; 
+        const height = canvas.clientHeight;
 
-        // Update the size of the renderer and camera
-        this.renderer.setSize(newWidth, newHeight);
-        this.camera.aspect = newWidth / newHeight;
-        this.camera.updateProjectionMatrix();
+        if (canvas.width != width || canvas.height != height) 
+        {
+            // Update the size of the renderer and camera
+            let scale = window.devicePixelRatio;
+            this.renderer.setSize(width / scale, height / scale, true); 
+            this.camera.aspect = width / height;
+            this.camera.updateProjectionMatrix();
+
+            console.log('Canvas Size:', canvas.clientWidth, canvas.clientHeight);
+            console.log('Renderer Size:', this.renderer.width, this.renderer.height);
+            console.log('Camera Aspect Ratio:', this.camera.aspect);
+        }
     }
 }
