@@ -72,6 +72,7 @@ async function VoxelizeMesh(paramsInput, mesh) {
 
     console.log('Voxels instantiated:', localVoxels.length);
     WeightedAmbientOcclusion(localVoxels, paramsInput.gridSize); 
+    localVoxels = RemoveFullyOccludedVoxels(localVoxels, 0.01); 
 
     let instancedMesh = GetVoxelGeometry(localParams, localVoxels.length);
     CreateInstancedVoxelMesh(instancedMesh, localVoxels);
@@ -139,16 +140,16 @@ function WeightedAmbientOcclusion(localVoxels, gridSize) {
 
         // Define neighbor offsets and their weights
         const directions = [
-            { offset: new THREE.Vector3(1, 0, 0), weight: 1.0 },   // Right
-            { offset: new THREE.Vector3(-1, 0, 0), weight: 1.0 },  // Left
+            { offset: new THREE.Vector3(1, 0, 0), weight: 0.5 },   // Right
+            { offset: new THREE.Vector3(-1, 0, 0), weight: 0.5 },  // Left
             { offset: new THREE.Vector3(0, 1, 0), weight: 1.0 },   // Top
             { offset: new THREE.Vector3(0, -1, 0), weight: 0.5 },  // Bottom
             { offset: new THREE.Vector3(0, 0, 1), weight: 1.0 },   // Front
             { offset: new THREE.Vector3(0, 0, -1), weight: 1.0 },  // Back
-            { offset: new THREE.Vector3(1, 1, 0), weight: 0.6 },   // Top-right diagonal
-            { offset: new THREE.Vector3(-1, 1, 0), weight: 0.6 },  // Top-left diagonal
-            { offset: new THREE.Vector3(1, -1, 0), weight: 0.6 },  // Bottom-right diagonal
-            { offset: new THREE.Vector3(-1, -1, 0), weight: 0.6 }, // Bottom-left diagonal
+            { offset: new THREE.Vector3(1, 1, 0), weight: 0.5 },   // Top-right diagonal
+            { offset: new THREE.Vector3(-1, 1, 0), weight: 0.5 },  // Top-left diagonal
+            { offset: new THREE.Vector3(1, -1, 0), weight: 0.5 },  // Bottom-right diagonal
+            { offset: new THREE.Vector3(-1, -1, 0), weight: 0.5 }, // Bottom-left diagonal
             // Add more diagonals if needed with lower weights
         ];
 
@@ -168,6 +169,28 @@ function WeightedAmbientOcclusion(localVoxels, gridSize) {
         // Apply a simple darkening based on occlusion factor
         voxel.color.multiplyScalar(occlusionFactor);
     });
+}
+
+function RemoveFullyOccludedVoxels(localVoxels, darknessThreshold = 0.1) {
+    const cleanedVoxels = [];
+
+    for (let i = 0; i < localVoxels.length; i++) {
+        const voxel = localVoxels[i];
+        const { r, g, b } = voxel.color;
+
+        // Check if the voxel color is below the darkness threshold for all RGB channels
+        const isFullyOccluded = r <= darknessThreshold && g <= darknessThreshold && b <= darknessThreshold;
+
+        // If the voxel is not fully occluded, keep it
+        if (!isFullyOccluded) {
+            cleanedVoxels.push(voxel);
+        }
+    }
+
+    console.log(`Original voxel count: ${localVoxels.length}`);
+    console.log(`Cleaned voxel count: ${cleanedVoxels.length}`);
+
+    return cleanedVoxels;
 }
 
 async function SaveVoxelData(object, metadata, portfolioMetadata, params, projectData) 

@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import * as CANNON from 'cannon';
 import Helpers from './helpers';  
 import Loader from './loader'; 
 import Voxel from './voxel'; 

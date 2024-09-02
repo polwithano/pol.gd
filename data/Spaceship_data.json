@@ -4,8 +4,7 @@
     "author": "Google Poly",
     "originalMeshFolder": "../meshes/",
     "originalMeshPath": "../meshes/Spaceship.glb",
-    "gradientStart": "#0000FF",
-    "gradientEnd": "#0000FF"
+    "gradient": ["#000000", "#2B2B2B", "#DDDDDD"]
   },
   "portfolioMetadata": {
     "projectName": "Stellar Pulse",

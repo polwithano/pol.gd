@@ -15,7 +15,7 @@ import { SimplexNoise } from 'three/examples/jsm/Addons.js';
 /* ENGINE STATES CONST */
 const worldStepValue = 1/60;
 const DEFAULT_RENDER_SCALE = 1; 
-const LOFI_RENDER_SCALE = 4;  
+const LOFI_RENDER_SCALE = 1;  
 
 // Define the parameters for the camera's orbit
 const orbitRadius = 8;  // Distance from the object
@@ -197,6 +197,7 @@ export default class EnginePortfolio extends Engine
 
         // Add the light to the scene
         this.scene.add(this.directionalLight);
+        this.scene.fog = new THREE.Fog(0x2B2B2B, 0.5, 45); 
 
         this.canvas = document.createElement('canvas');
         this.context = this.canvas.getContext('2d', {willReadFrequently: true});
@@ -221,12 +222,11 @@ export default class EnginePortfolio extends Engine
                 // Load the object asynchronously
                 await this.currentPFObject.load();
 
-                this.gradientTexture = Helpers.CreateGradientTexture(this.currentPFObject.metadata, this.context, this.canvas);
+                this.gradientTexture = HelpersBackground.CreateMultiGradientTexture(this.currentPFObject.metadata.gradient, this.context, this.canvas);
                 //this.gradientTexture = HelpersBackground.CreateCheckerboardTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 2, 2, this.context, this.canvas); 
                 //this.gradientTexture = HelpersBackground.CreateChartPieTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 24, this.context, this.canvas); 
 
                 this.scene.background = this.gradientTexture; 
-                this.scene.fog = new THREE.Fog(0x2B2B2B, 0.5, 45); 
         
                 // Ensure that the meshes are not null
                 if (this.currentPFObject.voxelizedMesh) 
@@ -279,7 +279,7 @@ export default class EnginePortfolio extends Engine
                 if (this.currentPFObject.originalMesh && this.currentPFObject.voxelizedMesh) 
                 {
                     this.scene.add(this.currentPFObject.voxelizedMesh);
-                    this.scene.add(this.currentPFObject.originalMesh); 
+                    //this.scene.add(this.currentPFObject.originalMesh); 
                 }
                 else 
                 {
@@ -321,8 +321,7 @@ export default class EnginePortfolio extends Engine
             author: "author", 
             originalMeshFolder: "../meshes/",
             originalMeshPath: "",
-            gradientStart: "#000000", 
-            gradientEnd: "#000000"
+            gradient: ["#000000", "#2B2B2B", "FFFFFF"]
         };
 
         const portfolioMetadata = 
@@ -527,12 +526,8 @@ export default class EnginePortfolio extends Engine
         // Load the next portfolio object
         this.nextPFObject = new ObjectPortfolio("Load", projectDataPathArray[this.currentProjectIndex]);
         await this.nextPFObject.load();
-    
-        const currentMetadata = this.currentPFObject.metadata; 
-        const newMetadata = this.nextPFObject.metadata;  
-        const currentGradient = {start: currentMetadata.gradientStart, end: currentMetadata.gradientEnd};
-        const newGradient = {start: newMetadata.gradientStart, end: newMetadata.gradientEnd};
-        this.SmoothGradientTransition(currentGradient, newGradient, duration);
+
+        this.SmoothGradientTransition(this.currentPFObject.metadata.gradient, this.nextPFObject.metadata.gradient, duration);
     
         // Calculate the camera's left and right direction vectors
         const cameraDirection = new THREE.Vector3();
@@ -595,9 +590,8 @@ export default class EnginePortfolio extends Engine
         }
     }
     
-    SmoothGradientTransition(oldGradient, newGradient, duration = 0.5) 
-    {
-        duration *= 1000; 
+    SmoothGradientTransition(oldGradient, newGradient, duration = 0.5) {
+        duration *= 1000; // Convert seconds to milliseconds
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         canvas.width = 512;
@@ -605,11 +599,19 @@ export default class EnginePortfolio extends Engine
     
         let startTime = null;
     
+        // Function to interpolate between two colors
         const interpolateColor = (start, end, t) => {
-            const startRGB = start.match(/\w\w/g).map((x) => parseInt(x, 16));
-            const endRGB = end.match(/\w\w/g).map((x) => parseInt(x, 16));
+            const startRGB = start.match(/\w\w/g).map(x => parseInt(x, 16));
+            const endRGB = end.match(/\w\w/g).map(x => parseInt(x, 16));
             const interpolated = startRGB.map((start, i) => Math.round(start + (endRGB[i] - start) * t));
-            return `#${interpolated.map((x) => x.toString(16).padStart(2, '0')).join('')}`;
+            return `#${interpolated.map(x => x.toString(16).padStart(2, '0')).join('')}`;
+        };
+    
+        // Function to create a linear gradient on the canvas
+        const createGradient = (colors) => {
+            const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
+            colors.forEach((color, i) => gradient.addColorStop(i / (colors.length - 1), color));
+            return gradient;
         };
     
         const animate = (timestamp) => {
@@ -617,13 +619,14 @@ export default class EnginePortfolio extends Engine
             const elapsed = timestamp - startTime;
             const t = Math.min(elapsed / duration, 1);
     
-            const startColor = interpolateColor(oldGradient.start, newGradient.start, t);
-            const endColor = interpolateColor(oldGradient.end, newGradient.end, t);
+            // Interpolate colors for each stop in the gradient
+            const interpolatedGradient = oldGradient.map((color, i) => {
+                const newColor = newGradient[i] || oldGradient[i];
+                return interpolateColor(color, newColor, t);
+            });
     
-            const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
-            gradient.addColorStop(0, startColor);
-            gradient.addColorStop(1, endColor);
-    
+            // Create gradient texture
+            const gradient = createGradient(interpolatedGradient);
             context.fillStyle = gradient;
             context.fillRect(0, 0, canvas.width, canvas.height);
     
@@ -667,7 +670,7 @@ export default class EnginePortfolio extends Engine
         this.stats.update(); 
 
         //this.AnimatePlane();
-        this.AnimateVoxelGrid(this.voxelGrid, this.simplex, 0.00002, xyCoef, zCoef);  
+        this.AnimateVoxelGrid(this.voxelGrid, this.simplex, 0.00006, xyCoef, zCoef);  
         this.AnimateVoxelizedMesh();
         this.AnimateCamera(); 
         this.renderer.shadowMap.needsUpdate = true;
@@ -741,10 +744,14 @@ export default class EnginePortfolio extends Engine
     AnimateVoxelGrid(instancedMesh, simplex, timeFactor, xyCoef, zCoef) 
     {
         const time = Date.now() * timeFactor;
-        const voxelCount = instancedMesh.count; 
+        const voxelCount = instancedMesh.count;
 
-        const colorGradientStart = new THREE.Color(this.currentPFObject.metadata.gradientEnd);
-        const colorGradientEnd = new THREE.Color(this.currentPFObject.metadata.gradientStart);
+        const gradient = this.currentPFObject.metadata.gradient; 
+
+        if (gradient == undefined) return; 
+
+        const colorGradientStart = new THREE.Color(gradient[gradient.length - 1]);
+        const colorGradientEnd = new THREE.Color(gradient[0]);
     
         for (let i = 0; i < voxelCount; i++) 
         {
