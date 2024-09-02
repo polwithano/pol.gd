@@ -71,6 +71,7 @@ async function VoxelizeMesh(paramsInput, mesh) {
     }
 
     console.log('Voxels instantiated:', localVoxels.length);
+    WeightedAmbientOcclusion(localVoxels, paramsInput.gridSize); 
 
     let instancedMesh = GetVoxelGeometry(localParams, localVoxels.length);
     CreateInstancedVoxelMesh(instancedMesh, localVoxels);
@@ -83,6 +84,90 @@ async function VoxelizeMesh(paramsInput, mesh) {
     }
 
     return { voxels: localVoxels, instancedMesh };
+}
+
+function FastAmbientOcclusion(localVoxels, gridSize) {
+    const voxelMap = new Map();
+
+    // Store voxel positions in a map for quick neighbor lookup
+    localVoxels.forEach(voxel => {
+        const key = `${voxel.position.x},${voxel.position.y},${voxel.position.z}`;
+        voxelMap.set(key, voxel);
+    });
+
+    localVoxels.forEach(voxel => {
+        let occlusion = 0;
+
+        // Check neighbors in all 6 directions (right, left, top, bottom, front, back)
+        const directions = [
+            new THREE.Vector3(1, 0, 0),
+            new THREE.Vector3(-1, 0, 0),
+            new THREE.Vector3(0, 1, 0),
+            new THREE.Vector3(0, -1, 0),
+            new THREE.Vector3(0, 0, 1),
+            new THREE.Vector3(0, 0, -1)
+        ];
+
+        directions.forEach(dir => {
+            const neighborPos = voxel.position.clone().add(dir.multiplyScalar(gridSize));
+            const neighborKey = `${neighborPos.x},${neighborPos.y},${neighborPos.z}`;
+            if (voxelMap.has(neighborKey)) {
+                occlusion++;
+            }
+        });
+
+        // The more neighbors, the more occluded this voxel is
+        const occlusionFactor = 1 - occlusion / directions.length;  // Range 0 to 1
+
+        // Apply a simple darkening based on occlusion factor
+        voxel.color.multiplyScalar(occlusionFactor);
+    });
+}
+
+function WeightedAmbientOcclusion(localVoxels, gridSize) {
+    const voxelMap = new Map();
+
+    // Store voxel positions in a map for quick neighbor lookup
+    localVoxels.forEach(voxel => {
+        const key = `${voxel.position.x},${voxel.position.y},${voxel.position.z}`;
+        voxelMap.set(key, voxel);
+    });
+
+    localVoxels.forEach(voxel => {
+        let occlusion = 0;
+        let totalWeight = 0;
+
+        // Define neighbor offsets and their weights
+        const directions = [
+            { offset: new THREE.Vector3(1, 0, 0), weight: 1.0 },   // Right
+            { offset: new THREE.Vector3(-1, 0, 0), weight: 1.0 },  // Left
+            { offset: new THREE.Vector3(0, 1, 0), weight: 1.0 },   // Top
+            { offset: new THREE.Vector3(0, -1, 0), weight: 0.5 },  // Bottom
+            { offset: new THREE.Vector3(0, 0, 1), weight: 1.0 },   // Front
+            { offset: new THREE.Vector3(0, 0, -1), weight: 1.0 },  // Back
+            { offset: new THREE.Vector3(1, 1, 0), weight: 0.6 },   // Top-right diagonal
+            { offset: new THREE.Vector3(-1, 1, 0), weight: 0.6 },  // Top-left diagonal
+            { offset: new THREE.Vector3(1, -1, 0), weight: 0.6 },  // Bottom-right diagonal
+            { offset: new THREE.Vector3(-1, -1, 0), weight: 0.6 }, // Bottom-left diagonal
+            // Add more diagonals if needed with lower weights
+        ];
+
+        // Check each neighbor and accumulate occlusion based on weights
+        directions.forEach(dir => {
+            const neighborPos = voxel.position.clone().add(dir.offset.multiplyScalar(gridSize));
+            const neighborKey = `${neighborPos.x},${neighborPos.y},${neighborPos.z}`;
+            if (voxelMap.has(neighborKey)) {
+                occlusion += dir.weight;
+            }
+            totalWeight += dir.weight;
+        });
+
+        // Normalize the occlusion to range 0 to 1 based on total possible weight
+        const occlusionFactor = 1 - occlusion / totalWeight;
+
+        // Apply a simple darkening based on occlusion factor
+        voxel.color.multiplyScalar(occlusionFactor);
+    });
 }
 
 async function SaveVoxelData(object, metadata, portfolioMetadata, params, projectData) 
@@ -157,8 +242,8 @@ function IsInsideMesh(params, raycaster, position, direction, mesh)
 function GetVoxelGeometry(params, length) 
 {
     let voxelGeometry = new THREE.BoxGeometry(params.boxSize, params.boxSize, params.boxSize);
-    let voxelMaterial = new THREE.MeshToonMaterial({ 
-        fog: false,
+    let voxelMaterial = new THREE.MeshBasicMaterial({ 
+        fog: true,
     });
     voxelGeometry.computeBoundsTree(); 
 
@@ -242,9 +327,42 @@ async function GetOriginalModel()
     return model; 
 }
 
+function CreateVoxelGrid(width, depth, spacing) {
+    const voxelSize = spacing;
+    const voxelGeometry = new THREE.BoxGeometry(voxelSize, voxelSize, voxelSize);
+    const voxelMaterial = new THREE.MeshBasicMaterial({color: '#ffffff', wireframe: false });
+
+    // Create an InstancedMesh with the number of voxels
+    const numVoxels = width * depth;
+    const instancedMesh = new THREE.InstancedMesh(voxelGeometry, voxelMaterial, numVoxels);
+
+    // Set up the matrix for each instance
+    const dummy = new THREE.Object3D();
+    let index = 0;
+    
+    for (let x = 0; x < width; x++) 
+    {
+        for (let z = 0; z < depth; z++) 
+        {
+            dummy.position.set(
+                x * voxelSize - width * voxelSize / 2,
+                0,
+                z * voxelSize - depth * voxelSize / 2,
+            );
+            dummy.updateMatrix();
+
+            //instancedMesh.setColorAt(index, THREE.Color()); 
+            instancedMesh.setMatrixAt(index++, dummy.matrix);
+        }
+    }
+
+    instancedMesh.receiveShadow = true; 
+    return instancedMesh;
+}
+
 function MinY() {return Math.min(...voxels.map(v => v.position.y)) - params.boxSize / 2;}
 function MaxY() {return Math.max(...voxels.map(v => v.position.y)) + params.boxSize / 2;}
 function VoxelHeight() {return ((MaxY() - MinY()) / params.boxSize);}
 function Metadata() {return metadata;}
 
-export default {GetVoxelGeometry, VoxelizeMesh, SaveVoxelData, LoadVoxelData, RecreateInstancedVoxelMesh, GetOriginalModel, MinY, MaxY, VoxelHeight, Metadata}; 
+export default {GetVoxelGeometry, VoxelizeMesh, SaveVoxelData, LoadVoxelData, RecreateInstancedVoxelMesh, GetOriginalModel, CreateVoxelGrid, MinY, MaxY, VoxelHeight, Metadata}; 

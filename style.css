@@ -79,10 +79,14 @@
   color: #fff;
 }
 
-canvas#bg
-{
-    display: block;
-    image-rendering: pixelated;
+#bg {
+  width: 100%;  /* Make sure it takes the full width of the parent */
+  height: 100%; /* Make sure it takes the full height of the parent */
+  display: block;
+  image-rendering: pixelated;
+  position: absolute; /* Ensure it stays within the bounds of the parent */
+  top: 0;
+  left: 0;
 }
 
 #canvas-container {
@@ -331,8 +335,7 @@ a:hover
 
 #project-description.hovered {
   width: calc(100%); /* Leave space for the horizontal padding */
-  height: calc(100% - 100px); /* Leave space for header and carousel dots */
-  top: 100px; /* Start below the header */
+  height: calc(100%); /* Leave space for header and carousel dots */
   left: 50%;
   bottom: auto; /* Prevent stretching to the bottom */
   transform: translateX(-50%);
@@ -361,8 +364,7 @@ a:hover
 /* PORTFOLIO PROJECT CONTENT */
 #project-wrapper {
   position: relative;
-  height: calc(100% - 200px); /* Adjust this height based on the header and carousel dots height */
-  top: 100px; 
+  height: calc(90%); /* Adjust this height based on the header and carousel dots height */ 
   width: 100%;
   overflow: auto; /* Hide overflow */
   scrollbar-width: none;
@@ -377,7 +379,6 @@ a:hover
   left: 0;
   width: 100%;
   color: white;
-  padding: 20px 10px; /* Adjust margins for top and bottom */
   display: flex;
   box-sizing: border-box;
   justify-content: center;
@@ -755,6 +756,19 @@ a:hover
 .project:hover {
   text-decoration: underline;
   cursor: pointer;
+}
+
+/* Style for favorite projects */
+.project.favorite {
+  color: #FFA500; /* Yellow/orange color for favorite projects */
+  font-weight: bold; /* Make the text bold, if desired */
+}
+
+/* Optional: style for the star icon */
+.project.favorite::after {
+  content: '⭐'; /* Add a star icon before the text */
+  margin-right: 8px; /* Space between the star and the text */
+  color: #FFA500; /* Color of the star, can match the text color */
 }
 
 /* FOLDER MENU */

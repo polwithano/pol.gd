@@ -1,26 +1,29 @@
 import * as THREE from 'three'; 
 import * as CANNON from 'cannon';
-import gsap from 'gsap';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GUI } from 'dat.gui'
+import gsap from 'gsap';
+import Stats from 'three/addons/libs/stats.module.js';
 
 import Engine from './engine'; 
+import HelpersBackground from './helpersBackground';
 import Helpers from './helpers'; 
 import Voxel from './voxel'; 
 import ObjectPortfolio from './objectPortfolio';
+import { SimplexNoise } from 'three/examples/jsm/Addons.js';
 
 /* ENGINE STATES CONST */
 const worldStepValue = 1/60;
 const DEFAULT_RENDER_SCALE = 1; 
-const LOFI_RENDER_SCALE = 1;  
+const LOFI_RENDER_SCALE = 4;  
 
 // Define the parameters for the camera's orbit
 const orbitRadius = 8;  // Distance from the object
 const orbitSpeed = .1; // Speed of the rotation
 const orbitHeight = 1;   // Height of the camera relative to the object
+
+const xyCoef = 8; 
+const zCoef = 2; 
 
 const defaultParams = 
 {
@@ -64,6 +67,11 @@ export default class EnginePortfolio extends Engine
 
         this.defaultJsonPath = projectDataPathArray[this.currentProjectIndex]; 
 
+        this.simplex = new SimplexNoise(); 
+        this.gridMinY = Infinity;
+        this.gridMaxY = -Infinity;
+        this.gridSize = 0.5; 
+
         this.Initialize(); 
         this.GameLoop(this.currentTimestamp); 
         this.SetupEventListeners(); 
@@ -88,21 +96,13 @@ export default class EnginePortfolio extends Engine
         this.renderer.shadowMap.soft = false; 
         this.renderer.localClippingEnabled = true; 
 
-        // Create the composer for post-processing
-        this.composer = new EffectComposer(this.renderer);
-        this.composer.addPass(new RenderPass(this.scene, this.camera));
-
-        // Create and configure the bloom pass
-        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-        this.composer.addPass(bloomPass);
-
         this.camera = new THREE.PerspectiveCamera(
             80,
             2,
             0.0001,
             100000
         );
-        
+
         this.dummyCamera = new THREE.OrthographicCamera(
             window.innerWidth  / -2, 
             window.innerWidth   / 2, 
@@ -142,6 +142,16 @@ export default class EnginePortfolio extends Engine
         this.renderer.autoClear = true;
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+
+        this.stats = new Stats();  
+        document.getElementById('canvas-container').appendChild(this.stats.dom);
+
+        // Change the position and top/left of the stats panel
+        this.stats.dom.style.position = 'relative';  // Make sure it's positioned relative to its parent
+        this.stats.dom.style.top = null;
+        this.stats.dom.style.right = null; 
+        this.stats.dom.style.bottom = '90%';
+        this.stats.dom.style.left = '0%';          // Set the left position relative to the parent container
     }
 
     InitializeCannon() 
@@ -163,7 +173,7 @@ export default class EnginePortfolio extends Engine
         }
 
         // Directional light setup
-        this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        this.directionalLight = new THREE.DirectionalLight(0xffffff, 4);
         this.directionalLight.position.set(10, 10, 10); 
 
         // Enable shadows
@@ -195,6 +205,13 @@ export default class EnginePortfolio extends Engine
 
         Helpers.CreateCarouselDots(projectDataPathArray.length, this.currentProjectIndex);
 
+        this.voxelGrid = Voxel.CreateVoxelGrid(100, 100, this.gridSize); 
+        this.scene.add(this.voxelGrid);
+        this.voxelGrid.receiveShadow = true;  
+
+        //this.planeBuffer = Helpers.CreatePlaneBufferGeometry(100, 40); 
+        //this.scene.add(this.planeBuffer); 
+
         if (this.useJsonData) 
         {
             try 
@@ -205,7 +222,11 @@ export default class EnginePortfolio extends Engine
                 await this.currentPFObject.load();
 
                 this.gradientTexture = Helpers.CreateGradientTexture(this.currentPFObject.metadata, this.context, this.canvas);
+                //this.gradientTexture = HelpersBackground.CreateCheckerboardTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 2, 2, this.context, this.canvas); 
+                //this.gradientTexture = HelpersBackground.CreateChartPieTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 24, this.context, this.canvas); 
+
                 this.scene.background = this.gradientTexture; 
+                this.scene.fog = new THREE.Fog(0x2B2B2B, 0.5, 45); 
         
                 // Ensure that the meshes are not null
                 if (this.currentPFObject.voxelizedMesh) 
@@ -222,6 +243,7 @@ export default class EnginePortfolio extends Engine
 
                     //this.scene.add(this.currentPFObject.originalMesh);
                     this.shadowPlane = Helpers.CreateShadowPlane(this.currentPFObject.MinY());
+                    this.reflectorPlane = Helpers.CreateReflectorPlane(this.currentPFObject.MinY());
 
                     this.currentPFObject.voxelizedMesh.position.x = 0;
                     this.currentPFObject.voxelizedMesh.position.z = 0; 
@@ -229,10 +251,9 @@ export default class EnginePortfolio extends Engine
                     Helpers.AnimateVoxels(this.currentPFObject, 20);
                     this.InitializeCamera(); 
 
-                    this.scene.add(this.shadowPlane);
-                    //this.scene.add(this.currentPFObject.voxelizedMesh);
-
-                    this.scene.add(new THREE.AxesHelper(10)); 
+                    //this.scene.add(this.shadowPlane);
+                    //this.scene.add(this.reflectorPlane); 
+                    this.scene.add(this.currentPFObject.voxelizedMesh);
 
                     this.InitializeHTML(); 
                     this.RenderProjectPage(this.currentPFObject.projectData); 
@@ -311,7 +332,8 @@ export default class EnginePortfolio extends Engine
             yearString: "1970",
             yearID: "1970", 
             tasks: "tasksList", 
-            description: "A short description of the project."
+            description: "A short description of the project.",
+            isFavorite: false
         }
 
         const projectData = Helpers.GenericProjectData(); 
@@ -432,6 +454,9 @@ export default class EnginePortfolio extends Engine
 
     OnMouseMove(event) 
     {
+        this.mouseX = event.clientX; 
+        this.mouseY = event.clientY;
+
         if (this.currentPFObject && this.clippingPlane1 && this.clippingPlane2) 
         {
             const margin = 0.33;
@@ -459,7 +484,7 @@ export default class EnginePortfolio extends Engine
         if (event.clientY >= window.innerHeight / 2) 
         {
             const opacity = (event.clientY / (window.innerHeight)) - 0.2;
-            darkOverlay.style.opacity = opacity;
+            darkOverlay.style.opacity = 0;
         }
         else 
         {
@@ -639,7 +664,10 @@ export default class EnginePortfolio extends Engine
     {
         super.GameLoop();
         this.world.step(worldStepValue);
+        this.stats.update(); 
 
+        //this.AnimatePlane();
+        this.AnimateVoxelGrid(this.voxelGrid, this.simplex, 0.00002, xyCoef, zCoef);  
         this.AnimateVoxelizedMesh();
         this.AnimateCamera(); 
         this.renderer.shadowMap.needsUpdate = true;
@@ -694,6 +722,66 @@ export default class EnginePortfolio extends Engine
                 }
             }, .1); // Start immediately after .1 second
         }
+    }
+
+    AnimatePlane() 
+    {
+        const time = Date.now() * 0.0002;
+        const gArray = this.planeBuffer.geometry.attributes.position.array; 
+
+        for (let i = 0; i < gArray.length; i += 3) 
+        {
+            gArray[i + 2] = this.simplex.noise4d(gArray[i] / xyCoef,
+                gArray[i + 1] / xyCoef, time, 2) * zCoef; 
+        }
+
+        this.planeBuffer.geometry.attributes.position.needsUpdate = true; 
+    }
+
+    AnimateVoxelGrid(instancedMesh, simplex, timeFactor, xyCoef, zCoef) 
+    {
+        const time = Date.now() * timeFactor;
+        const voxelCount = instancedMesh.count; 
+
+        const colorGradientStart = new THREE.Color(this.currentPFObject.metadata.gradientEnd);
+        const colorGradientEnd = new THREE.Color(this.currentPFObject.metadata.gradientStart);
+    
+        for (let i = 0; i < voxelCount; i++) 
+        {
+            let matrix = new THREE.Matrix4; 
+            let position = new THREE.Vector3;
+            
+            instancedMesh.getMatrixAt(i, matrix); 
+            position.setFromMatrixPosition(matrix);
+    
+            // Compute the new Y position using Simplex noise, adjusted to the nearest multiple of gridSize
+            position.y = Math.round(simplex.noise4d(position.x / xyCoef, position.z / xyCoef, time, 2) * zCoef / this.gridSize) * this.gridSize - 5;
+
+            if (position.y < this.gridMinY) this.gridMinY = position.y;
+            if (position.y > this.gridMaxY) this.gridMaxY = position.y;
+
+            matrix.setPosition(position); 
+            instancedMesh.setMatrixAt(i, matrix); 
+        }
+
+        for (let i = 0; i < voxelCount; i++) 
+        {
+            let matrix = new THREE.Matrix4; 
+            let position = new THREE.Vector3; 
+
+            instancedMesh.getMatrixAt(i, matrix); 
+            position.setFromMatrixPosition(matrix);
+
+            const normalizedY = (position.y - this.gridMinY) / (this.gridMaxY - this.gridMinY);
+            const color = new THREE.Color().lerpColors(colorGradientStart, colorGradientEnd, normalizedY); 
+
+            matrix.setPosition(position);
+            instancedMesh.setMatrixAt(i, matrix);
+            instancedMesh.setColorAt(i, color)
+        }
+
+        instancedMesh.instanceMatrix.needsUpdate = true; 
+        instancedMesh.instanceColor.needsUpdate = true; 
     }
 
     InitializeCamera() {

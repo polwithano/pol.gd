@@ -1,5 +1,7 @@
 import * as THREE from 'three'; 
 import gsap from 'gsap';
+import { Reflector } from 'three/examples/jsm/Addons.js';
+import { ceilPowerOfTwo } from 'three/src/math/MathUtils.js';
 
 function CloneMeshMaterials(mesh) 
 {
@@ -54,7 +56,7 @@ function AddClippingPlaneToMaterials(mesh, clippingPlane)
 
 function CreateGradientTexture(metadata, context, canvas) 
 {
-    const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
+    const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
     gradient.addColorStop(0, metadata.gradientStart); // Start color
     gradient.addColorStop(1, metadata.gradientEnd); // End color
     
@@ -85,10 +87,42 @@ function CreateShadowPlane(yPosition)
 
     plane.rotation.x = -Math.PI / 2; 
     plane.position.y = yPosition
-    plane.receiveShadow = true; 
+    plane.receiveShadow = true;  
 
     return plane; 
 }
+
+function CreateReflectorPlane(yPosition) 
+{
+    const reflectorGeometry = new THREE.PlaneGeometry(100, 100); 
+    const reflector = new Reflector(reflectorGeometry, {
+        textureWidth: 512, 
+        textureHeight: 512,
+        color: 0x2B2B2B,
+    }); 
+
+    //reflector.rotation.x = -Math.PI / 2; 
+    reflector.position.y = yPosition - 0.05;
+    reflector.position.z = -100; 
+
+    return reflector; 
+}
+
+function CreatePlaneBufferGeometry(width, height) 
+{
+    const material = new THREE.MeshLambertMaterial({
+        color: 0xFFFFFF,
+        side: THREE.DoubleSide
+    }); 
+    const geometry = new THREE.PlaneGeometry(width, height, width / 2, height / 2); 
+    const plane = new THREE.Mesh(geometry, material); 
+
+    plane.rotation.x = -Math.PI / 2;
+    plane.position.y = -10;
+
+    return plane; 
+}
+
 
 function CreateCarouselDots(projectCount, currentProjectIndex) 
 {
@@ -209,4 +243,4 @@ function AnimateVoxels(objectPortfolio, offset)
     }
 }
 
-export default {AnimateVoxels, CloneMeshMaterials, AddClippingPlaneToMaterials, CreateGradientTexture, FetchCurrentGradientColors, CreateShadowPlane, CreateCarouselDots, UpdateCarouselDots, GenericProjectData}; 
+export default {AnimateVoxels, CloneMeshMaterials, AddClippingPlaneToMaterials, CreateGradientTexture, FetchCurrentGradientColors, CreateShadowPlane, CreateReflectorPlane, CreatePlaneBufferGeometry, CreateCarouselDots, UpdateCarouselDots, GenericProjectData}; 

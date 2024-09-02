@@ -137,21 +137,22 @@ export default class Engine
 
     HandleWindowResize() 
     {
-        const canvas = this.renderer.domElement; 
-        const width = canvas.clientWidth; 
-        const height = canvas.clientHeight;
-
-        if (canvas.width != width || canvas.height != height) 
+        const container = document.getElementById('canvas-container');
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        
+        const canvas = this.renderer.domElement;  // Get the canvas from the renderer
+        
+        if (canvas.width !== width || canvas.height !== height) 
         {
             // Update the size of the renderer and camera
-            let scale = window.devicePixelRatio;
-            this.renderer.setSize(width / scale, height / scale, true); 
+            this.renderer.setSize(width, height, true);  // Set to container's width and height
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
-
-            console.log('Canvas Size:', canvas.clientWidth, canvas.clientHeight);
-            console.log('Renderer Size:', this.renderer.width, this.renderer.height);
-            console.log('Camera Aspect Ratio:', this.camera.aspect);
+        
+            // Log the size information
+            console.log('Container Size:', width, height);
+            console.log('Canvas Size:', canvas.width, canvas.height);
         }
-    }
+    }      
 }
