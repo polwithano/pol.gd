@@ -15,7 +15,7 @@ import { SimplexNoise } from 'three/examples/jsm/Addons.js';
 /* ENGINE STATES CONST */
 const worldStepValue = 1/60;
 const DEFAULT_RENDER_SCALE = 1; 
-const LOFI_RENDER_SCALE = 1;  
+const LOFI_RENDER_SCALE = 4;  
 
 // Define the parameters for the camera's orbit
 const orbitRadius = 8;  // Distance from the object
@@ -206,10 +206,6 @@ export default class EnginePortfolio extends Engine
 
         Helpers.CreateCarouselDots(projectDataPathArray.length, this.currentProjectIndex);
 
-        this.voxelGrid = Voxel.CreateVoxelGrid(100, 100, this.gridSize); 
-        this.scene.add(this.voxelGrid);
-        this.voxelGrid.receiveShadow = true;  
-
         //this.planeBuffer = Helpers.CreatePlaneBufferGeometry(100, 40); 
         //this.scene.add(this.planeBuffer); 
 
@@ -227,6 +223,9 @@ export default class EnginePortfolio extends Engine
                 //this.gradientTexture = HelpersBackground.CreateChartPieTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 24, this.context, this.canvas); 
 
                 this.scene.background = this.gradientTexture; 
+                this.voxelGrid = Voxel.CreateVoxelGrid(100, 100, this.gridSize); 
+                this.scene.add(this.voxelGrid);
+                this.voxelGrid.receiveShadow = true;  
         
                 // Ensure that the meshes are not null
                 if (this.currentPFObject.voxelizedMesh) 
@@ -321,7 +320,7 @@ export default class EnginePortfolio extends Engine
             author: "author", 
             originalMeshFolder: "../meshes/",
             originalMeshPath: "",
-            gradient: ["#000000", "#2B2B2B", "FFFFFF"]
+            gradient: ["#000000", "#2B2B2B", "#FFFFFF"]
         };
 
         const portfolioMetadata = 
@@ -670,10 +669,13 @@ export default class EnginePortfolio extends Engine
         this.stats.update(); 
 
         //this.AnimatePlane();
-        this.AnimateVoxelGrid(this.voxelGrid, this.simplex, 0.00006, xyCoef, zCoef);  
-        this.AnimateVoxelizedMesh();
-        this.AnimateCamera(); 
-        this.renderer.shadowMap.needsUpdate = true;
+        if (this.useJsonData) 
+        {
+            this.AnimateVoxelGrid(this.voxelGrid, this.simplex, 0.00006, xyCoef, zCoef);  
+            this.AnimateVoxelizedMesh();
+            this.AnimateCamera(); 
+            this.renderer.shadowMap.needsUpdate = true;
+        }
 
         // 2. Render the voxelized objects at lower resolution
         this.renderer.setRenderTarget(this.rtTexture); 

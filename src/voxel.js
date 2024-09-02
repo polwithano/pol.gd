@@ -71,8 +71,8 @@ async function VoxelizeMesh(paramsInput, mesh) {
     }
 
     console.log('Voxels instantiated:', localVoxels.length);
-    WeightedAmbientOcclusion(localVoxels, paramsInput.gridSize); 
-    localVoxels = RemoveFullyOccludedVoxels(localVoxels, 0.01); 
+    WeightedAmbientOcclusion(localVoxels, paramsInput.gridSize, false); 
+    localVoxels = RemoveFullyOccludedVoxels(localVoxels, 0); 
 
     let instancedMesh = GetVoxelGeometry(localParams, localVoxels.length);
     CreateInstancedVoxelMesh(instancedMesh, localVoxels);
@@ -87,7 +87,7 @@ async function VoxelizeMesh(paramsInput, mesh) {
     return { voxels: localVoxels, instancedMesh };
 }
 
-function FastAmbientOcclusion(localVoxels, gridSize) {
+function FastAmbientOcclusion(localVoxels, gridSize, debug = false) {
     const voxelMap = new Map();
 
     // Store voxel positions in a map for quick neighbor lookup
@@ -98,6 +98,7 @@ function FastAmbientOcclusion(localVoxels, gridSize) {
 
     localVoxels.forEach(voxel => {
         let occlusion = 0;
+        let totalWeight = 0;
 
         // Check neighbors in all 6 directions (right, left, top, bottom, front, back)
         const directions = [
@@ -109,23 +110,34 @@ function FastAmbientOcclusion(localVoxels, gridSize) {
             new THREE.Vector3(0, 0, -1)
         ];
 
-        directions.forEach(dir => {
+        directions.forEach(dir => 
+        {
             const neighborPos = voxel.position.clone().add(dir.multiplyScalar(gridSize));
             const neighborKey = `${neighborPos.x},${neighborPos.y},${neighborPos.z}`;
-            if (voxelMap.has(neighborKey)) {
-                occlusion++;
-            }
+
+            if (voxelMap.has(neighborKey)) occlusion++;
+            totalWeight += dir.weight;
         });
 
         // The more neighbors, the more occluded this voxel is
-        const occlusionFactor = 1 - occlusion / directions.length;  // Range 0 to 1
+        const occlusionFactor = 1 - occlusion / totalWeight;  // Range 0 to 1
 
-        // Apply a simple darkening based on occlusion factor
-        voxel.color.multiplyScalar(occlusionFactor);
+        if (debug) 
+        {
+            // Visualize AO as grayscale
+            // Assuming voxel.color is a THREE.Color instance
+            const grayscale = occlusionFactor; // 0 (fully occluded) to 1 (no occlusion)
+            voxel.color.setRGB(grayscale, grayscale, grayscale);
+        } 
+        else 
+        {
+            // Apply AO as a darkening factor
+            voxel.color.multiplyScalar(occlusionFactor);
+        }
     });
 }
 
-function WeightedAmbientOcclusion(localVoxels, gridSize) {
+function WeightedAmbientOcclusion(localVoxels, gridSize, debug = false) {
     const voxelMap = new Map();
 
     // Store voxel positions in a map for quick neighbor lookup
@@ -140,34 +152,49 @@ function WeightedAmbientOcclusion(localVoxels, gridSize) {
 
         // Define neighbor offsets and their weights
         const directions = [
-            { offset: new THREE.Vector3(1, 0, 0), weight: 0.5 },   // Right
-            { offset: new THREE.Vector3(-1, 0, 0), weight: 0.5 },  // Left
-            { offset: new THREE.Vector3(0, 1, 0), weight: 1.0 },   // Top
-            { offset: new THREE.Vector3(0, -1, 0), weight: 0.5 },  // Bottom
-            { offset: new THREE.Vector3(0, 0, 1), weight: 1.0 },   // Front
-            { offset: new THREE.Vector3(0, 0, -1), weight: 1.0 },  // Back
-            { offset: new THREE.Vector3(1, 1, 0), weight: 0.5 },   // Top-right diagonal
-            { offset: new THREE.Vector3(-1, 1, 0), weight: 0.5 },  // Top-left diagonal
-            { offset: new THREE.Vector3(1, -1, 0), weight: 0.5 },  // Bottom-right diagonal
-            { offset: new THREE.Vector3(-1, -1, 0), weight: 0.5 }, // Bottom-left diagonal
-            // Add more diagonals if needed with lower weights
+            { offset: new THREE.Vector3(1, 0, 0),   weight: 0.01 },   // RIGHT
+            { offset: new THREE.Vector3(-1, 0, 0),  weight: 0.01 },   // LEFT
+            { offset: new THREE.Vector3(0, 1, 0),   weight: 0.25 },   // TOP
+            { offset: new THREE.Vector3(0, -1, 0),  weight: 0.01 },   // BOTTOM
+            { offset: new THREE.Vector3(0, 0, 1),   weight: 0.25 },   // FRONT
+            { offset: new THREE.Vector3(0, 0, -1),  weight: 0.01 },   // BACK
+            { offset: new THREE.Vector3(1, 1, 0),   weight: 0.01 },   // TOP-RIGHT DIAG
+            { offset: new THREE.Vector3(-1, 1, 0),  weight: 0.01 },   // TOP-LEFT DIAG
+            { offset: new THREE.Vector3(1, -1, 0),  weight: 0.01 },   // BOT-RIGHT DIAG
+            { offset: new THREE.Vector3(-1, -1, 0), weight: 0.01 },   // BOT-LEFT DIAG
+            { offset: new THREE.Vector3(0, 1, 1),   weight: 0.25 },   // TOP-FRONT DIAG
         ];
 
         // Check each neighbor and accumulate occlusion based on weights
-        directions.forEach(dir => {
+        directions.forEach(dir => 
+        {
             const neighborPos = voxel.position.clone().add(dir.offset.multiplyScalar(gridSize));
             const neighborKey = `${neighborPos.x},${neighborPos.y},${neighborPos.z}`;
-            if (voxelMap.has(neighborKey)) {
-                occlusion += dir.weight;
-            }
+
+            if (voxelMap.has(neighborKey)) occlusion += dir.weight;
             totalWeight += dir.weight;
         });
 
         // Normalize the occlusion to range 0 to 1 based on total possible weight
-        const occlusionFactor = 1 - occlusion / totalWeight;
+        const occlusionFactor = THREE.MathUtils.clamp(1 - (occlusion / totalWeight), 0, 1);
 
-        // Apply a simple darkening based on occlusion factor
-        voxel.color.multiplyScalar(occlusionFactor);
+        if (debug) 
+        {
+            // Visualize AO as grayscale
+            const grayscale = occlusionFactor; // 0 (fully occluded) to 1 (no occlusion)
+            voxel.color.setRGB(grayscale, grayscale, grayscale);
+            /*
+            console.log(`Voxel at ${voxel.position.x}, ${voxel.position.y}, ${voxel.position.z}`);
+            console.log(`  Occlusion: ${occlusion}`);
+            console.log(`  Total Weight: ${totalWeight}`);
+            console.log(`  Occlusion Factor: ${occlusionFactor}`);
+            */
+        } 
+        else 
+        {
+            // Apply AO as a darkening factor
+            voxel.color.multiplyScalar(occlusionFactor);
+        }
     });
 }
 
