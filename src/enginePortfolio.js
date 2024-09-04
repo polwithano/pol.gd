@@ -23,7 +23,7 @@ const orbitRadius = 8;  // Distance from the object
 const orbitSpeed = .1; // Speed of the rotation
 const orbitHeight = 1;   // Height of the camera relative to the object
 
-const xyCoef = 8; 
+const xyCoef = 15; 
 const zCoef = 2; 
 
 const defaultParams = {
@@ -34,7 +34,7 @@ const defaultParams = {
     voxelRoundess:    .025,
 };
 
-const USE_JSON = false; 
+const USE_JSON = true; 
 const DEFAULT_GLB_PATH = "../meshes/Biplane.glb";
 const PROJECT_DATAPATH_ARRAY = 
 [
@@ -57,6 +57,7 @@ export default class EnginePortfolio extends Engine
         this.keyDownListener = (event) => this.OnKeyDown(event); 
 
         this.composer = null; 
+        this.lofi = false; 
         this.currentPFObject = null; 
         this.nextPFObject = null; 
         this.clippingPlane = null; 
@@ -101,10 +102,7 @@ export default class EnginePortfolio extends Engine
         this.renderer.autoClear = true;
 
         this.camera = new THREE.PerspectiveCamera(80, 2, 0.0001, 100000);
-        this.dummyCamera = new THREE.OrthographicCamera(window.innerWidth  / -2, window.innerWidth   / 2, window.innerHeight  / 2, window.innerHeight / -2, -10000, 10000);
-        this.dummyCamera.position.z = 1; 
-        this.dummyScene = new THREE.Scene(); 
-        this.InitializeRenderTarget(false);
+        this.InitializeRenderTarget(this.lofi);
 
         this.stats = new Stats();  
         document.getElementById('canvas-container').appendChild(this.stats.dom);
@@ -119,6 +117,10 @@ export default class EnginePortfolio extends Engine
 
     InitializeRenderTarget(pixelated) 
     {
+        this.dummyCamera = new THREE.OrthographicCamera(window.innerWidth  / -2, window.innerWidth   / 2, window.innerHeight  / 2, window.innerHeight / -2, -10000, 10000);
+        this.dummyCamera.position.z = 1; 
+        this.dummyScene = new THREE.Scene(); 
+
         this.rtTexture = new THREE.WebGLRenderTarget( 
             Math.floor(window.innerWidth / (pixelated ? LOFI_RENDER_SCALE : DEFAULT_RENDER_SCALE)),
             Math.floor(window.innerHeight / (pixelated ? LOFI_RENDER_SCALE : DEFAULT_RENDER_SCALE)),
@@ -363,6 +365,13 @@ export default class EnginePortfolio extends Engine
 
     SetupEventListeners() 
     {
+        const switchElement = document.getElementById('switch');
+
+        switchElement.addEventListener('change', (event) => {
+            this.lofi = event.target.checked; 
+            this.InitializeRenderTarget(this.lofi);
+        });
+
         const darkOverlay = document.getElementById('darkOverlay');
         const projectDescription = document.getElementById('project-description');
         const projectContainer = document.getElementById('project-container'); 
@@ -712,7 +721,7 @@ export default class EnginePortfolio extends Engine
         //this.AnimatePlane();
         if (this.useJsonData) 
         {
-            this.AnimateVoxelGrid(this.voxelGrid, this.simplex, 0.00006, xyCoef, zCoef);  
+            this.AnimateVoxelGrid(this.voxelGrid, this.simplex, 0.00015, xyCoef, zCoef);  
             this.AnimateVoxelizedMesh();
             this.AnimateCamera(); 
             this.renderer.shadowMap.needsUpdate = true;

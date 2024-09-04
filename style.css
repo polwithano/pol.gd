@@ -816,8 +816,8 @@ a:hover
  /* The switch - the box around the slider */
  .switch {
   position: absolute;
-  left: 30px;
-  bottom: 64px; 
+  left: 5px;
+  bottom: 10px; 
   display: inline-block;
   width: 60px;
   height: 34px;
