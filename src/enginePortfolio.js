@@ -16,10 +16,10 @@ import { SimplexNoise } from 'three/examples/jsm/Addons.js';
 /* ENGINE STATES CONST */
 const worldStepValue = 1/60;
 const DEFAULT_RENDER_SCALE = 1; 
-const LOFI_RENDER_SCALE = 6;  
+const LOFI_RENDER_SCALE = 4;  
 
 // Define the parameters for the camera's orbit
-const orbitRadius = 8;  // Distance from the object
+const orbitRadius = 6;  // Distance from the object
 const orbitSpeed = .1; // Speed of the rotation
 const orbitHeight = 1;   // Height of the camera relative to the object
 
@@ -73,7 +73,7 @@ export default class EnginePortfolio extends Engine
         this.simplex = new SimplexNoise(); 
         this.gridMinY = Infinity;
         this.gridMaxY = -Infinity;
-        this.gridSize = 0.5; 
+        this.gridSize = 0.4; 
 
         this.Initialize(); 
         this.GameLoop(this.currentTimestamp); 
@@ -111,6 +111,7 @@ export default class EnginePortfolio extends Engine
         this.stats.dom.style.right = null; 
         this.stats.dom.style.bottom = '90%';
         this.stats.dom.style.left = '0%';       
+        this.stats.dom.style.zIndex = '1'; 
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     }
@@ -207,12 +208,13 @@ export default class EnginePortfolio extends Engine
                 // Load the object asynchronously
                 await this.currentPFObject.load();
 
-                this.gradientTexture = HelpersBackground.CreateMultiGradientTexture(this.currentPFObject.voxelMetadata.gradient, this.context, this.canvas);
+                this.gradientTexture = HelpersBackground.CreateMultiGradientTexture(this.currentPFObject.projectMetadata.gradientBackground, this.context, this.canvas);
                 //this.gradientTexture = HelpersBackground.CreateCheckerboardTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 2, 2, this.context, this.canvas); 
                 //this.gradientTexture = HelpersBackground.CreateChartPieTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 24, this.context, this.canvas); 
 
                 this.scene.background = this.gradientTexture; 
-                this.voxelGrid = Voxel.CreateVoxelGrid(100, 100, this.gridSize); 
+                //this.voxelGrid = Voxel.CreateVoxelGrid(120, 120, this.gridSize);
+                this.voxelGrid = Voxel.CreateVoxelCircle(40, this.gridSize);  
                 this.scene.add(this.voxelGrid);
                 this.voxelGrid.receiveShadow = true;  
         
@@ -297,7 +299,7 @@ export default class EnginePortfolio extends Engine
         document.getElementById('author-name').textContent = projectMetadata.yearString;
         document.getElementById('project-year').textContent = projectMetadata.tasks;
         document.getElementById('project-description').textContent = projectMetadata.description;
-        document.getElementById('copyright-model').textContent = "© Model • " + voxelMetadata.author; 
+        document.getElementById('copyright-model').innerHTML = `© Original Model • <a href="${voxelMetadata.modelLink}" target="_blank">${voxelMetadata.author}</a>`;
     }
 
     InitializeGUI() 
@@ -576,7 +578,7 @@ export default class EnginePortfolio extends Engine
         this.nextPFObject = new ObjectPortfolio("Load", PROJECT_DATAPATH_ARRAY[this.currentProjectIndex]);
         await this.nextPFObject.load();
 
-        this.SmoothGradientTransition(this.currentPFObject.voxelMetadata.gradient, this.nextPFObject.voxelMetadata.gradient, duration);
+        this.SmoothGradientTransition(this.currentPFObject.projectMetadata.gradientBackground, this.nextPFObject.projectMetadata.gradientBackground, duration);
     
         // Calculate the camera's left and right direction vectors
         const cameraDirection = new THREE.Vector3();
@@ -767,7 +769,7 @@ export default class EnginePortfolio extends Engine
             // Continuous rotation animation
             timeline.to(this.currentPFObject.voxelizedMesh.position, {
                 y: "+=" + 1,
-                duration: 8,
+                duration: 32,
                 ease: "linear",  // Linear rotation
                 onUpdate: () => {
                     // Force update of rotation
@@ -800,7 +802,7 @@ export default class EnginePortfolio extends Engine
         const time = Date.now() * timeFactor;
         const voxelCount = instancedMesh.count;
 
-        const gradient = this.currentPFObject.voxelMetadata.gradient; 
+        const gradient = this.currentPFObject.projectMetadata.gradientGrid; 
 
         if (gradient == undefined) return; 
 

@@ -75,7 +75,6 @@ function CreateVoxelDataFiles(voxelObject, voxelParams, projectName, modelName)
         modelLink: "https://google.com",
         originalMeshFolder: "../meshes/",
         originalMeshPath: "",
-        gradient: ["#000000", "#2B2B2B", "#FFFFFF"]
     };
     voxelMetadata.originalMeshPath = voxelMetadata.originalMeshFolder + voxelMetadata.modelName + ".glb";
 
@@ -102,7 +101,9 @@ function CreateProjectDataFiles(voxelObject, voxelParams, projectName, modelName
         tasks: "tasksList", 
         description: "A short description of the project.",
         isFavorite: false,
-        voxelPath: voxelPath
+        voxelPath: voxelPath,
+        gradientBackground : ["#000000", "#2B2B2B", "#FFFFFF"], 
+        gradientGrid : ["#000000", "#2B2B2B", "#FFFFFF"],
     }
 
     const projectContent = DefaultProjectContent(projectName);

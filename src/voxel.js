@@ -458,7 +458,41 @@ function CreateVoxelGrid(width, depth, spacing) {
         }
     }
 
-    instancedMesh.receiveShadow = true; 
+    instancedMesh.receiveShadow = false; 
+    return instancedMesh;
+}
+
+function CreateVoxelCircle(radius, spacing) {
+    const voxelSize = spacing;
+    const voxelGeometry = new THREE.BoxGeometry(voxelSize, voxelSize, voxelSize);
+    const voxelMaterial = new THREE.MeshBasicMaterial({ color: '#ffffff', wireframe: false });
+
+    // Estimate the number of voxels needed (approximately the area of the circle divided by voxel area)
+    const numVoxels = Math.ceil(Math.PI * Math.pow(radius, 2) / Math.pow(voxelSize, 2));
+    const instancedMesh = new THREE.InstancedMesh(voxelGeometry, voxelMaterial, numVoxels);
+
+    // Set up the matrix for each instance
+    const dummy = new THREE.Object3D();
+    let index = 0;
+
+    for (let x = -radius; x <= radius; x++) {
+        for (let z = -radius; z <= radius; z++) {
+            // Check if the (x, z) position is within the circle
+            if (x * x + z * z <= radius * radius) {
+                dummy.position.set(
+                    x * voxelSize,
+                    0,
+                    z * voxelSize,
+                );
+                dummy.updateMatrix();
+
+                // Set matrix and color for each voxel
+                instancedMesh.setMatrixAt(index++, dummy.matrix);
+            }
+        }
+    }
+
+    instancedMesh.receiveShadow = false;
     return instancedMesh;
 }
 
@@ -467,4 +501,4 @@ function MaxY() {return Math.max(...voxels.map(v => v._p.y)) + params.voxelSize 
 function VoxelHeight() {return ((MaxY() - MinY()) / params.voxelSize);}
 function Metadata() {return metadata;}
 
-export default {GetVoxelGeometry, VoxelizeMesh, SaveVoxelData, LoadVoxelData, RecreateInstancedVoxelMesh, GetOriginalModel, CreateVoxelGrid, MinY, MaxY, VoxelHeight, Metadata}; 
+export default {GetVoxelGeometry, VoxelizeMesh, SaveVoxelData, LoadVoxelData, RecreateInstancedVoxelMesh, GetOriginalModel, CreateVoxelGrid, CreateVoxelCircle, MinY, MaxY, VoxelHeight, Metadata}; 

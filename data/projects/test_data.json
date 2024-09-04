@@ -7,7 +7,9 @@
     "tasks": "tasksList",
     "description": "A short description of the project.",
     "isFavorite": false,
-    "voxelPath": "../data/voxels/test_voxel.json"
+    "voxelPath": "../data/voxels/test_voxel.json",
+    "gradientBackground": ["#000000", "#000000", "#000000"], 
+    "gradientGrid": ["#9bafd9", "#2B2B2B", "#103783"]
   },
   "content": {
     "title": "test",

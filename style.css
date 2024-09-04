@@ -797,7 +797,7 @@ a:hover
   padding: 5px 8px; /* Padding around the text */
   border-radius: 5px; /* Rounded corners */
   z-index: 1000; /* Ensure it stays above most elements */
-  pointer-events: none; /* Prevents it from blocking clicks on other elements */
+  pointer-events: auto; /* Prevents it from blocking clicks on other elements */
 }
 
 @media only screen and (max-width: 767px) {
