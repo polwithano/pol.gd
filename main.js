@@ -5,7 +5,6 @@ import EnginePortfolio from './src/enginePortfolio';
 
 // ELEMENTS
 const canvasID = '#bg';  
-
 const engines = [EnginePortfolio];
 
 let currentEngineIndex = 0; 
@@ -20,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function LoadEngine() 
     {
         console.log("LoadEngine function called");
-        const engineClassName = engines[currentEngineIndex].name;
+        const engineClassName = 'EnginePortfolio';
         console.log("Loading Engine " + engineClassName);
 
         if (currentEngine != null) {
