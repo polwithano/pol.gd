@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "tag": "video game",
+    "projectName": "test_2",
+    "companyName": "companyName",
+    "yearString": "1970",
+    "yearID": "1970",
+    "tasks": "tasksList",
+    "description": "A short description of the project.",
+    "isFavorite": false,
+    "voxelPath": "../data/voxels/test_2_voxel.json",
+    "gradientBackground": [
+      "#62cff4",
+      "#2c67f2"
+    ],
+    "gradientGrid": [
+      "#77A1D3",
+      "#79CBCA",
+      "#E684AE"
+    ]
+  },
+  "content": {
+    "title": "test_2",
+    "tagline": "Project Tagline",
+    "sections": [
+      {
+        "type": "text-image",
+        "content": {
+          "paragraph": "This is a paragraph.",
+          "image": {
+            "src": "media/placeholder-image.jpg",
+            "alt": "project image",
+            "position": "left"
+          }
+        }
+      },
+      {
+        "type": "text-image",
+        "content": {
+          "paragraph": "This is a paragraph.",
+          "image": {
+            "src": "media/placeholder-image.jpg",
+            "alt": "project image",
+            "position": "right"
+          }
+        }
+      },
+      {
+        "type": "video",
+        "content": {
+          "videoId": "dQw4w9WgXcQ",
+          "caption": "This is a caption for the video."
+        }
+      }
+    ],
+    "download": {
+      "url": "download-link.zip",
+      "label": "Download Project"
+    }
+  }
+}

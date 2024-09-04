@@ -10,6 +10,7 @@ export default class Engine
         this.isRunning = true; 
         this.animationFrameID = null; 
         this.toggleDebug = false; 
+        this.frameCounter = 0;
 
         this.buttons = []; 
     }
@@ -61,13 +62,14 @@ export default class Engine
 
     GameLoop() 
     {
-        if (!this.isRunning) return; 
+        if (!this.isRunning) return;
         this.HandleWindowResize(); 
 
         this.animationFrameID = requestAnimationFrame(() => this.GameLoop());
 
         if (this.toggleDebug) this.cannonDebugger.update();
-        this.camera.updateMatrixWorld(); 
+        this.camera.updateMatrixWorld();
+        this.frameCounter++; 
     }
     
     // #region Events Listeners

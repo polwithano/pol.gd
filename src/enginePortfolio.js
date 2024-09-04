@@ -19,7 +19,7 @@ const DEFAULT_RENDER_SCALE = 1;
 const LOFI_RENDER_SCALE = 4;  
 
 // Define the parameters for the camera's orbit
-const orbitRadius = 6;  // Distance from the object
+const orbitRadius = 8;  // Distance from the object
 const orbitSpeed = .1; // Speed of the rotation
 const orbitHeight = 1;   // Height of the camera relative to the object
 
@@ -39,7 +39,7 @@ const DEFAULT_GLB_PATH = "../meshes/Biplane.glb";
 const PROJECT_DATAPATH_ARRAY = 
 [
     '../data/projects/test_data.json',
-    '../data/projects/Spaceship_data.json',
+    '../data/projects/test_2_data.json',
     '../data/projects/Spaceship_data.json',
     '../data/projects/Spaceship_data.json',
     '../data/projects/Spaceship_data.json',
@@ -723,7 +723,7 @@ export default class EnginePortfolio extends Engine
         //this.AnimatePlane();
         if (this.useJsonData) 
         {
-            this.AnimateVoxelGrid(this.voxelGrid, this.simplex, 0.00015, xyCoef, zCoef);  
+            if (this.frameCounter % 4 == 0) this.AnimateVoxelGrid(this.voxelGrid, this.simplex, 0.00015, xyCoef, zCoef);  
             this.AnimateVoxelizedMesh();
             this.AnimateCamera(); 
             this.renderer.shadowMap.needsUpdate = true;
@@ -809,11 +809,12 @@ export default class EnginePortfolio extends Engine
         const colorGradientStart = new THREE.Color(gradient[gradient.length - 1]);
         const colorGradientEnd = new THREE.Color(gradient[0]);
     
+        const matrix = new THREE.Matrix4();
+        const position = new THREE.Vector3();
+        const color = new THREE.Color();
+
         for (let i = 0; i < voxelCount; i++) 
-        {
-            let matrix = new THREE.Matrix4; 
-            let position = new THREE.Vector3;
-            
+        {            
             instancedMesh.getMatrixAt(i, matrix); 
             position.setFromMatrixPosition(matrix);
     
@@ -829,14 +830,11 @@ export default class EnginePortfolio extends Engine
 
         for (let i = 0; i < voxelCount; i++) 
         {
-            let matrix = new THREE.Matrix4; 
-            let position = new THREE.Vector3; 
-
             instancedMesh.getMatrixAt(i, matrix); 
             position.setFromMatrixPosition(matrix);
 
             const normalizedY = (position.y - this.gridMinY) / (this.gridMaxY - this.gridMinY);
-            const color = new THREE.Color().lerpColors(colorGradientStart, colorGradientEnd, normalizedY); 
+            color.lerpColors(colorGradientStart, colorGradientEnd, normalizedY); 
 
             matrix.setPosition(position);
             instancedMesh.setMatrixAt(i, matrix);
