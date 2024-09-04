@@ -28,7 +28,7 @@ export default class Engine
 
     InitializeThreeJS() 
     {
-        this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true, canvas: document.querySelector(this.canvasID)});
+        this.renderer = new THREE.WebGLRenderer({antialias: false, alpha: true, canvas: document.querySelector(this.canvasID)});
         this.scene = new THREE.Scene(); 
     }
 

@@ -61,4 +61,116 @@ async function LoadGLTFMesh(meshPath) {
     });
 }
 
-export default {LoadFBXMesh, LoadOBJMesh, LoadGLTFMesh}; 
+function CreateVoxelDataFiles(voxelObject, voxelParams, projectName, modelName) 
+{
+    if (!voxelObject.voxels || voxelObject.voxels.length === 0) 
+    {
+        console.warn("No voxel data available to save.");
+        return;
+    }
+
+    const voxelMetadata = {
+        modelName: modelName, 
+        author: "author", 
+        modelLink: "https://google.com",
+        originalMeshFolder: "../meshes/",
+        originalMeshPath: "",
+        gradient: ["#000000", "#2B2B2B", "#FFFFFF"]
+    };
+    voxelMetadata.originalMeshPath = voxelMetadata.originalMeshFolder + voxelMetadata.modelName + ".glb";
+
+    const voxelData = {
+        metadata: voxelMetadata,
+        params: voxelParams,
+        voxels: voxelObject.voxels
+    }
+
+    const voxelJsonName = `${projectName}_voxel.json`;
+    const voxelJson = JSON.stringify(voxelData, null, 0); 
+    DownloadJsonFile(voxelJson, voxelJsonName, "application/json");
+}
+
+function CreateProjectDataFiles(voxelObject, voxelParams, projectName, modelName) 
+{
+    const voxelPath = "../data/voxels/" + projectName + "_voxel.json";
+    const projectMetadata = {
+        tag: "video game",
+        projectName: projectName, 
+        companyName: "companyName",
+        yearString: "1970",
+        yearID: "1970", 
+        tasks: "tasksList", 
+        description: "A short description of the project.",
+        isFavorite: false,
+        voxelPath: voxelPath
+    }
+
+    const projectContent = DefaultProjectContent(projectName);
+
+    const projectData = {
+        metadata: projectMetadata,
+        content: projectContent
+    }
+    
+
+    const projectJsonName = `${projectName}_data.json`;
+    const projectJson = JSON.stringify(projectData, null, 2); 
+ 
+    DownloadJsonFile(projectJson, projectJsonName, "application/json"); 
+    CreateVoxelDataFiles(voxelObject, voxelParams, projectName, modelName); 
+}
+
+function DefaultProjectContent(projectName) 
+{
+    const projectData = 
+    {
+        title: projectName, 
+        tagline: "Project Tagline", 
+        sections: [{
+                type: "text-image",
+                content: {
+                    paragraph: "This is a paragraph.", 
+                    image: {
+                        src: "media/placeholder-image.jpg", 
+                        alt: "project image", 
+                        position: "left"
+                    }
+                }
+            },
+            {
+                type: "text-image",
+                content: {
+                    paragraph: "This is a paragraph.", 
+                    image: {
+                        src: "media/placeholder-image.jpg", 
+                        alt: "project image", 
+                        position: "right"
+                    }
+                }
+            },
+            {
+                type: "video",
+                content: {
+                    videoId: "dQw4w9WgXcQ",
+                    caption: "This is a caption for the video."
+                }
+            }],
+        download: {
+            url: "download-link.zip", 
+            label: "Download Project"
+        }
+    }    
+    
+    return projectData;
+}
+
+function DownloadJsonFile(content, fileName, contentType) 
+{
+    const a = document.createElement("a");
+    const file = new Blob([content], { type: contentType });
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
+}
+
+export default {LoadFBXMesh, LoadOBJMesh, LoadGLTFMesh, CreateVoxelDataFiles, CreateProjectDataFiles}; 

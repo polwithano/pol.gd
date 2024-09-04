@@ -16,6 +16,16 @@
   --desktop-header-height: 100px;
 }
 
+/* Dat GUI */ 
+.dg .property-name {
+  font-family: '0xProto Nerd Font Mono';
+}
+
+.dg .slider:before {
+  display: none;
+}
+/* Dat GUI */ 
+
 /* Header that contains the navigation */
 #desktop-header {
   position: fixed;
@@ -243,17 +253,20 @@ a:hover
 /* Container for the portfolio icons */
 #portfolio-icons {
   position: fixed;
-  right: 16px; /* Adjust as needed to create space from the right edge */
+  right: 32px; /* Adjust as needed to create space from the right edge */
   top: 50%; /* Center vertically */
   transform: translateY(-50%); /* Adjust vertical centering */
   display: flex;
+  background-color: rgba(0, 0, 0, 0.75);
+  padding: 0px 8px;
+  border-radius: 4px;
   flex-direction: column;
   align-items: center; /* Center icons horizontally */
   z-index: 10; /* Ensure it appears above other content */
 }
 
 .icon {
-  margin: 4px 0; /* Space between icons */
+  margin: 8px 0; /* Space between icons */
   text-align: center; /* Center text below icons */
 }
 
@@ -261,12 +274,15 @@ a:hover
   font-family: '0xProto Nerd Font Mono';
   font-size: 12px;
   color: whitesmoke; 
-  margin-top: -4px;
+  margin-top: -2px;
+  margin-bottom: 1px;
 }
 
 .icon-img {
   width: 48px; /* Adjust size of icons */
   height: 48px; /* Adjust size of icons */
+  max-width: 48px;
+  max-height: 48px;
 }
 
 .info-row {
@@ -323,32 +339,13 @@ a:hover
   text-align: center;
   font-size: 18px;
   display: inline-block;
-  max-width: 100%;
-  background-color: rgba(0, 0, 0, 0.75);
+  max-width: 80%;
+  background-color: rgba(0, 0, 0, 0.6);
   padding: 6px 10px;
   border-radius: 5px;
-  transition: width 0.5s ease, height 0.5s ease 0.5s, background-color 0.3s ease; /* Smooth transitions */
   z-index: 999;
   pointer-events: auto;
   line-height: 1.4; /* Adjusts line height for better readability */
-}
-
-#project-description.hovered {
-  width: calc(100%); /* Leave space for the horizontal padding */
-  height: calc(100%); /* Leave space for header and carousel dots */
-  left: 50%;
-  bottom: auto; /* Prevent stretching to the bottom */
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.9); /* Darker background */
-  display: flex;
-  flex-direction: column; /* Align items vertically */
-  justify-content: flex-start; /* Align items at the top */
-  align-items: center; /* Center items horizontally */
-  z-index: 999; /* Ensure it stays on top */
-  font-size: 0px; /* Increase text size on hover */
-  transition: width 0.3s ease, height 0.3s ease 0.3s, background-color 0.3s ease, font-size 0.3s ease; /* Smooth transitions */
-  padding: 20px; /* Add padding for spacing */
-  border-radius: 0px;
 }
 
 /* Additional styles to ensure text is centered vertically and horizontally */
@@ -384,7 +381,6 @@ a:hover
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  transition: all 0.5s ease; /* Smooth transition */
   z-index: 9; /* Keep it below project description */
   opacity: 0; /* Start hidden */
   pointer-events: none; /* Prevent interaction */
@@ -393,8 +389,6 @@ a:hover
 }
 
 #project-container.visible {
-  opacity: 1; /* Make content visible */
-  pointer-events: auto; /* Allow interaction */
   z-index: 999;
 }
 
@@ -769,6 +763,12 @@ a:hover
   content: '⭐'; /* Add a star icon before the text */
   margin-right: 8px; /* Space between the star and the text */
   color: #FFA500; /* Color of the star, can match the text color */
+}
+
+.project.selected {
+  color: rgb(211, 211, 211); 
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* FOLDER MENU */

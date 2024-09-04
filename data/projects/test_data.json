@@ -1,0 +1,51 @@
+{
+  "metadata": {
+    "projectName": "test",
+    "companyName": "companyName",
+    "yearString": "1970",
+    "yearID": "1970",
+    "tasks": "tasksList",
+    "description": "A short description of the project.",
+    "isFavorite": false,
+    "voxelPath": "../data/voxels/test_voxel.json"
+  },
+  "content": {
+    "title": "test",
+    "tagline": "Project Tagline",
+    "sections": [
+      {
+        "type": "text-image",
+        "content": {
+          "paragraph": "This is a paragraph.",
+          "image": {
+            "src": "media/placeholder-image.jpg",
+            "alt": "project image",
+            "position": "left"
+          }
+        }
+      },
+      {
+        "type": "text-image",
+        "content": {
+          "paragraph": "This is a paragraph.",
+          "image": {
+            "src": "media/placeholder-image.jpg",
+            "alt": "project image",
+            "position": "right"
+          }
+        }
+      },
+      {
+        "type": "video",
+        "content": {
+          "videoId": "dQw4w9WgXcQ",
+          "caption": "This is a caption for the video."
+        }
+      }
+    ],
+    "download": {
+      "url": "download-link.zip",
+      "label": "Download Project"
+    }
+  }
+}

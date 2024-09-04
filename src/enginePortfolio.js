@@ -7,6 +7,7 @@ import Stats from 'three/addons/libs/stats.module.js';
 
 import Engine from './engine'; 
 import HelpersBackground from './helpersBackground';
+import Loader from './loader'; 
 import Helpers from './helpers'; 
 import Voxel from './voxel'; 
 import ObjectPortfolio from './objectPortfolio';
@@ -15,7 +16,7 @@ import { SimplexNoise } from 'three/examples/jsm/Addons.js';
 /* ENGINE STATES CONST */
 const worldStepValue = 1/60;
 const DEFAULT_RENDER_SCALE = 1; 
-const LOFI_RENDER_SCALE = 4;  
+const LOFI_RENDER_SCALE = 6;  
 
 // Define the parameters for the camera's orbit
 const orbitRadius = 8;  // Distance from the object
@@ -25,23 +26,23 @@ const orbitHeight = 1;   // Height of the camera relative to the object
 const xyCoef = 8; 
 const zCoef = 2; 
 
-const defaultParams = 
-{
-    gridSize: .1,
-    modelSize: 10,
-    boxSize : .1,
-    boxRoundness: .025
+const defaultParams = {
+    gridSize:          .10,
+    modelSize:          10,
+    voxelSize :        .10,
+    enableRoundness: false,
+    voxelRoundess:    .025,
 };
 
-const usesJson = true; 
-const glbPath = "../meshes/Airplane.glb";
-const projectDataPathArray = 
+const USE_JSON = false; 
+const DEFAULT_GLB_PATH = "../meshes/Biplane.glb";
+const PROJECT_DATAPATH_ARRAY = 
 [
-    '../data/Airplane_data.json',
-    '../data/Spaceship_data.json',
-    '../data/Spaceship_data.json',
-    '../data/Spaceship_data.json',
-    '../data/Spaceship_data.json',
+    '../data/projects/test_data.json',
+    '../data/projects/Spaceship_data.json',
+    '../data/projects/Spaceship_data.json',
+    '../data/projects/Spaceship_data.json',
+    '../data/projects/Spaceship_data.json',
 ]
 
 export default class EnginePortfolio extends Engine 
@@ -61,11 +62,12 @@ export default class EnginePortfolio extends Engine
         this.clippingPlane = null; 
         this.currentProjectIndex = 0; 
         this.canSwitchObject = true; 
-        this.useJsonData = usesJson;  
+        this.useJsonData = USE_JSON;  
         this.canRotateCamera = true; 
         this.animationStartTime = 0; 
 
-        this.defaultJsonPath = projectDataPathArray[this.currentProjectIndex]; 
+        this.defaultJsonPath = PROJECT_DATAPATH_ARRAY[this.currentProjectIndex]; 
+        this.defaultGLBPath = DEFAULT_GLB_PATH; 
 
         this.simplex = new SimplexNoise(); 
         this.gridMinY = Infinity;
@@ -95,63 +97,48 @@ export default class EnginePortfolio extends Engine
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.shadowMap.soft = false; 
         this.renderer.localClippingEnabled = true; 
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.autoClear = true;
 
-        this.camera = new THREE.PerspectiveCamera(
-            80,
-            2,
-            0.0001,
-            100000
-        );
-
-        this.dummyCamera = new THREE.OrthographicCamera(
-            window.innerWidth  / -2, 
-            window.innerWidth   / 2, 
-            window.innerHeight  / 2, 
-            window.innerHeight / -2,
-            - 10000, 
-            10000
-        );
+        this.camera = new THREE.PerspectiveCamera(80, 2, 0.0001, 100000);
+        this.dummyCamera = new THREE.OrthographicCamera(window.innerWidth  / -2, window.innerWidth   / 2, window.innerHeight  / 2, window.innerHeight / -2, -10000, 10000);
         this.dummyCamera.position.z = 1; 
         this.dummyScene = new THREE.Scene(); 
-        this.rtTexture = new THREE.WebGLRenderTarget( 
-            Math.floor(window.innerWidth / LOFI_RENDER_SCALE), //resolution x
-            Math.floor(window.innerHeight / LOFI_RENDER_SCALE), //resolution y
-            { 
-              minFilter: THREE.LinearFilter, 
-              magFilter: THREE.NearestFilter, 
-              format: THREE.RGBAFormat 
-            });
-        this.uniforms = {
-            tDiffuse: { value: this.rtTexture.texture },
-            iResolution:  { value: new THREE.Vector3() },
-          };
-        this.materialScreen = new THREE.ShaderMaterial( {
+        this.InitializeRenderTarget(false);
 
+        this.stats = new Stats();  
+        document.getElementById('canvas-container').appendChild(this.stats.dom);
+        this.stats.dom.style.position = 'relative'; 
+        this.stats.dom.style.top = null;
+        this.stats.dom.style.right = null; 
+        this.stats.dom.style.bottom = '90%';
+        this.stats.dom.style.left = '0%';       
+
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    }
+
+    InitializeRenderTarget(pixelated) 
+    {
+        this.rtTexture = new THREE.WebGLRenderTarget( 
+            Math.floor(window.innerWidth / (pixelated ? LOFI_RENDER_SCALE : DEFAULT_RENDER_SCALE)),
+            Math.floor(window.innerHeight / (pixelated ? LOFI_RENDER_SCALE : DEFAULT_RENDER_SCALE)),
+            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat });
+
+        this.uniforms = { tDiffuse: { value: this.rtTexture.texture }, iResolution: { value: new THREE.Vector3() }};
+        this.materialScreen = new THREE.ShaderMaterial({
             uniforms: this.uniforms, // rtTexture = material from perspective camera
             vertexShader: document.getElementById( 'vertexShader' ).textContent,
             fragmentShader: document.getElementById( 'fragment_shader_screen' ).textContent,
             depthWrite: false
-        
         });
+
         this.renderPlane = new THREE.PlaneGeometry( window.innerWidth, window.innerHeight );
-        let quad = new THREE.Mesh(this.renderPlane, this.materialScreen);
-        quad.position.z = -100; 
-        this.dummyScene.add(quad); 
 
-        this.renderer.setSize( window.innerWidth, window.innerHeight );
-        this.renderer.autoClear = true;
+        if (this.quad != null) this.dummyScene.remove(this.quad); 
+        this.quad = new THREE.Mesh(this.renderPlane, this.materialScreen);
+        this.quad.position.z = -100;
 
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-
-        this.stats = new Stats();  
-        document.getElementById('canvas-container').appendChild(this.stats.dom);
-
-        // Change the position and top/left of the stats panel
-        this.stats.dom.style.position = 'relative';  // Make sure it's positioned relative to its parent
-        this.stats.dom.style.top = null;
-        this.stats.dom.style.right = null; 
-        this.stats.dom.style.bottom = '90%';
-        this.stats.dom.style.left = '0%';          // Set the left position relative to the parent container
+        this.dummyScene.add(this.quad); 
     }
 
     InitializeCannon() 
@@ -204,7 +191,7 @@ export default class EnginePortfolio extends Engine
         this.canvas.width = 512;
         this.canvas.height = 512;
 
-        Helpers.CreateCarouselDots(projectDataPathArray.length, this.currentProjectIndex);
+        Helpers.CreateCarouselDots(PROJECT_DATAPATH_ARRAY.length, this.currentProjectIndex);
 
         //this.planeBuffer = Helpers.CreatePlaneBufferGeometry(100, 40); 
         //this.scene.add(this.planeBuffer); 
@@ -218,7 +205,7 @@ export default class EnginePortfolio extends Engine
                 // Load the object asynchronously
                 await this.currentPFObject.load();
 
-                this.gradientTexture = HelpersBackground.CreateMultiGradientTexture(this.currentPFObject.metadata.gradient, this.context, this.canvas);
+                this.gradientTexture = HelpersBackground.CreateMultiGradientTexture(this.currentPFObject.voxelMetadata.gradient, this.context, this.canvas);
                 //this.gradientTexture = HelpersBackground.CreateCheckerboardTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 2, 2, this.context, this.canvas); 
                 //this.gradientTexture = HelpersBackground.CreateChartPieTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 24, this.context, this.canvas); 
 
@@ -255,7 +242,7 @@ export default class EnginePortfolio extends Engine
                     this.scene.add(this.currentPFObject.voxelizedMesh);
 
                     this.InitializeHTML(); 
-                    this.RenderProjectPage(this.currentPFObject.projectData); 
+                    this.RenderProjectPage(this.currentPFObject.projectContent); 
                 }
                 else 
                 {
@@ -271,12 +258,18 @@ export default class EnginePortfolio extends Engine
         {
             try 
             {
-                this.currentPFObject = new ObjectPortfolio("Create", this.defaultJsonPath, glbPath, defaultParams);
+                this.currentPFObject = new ObjectPortfolio("Create", this.defaultJsonPath, this.defaultGLBPath, defaultParams);
 
                 await this.currentPFObject.load();
 
                 if (this.currentPFObject.originalMesh && this.currentPFObject.voxelizedMesh) 
                 {
+                    this.gridHelper = new THREE.GridHelper(defaultParams.modelSize, defaultParams.modelSize / defaultParams.gridSize); 
+                    this.gridHelper.position.x += defaultParams.voxelSize / 2; 
+                    this.gridHelper.position.z += defaultParams.voxelSize / 2; 
+                    this.gridHelper.position.y += defaultParams.voxelSize / 2; 
+                    
+                    this.scene.add(this.gridHelper); 
                     this.scene.add(this.currentPFObject.voxelizedMesh);
                     //this.scene.add(this.currentPFObject.originalMesh); 
                 }
@@ -294,70 +287,131 @@ export default class EnginePortfolio extends Engine
 
     InitializeHTML() 
     {
-        const portfolioMetadata = this.currentPFObject.metadataPorfolio;
-        const metadata = this.currentPFObject.metadata; 
+        const projectMetadata = this.currentPFObject.projectMetadata;
+        const voxelMetadata = this.currentPFObject.voxelMetadata; 
 
-        document.getElementById('project-name').textContent = portfolioMetadata.projectName;
-        document.getElementById('company-name').textContent = portfolioMetadata.companyName;
-        document.getElementById('author-name').textContent = portfolioMetadata.yearString;
-        document.getElementById('project-year').textContent = portfolioMetadata.tasks;
-        document.getElementById('project-description').textContent = portfolioMetadata.description;
-        document.getElementById('copyright-model').textContent = "© Model • " + metadata.author; 
+        document.getElementById('project-name').textContent = projectMetadata.projectName;
+        document.getElementById('company-name').textContent = projectMetadata.companyName;
+        document.getElementById('author-name').textContent = projectMetadata.yearString;
+        document.getElementById('project-year').textContent = projectMetadata.tasks;
+        document.getElementById('project-description').textContent = projectMetadata.description;
+        document.getElementById('copyright-model').textContent = "© Model • " + voxelMetadata.author; 
     }
 
     InitializeGUI() 
     {
-        this.gui = new GUI();  // Create a new GUI instance
+        this.gui = new GUI({width: 300});  // Create a new GUI instance
 
-        // Add parameters to the GUI
-        this.gui.add(defaultParams, 'gridSize', 0.1, 10).name('Grid Size').onChange(this.UpdateVoxelization.bind(this));
-        this.gui.add(defaultParams, 'modelSize', 1, 100).name('Model Size').onChange(this.UpdateVoxelization.bind(this));
-        this.gui.add(defaultParams, 'boxSize', 0.1, 5).name('Box Size').onChange(this.UpdateVoxelization.bind(this));
-        this.gui.add(defaultParams, 'boxRoundness', 0, 1).name('Box Roundness').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.domElement.style.position = 'absolute';
+        this.gui.domElement.style.marginTop = '100px';
+        this.gui.domElement.style.width = '300px';
 
-        const metadata = {
-            modelName: "modelName", 
-            author: "author", 
-            originalMeshFolder: "../meshes/",
-            originalMeshPath: "",
-            gradient: ["#000000", "#2B2B2B", "#FFFFFF"]
-        };
+        const models = [
+            '../meshes/Biplane.glb',
+            '../meshes/Statue.glb',
+            '../meshes/Computer.glb',
+            '../meshes/Spaceship.glb',
+            '../meshes/Fighter.glb',
+            '../meshes/Gloves.glb',
+            '../meshes/Keg.glb',
+            '../meshes/UFO.glb',
+            '../meshes/Knight.glb',
+            '../meshes/Airplane.glb',
+        ];
+        const modelOptions = {selectedModel: models[0]}; 
 
-        const portfolioMetadata = 
-        {
-            projectName: "projectName", 
-            companyName: "companyName",
-            yearString: "1970",
-            yearID: "1970", 
-            tasks: "tasksList", 
-            description: "A short description of the project.",
-            isFavorite: false
+        // Extract the model name from the selectedModel path
+        const extractModelName = (modelPath) => {
+            const parts = modelPath.split('/');
+            const fileName = parts[parts.length - 1];
+            const modelName = fileName.split('.')[0];
+            return modelName;
         }
 
-        const projectData = Helpers.GenericProjectData(); 
+        const guiParams = 
+        {
+            modelName: extractModelName(modelOptions.selectedModel),
+            enableWireframe: false,
+            enableLofi: false,
+            enableAO: true, 
+            enableAODebug: false, 
+            projectName: "project_name", 
+        }
 
-        this.gui.add(metadata, 'modelName').name('Model Name');
-        this.gui.add(metadata, 'author').name('Author');
-        this.gui.add(metadata, 'originalMeshFolder').name('Mesh Folder');
+        this.gui.add(modelOptions, 'selectedModel', models).name('Model').onChange((value) => {
+            this.defaultGLBPath = value; 
+            guiParams.modelName = extractModelName(modelOptions.selectedModel);
+            this.gui.updateDisplay(); 
+            this.UpdateVoxelization();
+        })
+        this.gui.add(defaultParams, 'gridSize', 0.01, 1).name('Grid Size').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(defaultParams, 'modelSize', 1, 100).name('Model Size').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(defaultParams, 'voxelSize', 0.01, 1).name('Voxel Size').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(defaultParams, 'enableRoundness').name('Roundess').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(defaultParams, 'voxelRoundess', 0.01, 1).name('Voxel Roundness').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(guiParams, 'enableLofi').name('Lo-Fi').onChange(value => this.InitializeRenderTarget(value));
+        this.gui.add(guiParams, 'enableWireframe').name('Wireframe').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(guiParams, 'enableAO').name('AO').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(guiParams, 'enableAODebug').name('AO Debug').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(guiParams, 'modelName').name('Model Name').onChange(value => guiParams.modelName = value);
+        this.gui.add(guiParams, 'projectName').name('Project Name');
 
-        this.gui.add({save: () => Voxel.SaveVoxelData(this.currentPFObject, metadata, portfolioMetadata, defaultParams, projectData) }, 'save').name('Save Voxel Data');
+        //this.gui.add({save: () => Voxel.SaveVoxelData(this.currentPFObject, metadata, portfolioMetadata, defaultParams, projectData) }, 'save').name('Save Voxel Data');
+        this.gui.add({save: () => Loader.CreateVoxelDataFiles(this.currentPFObject, defaultParams, guiParams.projectName, guiParams.modelName) }, 'save').name('Save Voxel Data');
+        this.gui.add({save: () => Loader.CreateProjectDataFiles(this.currentPFObject, defaultParams, guiParams.projectName, guiParams.modelName) }, 'save').name('Save Project Data');
     }
 
     SetupEventListeners() 
     {
+        const darkOverlay = document.getElementById('darkOverlay');
         const projectDescription = document.getElementById('project-description');
         const projectContainer = document.getElementById('project-container'); 
-        
+
+        const expandTimeline = gsap.timeline({ 
+            paused: true,
+            ease: "expo.inOut",
+            onComplete: () => {
+                projectContainer.classList.add('visible');
+                projectContainer.classList.remove('hidden'); 
+                projectContainer.style.pointerEvents = 'auto';  // Enable interaction after animation
+            },
+            onReverseComplete: () => {
+                projectContainer.classList.remove('visible');
+                projectContainer.classList.add('hidden');
+                projectContainer.style.pointerEvents = 'none';  // Enable interaction after animation
+            }});
+
+        expandTimeline.to(darkOverlay, {
+            duration: 0.1,
+            opacity: '0.5'
+        }).to(projectDescription, {
+            duration: 0.33,
+            color: 'rgb(0, 0, 0, 0)', 
+            backgroundColor: 'rgb(0, 0, 0, 0.9)',
+            width: '100%',
+            maxWidth: '100%',
+            padding: '0px 0px',
+            bottom: '-18px',
+            borderRadius: '0px',
+        }, "+=0.2") // Starts 0.5 seconds after the previous animation ends
+        .to(projectDescription, {
+            duration: 0.33,
+            height: '100%',
+        }, "+=0.2") // Starts 0.3 seconds after the previous animation ends
+        .to(projectContainer, {
+            duration: 0.2,
+            opacity: '1',
+        }, "+=0.2"); // Starts 0.4 seconds after the previous animation ends
+            
+        // Adjust timeScale to speed up reverse
+        const reverseSpeedMultiplier = 1.5; // Speed up reverse by 2x
+
         projectDescription.addEventListener('mouseenter', () => {
-            projectDescription.classList.add('hovered');
-            projectContainer.classList.add('visible');
-            projectContainer.classList.remove('hidden'); 
+            expandTimeline.timeScale(1).play(); // Normal speed for forward animation
         });
-    
+
         projectContainer.addEventListener('mouseleave', () => {
-            projectDescription.classList.remove('hovered');
-            projectContainer.classList.remove('visible');
-            projectContainer.classList.add('hidden');
+            expandTimeline.timeScale(reverseSpeedMultiplier).reverse(); // Faster reverse speed
         });
     
         document.querySelectorAll('.folder-header').forEach(header => {
@@ -476,19 +530,6 @@ export default class EnginePortfolio extends Engine
 
             this.UpdateClippingPlanes(mouseY); 
         }
-
-        const darkOverlay = document.getElementById('darkOverlay');
-        
-        if (event.clientY >= window.innerHeight / 2) 
-        {
-            const opacity = (event.clientY / (window.innerHeight)) - 0.2;
-            darkOverlay.style.opacity = 0;
-        }
-        else 
-        {
-            // Ensure the overlay is invisible if the mouse is below the middle
-            darkOverlay.style.opacity = 0;
-        }
     }
 
     OnKeyDown(event) 
@@ -510,7 +551,7 @@ export default class EnginePortfolio extends Engine
     async SwitchToNextObject() 
     {
         if (!this.canSwitchObject) return; 
-        if (this.currentProjectIndex < projectDataPathArray.length - 1) 
+        if (this.currentProjectIndex < PROJECT_DATAPATH_ARRAY.length - 1) 
         {
             this.currentProjectIndex++;
             await this.SwitchObject(1, 0.5); 
@@ -523,10 +564,10 @@ export default class EnginePortfolio extends Engine
         this.canRotateCamera = false; 
     
         // Load the next portfolio object
-        this.nextPFObject = new ObjectPortfolio("Load", projectDataPathArray[this.currentProjectIndex]);
+        this.nextPFObject = new ObjectPortfolio("Load", PROJECT_DATAPATH_ARRAY[this.currentProjectIndex]);
         await this.nextPFObject.load();
 
-        this.SmoothGradientTransition(this.currentPFObject.metadata.gradient, this.nextPFObject.metadata.gradient, duration);
+        this.SmoothGradientTransition(this.currentPFObject.voxelMetadata.gradient, this.nextPFObject.voxelMetadata.gradient, duration);
     
         // Calculate the camera's left and right direction vectors
         const cameraDirection = new THREE.Vector3();
@@ -745,10 +786,12 @@ export default class EnginePortfolio extends Engine
 
     AnimateVoxelGrid(instancedMesh, simplex, timeFactor, xyCoef, zCoef) 
     {
+        if (instancedMesh == null) return; 
+        
         const time = Date.now() * timeFactor;
         const voxelCount = instancedMesh.count;
 
-        const gradient = this.currentPFObject.metadata.gradient; 
+        const gradient = this.currentPFObject.voxelMetadata.gradient; 
 
         if (gradient == undefined) return; 
 

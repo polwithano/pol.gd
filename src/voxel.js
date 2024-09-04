@@ -10,10 +10,10 @@ THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
 let metadata = []; 
 let voxels = [];
-let meshes = [];   
 let params = []; 
 
-async function VoxelizeMesh(paramsInput, mesh) {
+async function VoxelizeMesh(paramsInput, mesh) 
+{
     let localMeshes = [];
     let localVoxels = [];
     let localParams = paramsInput;
@@ -30,20 +30,34 @@ async function VoxelizeMesh(paramsInput, mesh) {
     boundingBox = new THREE.Box3().setFromObject(mesh);
     let minY = Infinity;
 
-    for (let i = boundingBox.min.x; i < boundingBox.max.x; i += localParams.gridSize) {
-        for (let j = boundingBox.min.y; j < boundingBox.max.y; j += localParams.gridSize) {
-            for (let k = boundingBox.min.z; k < boundingBox.max.z; k += localParams.gridSize) {
-                for (let meshCount = 0; meshCount < localMeshes.length; meshCount++) {
+    for (let i = boundingBox.min.x; i < boundingBox.max.x; i += localParams.gridSize) 
+    {
+        for (let j = boundingBox.min.y; j < boundingBox.max.y; j += localParams.gridSize) 
+        {
+            for (let k = boundingBox.min.z; k < boundingBox.max.z; k += localParams.gridSize) 
+            {
+                for (let meshCount = 0; meshCount < localMeshes.length; meshCount++) 
+                {
                     const pos = new THREE.Vector3(i, j, k);
+                    const snappedPos = new THREE.Vector3(
+                        snapToGrid(pos.x, localParams.gridSize),
+                        snapToGrid(pos.y, localParams.gridSize),
+                        snapToGrid(pos.z, localParams.gridSize)
+                    );
+                    const roundedPos = new THREE.Vector3(
+                        roundToPrecision(snappedPos.x, 10),
+                        roundToPrecision(snappedPos.y, 10),
+                        roundToPrecision(snappedPos.z, 10)
+                    );
                     const currentMesh = localMeshes[meshCount];
 
-                    if (IsInsideMesh(localParams, raycaster, pos, { x: 0, y: 0, z: 1 }, currentMesh) ||
-                        IsInsideMesh(localParams, raycaster, pos, { x: 0, y: 0, z: -1 }, currentMesh) ||
-                        IsInsideMesh(localParams, raycaster, pos, { x: 0, y: 1, z: 0 }, currentMesh) ||
-                        IsInsideMesh(localParams, raycaster, pos, { x: 0, y: -1, z: 0 }, currentMesh) ||
-                        IsInsideMesh(localParams, raycaster, pos, { x: 1, y: 0, z: 0 }, currentMesh) ||
-                        IsInsideMesh(localParams, raycaster, pos, { x: -1, y: 0, z: 0 }, currentMesh)) {
-                        
+                    if (IsInsideMesh(localParams, raycaster, snappedPos, { x: 0, y: 0, z: 1 }, currentMesh) ||
+                        IsInsideMesh(localParams, raycaster, snappedPos, { x: 0, y: 0, z: -1 }, currentMesh) ||
+                        IsInsideMesh(localParams, raycaster, snappedPos, { x: 0, y: 1, z: 0 }, currentMesh) ||
+                        IsInsideMesh(localParams, raycaster, snappedPos, { x: 0, y: -1, z: 0 }, currentMesh) ||
+                        IsInsideMesh(localParams, raycaster, snappedPos, { x: 1, y: 0, z: 0 }, currentMesh) ||
+                        IsInsideMesh(localParams, raycaster, snappedPos, { x: -1, y: 0, z: 0 }, currentMesh)) 
+                    {
                         const material = currentMesh.material;
                         const isEmissive = material.emissive && (material.emissive.r !== 0 || material.emissive.g !== 0 || material.emissive.b !== 0);
                         let color = new THREE.Color();
@@ -56,13 +70,13 @@ async function VoxelizeMesh(paramsInput, mesh) {
                         }
 
                         localVoxels.push({
-                            color: color,
-                            position: pos,
-                            materialType: isEmissive ? 'Emissive' : 'BSDF',
-                            emissiveIntensity: isEmissive ? material.emissiveIntensity : null
+                            _c: color,
+                            _p: roundedPos,
+                            _mt: isEmissive ? 'Emissive' : 'BSDF',
+                            _ei: isEmissive ? material.emissiveIntensity : null
                         });
 
-                        if (pos.y < minY) minY = pos.y;
+                        if (snappedPos.y < minY) minY = snappedPos.y;
                         break;
                     }
                 }
@@ -71,6 +85,7 @@ async function VoxelizeMesh(paramsInput, mesh) {
     }
 
     console.log('Voxels instantiated:', localVoxels.length);
+
     WeightedAmbientOcclusion(localVoxels, paramsInput.gridSize, false); 
     localVoxels = RemoveFullyOccludedVoxels(localVoxels, 0); 
 
@@ -87,12 +102,21 @@ async function VoxelizeMesh(paramsInput, mesh) {
     return { voxels: localVoxels, instancedMesh };
 }
 
+function snapToGrid(value, gridSize) {
+    return Math.round(value / gridSize) * gridSize;
+}
+
+function roundToPrecision(value, precision = 10) {
+    return Math.round(value * precision) / precision;
+}
+
+
 function FastAmbientOcclusion(localVoxels, gridSize, debug = false) {
     const voxelMap = new Map();
 
     // Store voxel positions in a map for quick neighbor lookup
     localVoxels.forEach(voxel => {
-        const key = `${voxel.position.x},${voxel.position.y},${voxel.position.z}`;
+        const key = `${voxel._p.x},${voxel._p.y},${voxel._p.z}`;
         voxelMap.set(key, voxel);
     });
 
@@ -112,10 +136,20 @@ function FastAmbientOcclusion(localVoxels, gridSize, debug = false) {
 
         directions.forEach(dir => 
         {
-            const neighborPos = voxel.position.clone().add(dir.multiplyScalar(gridSize));
-            const neighborKey = `${neighborPos.x},${neighborPos.y},${neighborPos.z}`;
-
-            if (voxelMap.has(neighborKey)) occlusion++;
+            const neighborPos = voxel._p.clone().add(dir.offset.multiplyScalar(gridSize));
+            const snappedPos = new THREE.Vector3(
+                snapToGrid(neighborPos.x, gridSize),
+                snapToGrid(neighborPos.y, gridSize),
+                snapToGrid(neighborPos.z, gridSize)
+            );
+            const roundedPos = new THREE.Vector3(
+                roundToPrecision(snappedPos.x, 10),
+                roundToPrecision(snappedPos.y, 10),
+                roundToPrecision(snappedPos.z, 10)
+            );
+            const neighborKey = `${roundedPos.x},${roundedPos.y},${roundedPos.z}`
+            
+            if (voxelMap.has(neighborKey)) occlusion += dir.weight;
             totalWeight += dir.weight;
         });
 
@@ -125,14 +159,14 @@ function FastAmbientOcclusion(localVoxels, gridSize, debug = false) {
         if (debug) 
         {
             // Visualize AO as grayscale
-            // Assuming voxel.color is a THREE.Color instance
+            // Assuming voxel._c is a THREE.Color instance
             const grayscale = occlusionFactor; // 0 (fully occluded) to 1 (no occlusion)
-            voxel.color.setRGB(grayscale, grayscale, grayscale);
+            voxel._c.setRGB(grayscale, grayscale, grayscale);
         } 
         else 
         {
             // Apply AO as a darkening factor
-            voxel.color.multiplyScalar(occlusionFactor);
+            voxel._c.multiplyScalar(occlusionFactor);
         }
     });
 }
@@ -142,7 +176,7 @@ function WeightedAmbientOcclusion(localVoxels, gridSize, debug = false) {
 
     // Store voxel positions in a map for quick neighbor lookup
     localVoxels.forEach(voxel => {
-        const key = `${voxel.position.x},${voxel.position.y},${voxel.position.z}`;
+        const key = `${voxel._p.x},${voxel._p.y},${voxel._p.z}`;
         voxelMap.set(key, voxel);
     });
 
@@ -152,24 +186,49 @@ function WeightedAmbientOcclusion(localVoxels, gridSize, debug = false) {
 
         // Define neighbor offsets and their weights
         const directions = [
-            { offset: new THREE.Vector3(1, 0, 0),   weight: 0.01 },   // RIGHT
-            { offset: new THREE.Vector3(-1, 0, 0),  weight: 0.01 },   // LEFT
-            { offset: new THREE.Vector3(0, 1, 0),   weight: 0.25 },   // TOP
-            { offset: new THREE.Vector3(0, -1, 0),  weight: 0.01 },   // BOTTOM
-            { offset: new THREE.Vector3(0, 0, 1),   weight: 0.25 },   // FRONT
-            { offset: new THREE.Vector3(0, 0, -1),  weight: 0.01 },   // BACK
-            { offset: new THREE.Vector3(1, 1, 0),   weight: 0.01 },   // TOP-RIGHT DIAG
-            { offset: new THREE.Vector3(-1, 1, 0),  weight: 0.01 },   // TOP-LEFT DIAG
-            { offset: new THREE.Vector3(1, -1, 0),  weight: 0.01 },   // BOT-RIGHT DIAG
-            { offset: new THREE.Vector3(-1, -1, 0), weight: 0.01 },   // BOT-LEFT DIAG
-            { offset: new THREE.Vector3(0, 1, 1),   weight: 0.25 },   // TOP-FRONT DIAG
+            // Primary directions
+            { offset: new THREE.Vector3(1, 0, 0),    weight: 0.015 }, // RIGHT
+            { offset: new THREE.Vector3(-1, 0, 0),   weight: 0.015 }, // LEFT
+            { offset: new THREE.Vector3(0, 1, 0),    weight: 0.450 }, // TOP
+            { offset: new THREE.Vector3(0, -1, 0),   weight: 0.050 }, // BOTTOM
+            { offset: new THREE.Vector3(0, 0, 1),    weight: 0.150 }, // FRONT
+            { offset: new THREE.Vector3(0, 0, -1),   weight: 0.010 }, // BACK
+        
+            // 2D Diagonals
+            { offset: new THREE.Vector3(1, 1, 0),    weight: 0.150 }, // TOP-RIGHT
+            { offset: new THREE.Vector3(-1, 1, 0),   weight: 0.150 }, // TOP-LEFT
+            { offset: new THREE.Vector3(1, -1, 0),   weight: 0.025 }, // BOT-RIGHT
+            { offset: new THREE.Vector3(-1, -1, 0),  weight: 0.025 }, // BOT-LEFT
+            
+            // 3D Diagonals
+            { offset: new THREE.Vector3(1, 1, 1),    weight: 0.150 }, // TOP-RIGHT-FRONT
+            { offset: new THREE.Vector3(-1, 1, 1),   weight: 0.150 }, // TOP-LEFT-FRONT
+            { offset: new THREE.Vector3(1, -1, 1),   weight: 0.025 }, // BOT-RIGHT-FRONT
+            { offset: new THREE.Vector3(-1, -1, 1),  weight: 0.025 }, // BOT-LEFT-FRONT
+            { offset: new THREE.Vector3(1, 1, -1),   weight: 0.010 }, // TOP-RIGHT-BACK
+            { offset: new THREE.Vector3(-1, 1, -1),  weight: 0.010 }, // TOP-LEFT-BACK
+            { offset: new THREE.Vector3(1, -1, -1),  weight: 0.010 }, // BOT-RIGHT-BACK
+            { offset: new THREE.Vector3(-1, -1, -1), weight: 0.010 }  // BOT-LEFT-BACK
         ];
-
+        
         // Check each neighbor and accumulate occlusion based on weights
         directions.forEach(dir => 
         {
-            const neighborPos = voxel.position.clone().add(dir.offset.multiplyScalar(gridSize));
-            const neighborKey = `${neighborPos.x},${neighborPos.y},${neighborPos.z}`;
+            const neighborPos = voxel._p.clone().add(dir.offset.multiplyScalar(gridSize));
+            const snappedPos = new THREE.Vector3(
+                snapToGrid(neighborPos.x, gridSize),
+                snapToGrid(neighborPos.y, gridSize),
+                snapToGrid(neighborPos.z, gridSize)
+            );
+            const roundedPos = new THREE.Vector3(
+                roundToPrecision(snappedPos.x, 10),
+                roundToPrecision(snappedPos.y, 10),
+                roundToPrecision(snappedPos.z, 10)
+            );
+            const neighborKey = `${roundedPos.x},${roundedPos.y},${roundedPos.z}`
+        
+            //console.log(`Voxel Position: ${voxel.position.x}, ${voxel.position.y}, ${voxel.position.z}`);
+            //console.log(`Neighbor Position: ${roundedPos.x},${roundedPos.y},${roundedPos.z}`);
 
             if (voxelMap.has(neighborKey)) occlusion += dir.weight;
             totalWeight += dir.weight;
@@ -182,7 +241,7 @@ function WeightedAmbientOcclusion(localVoxels, gridSize, debug = false) {
         {
             // Visualize AO as grayscale
             const grayscale = occlusionFactor; // 0 (fully occluded) to 1 (no occlusion)
-            voxel.color.setRGB(grayscale, grayscale, grayscale);
+            voxel._c.setRGB(grayscale, grayscale, grayscale);
             /*
             console.log(`Voxel at ${voxel.position.x}, ${voxel.position.y}, ${voxel.position.z}`);
             console.log(`  Occlusion: ${occlusion}`);
@@ -193,7 +252,7 @@ function WeightedAmbientOcclusion(localVoxels, gridSize, debug = false) {
         else 
         {
             // Apply AO as a darkening factor
-            voxel.color.multiplyScalar(occlusionFactor);
+            voxel._c.multiplyScalar(occlusionFactor);
         }
     });
 }
@@ -203,7 +262,7 @@ function RemoveFullyOccludedVoxels(localVoxels, darknessThreshold = 0.1) {
 
     for (let i = 0; i < localVoxels.length; i++) {
         const voxel = localVoxels[i];
-        const { r, g, b } = voxel.color;
+        const { r, g, b } = voxel._c;
 
         // Check if the voxel color is below the darkness threshold for all RGB channels
         const isFullyOccluded = r <= darknessThreshold && g <= darknessThreshold && b <= darknessThreshold;
@@ -291,7 +350,7 @@ function IsInsideMesh(params, raycaster, position, direction, mesh)
 
 function GetVoxelGeometry(params, length) 
 {
-    let voxelGeometry = new THREE.BoxGeometry(params.boxSize, params.boxSize, params.boxSize);
+    let voxelGeometry = new THREE.BoxGeometry(params.voxelSize, params.voxelSize, params.voxelSize);
     let voxelMaterial = new THREE.MeshBasicMaterial({ 
         fog: true,
     });
@@ -306,30 +365,21 @@ function CreateInstancedVoxelMesh(mesh, data)
 
     for (let i = 0; i < data.length; i++) 
     {
-        dummy.position.copy(data[i].position);
+        dummy.position.copy(data[i]._p);
         dummy.updateMatrix();
 
         mesh.setMatrixAt(i, dummy.matrix);
 
         let color = new THREE.Color();
 
-        if (typeof data[i].color === 'string' || typeof data[i].color === 'number') 
-        {
-            color.set(data[i].color);
-        } 
-        else if (data[i].color instanceof THREE.Color) 
-        {
-            color.copy(data[i].color);
-        } 
-        else 
-        {
-            console.warn("Unknown color format:", data[i].color);
-        }
+        if (typeof data[i]._c === 'string' || typeof data[i]._c === 'number') color.set(data[i]._c);  // Handle string or number color formats
+        else if (data[i]._c instanceof THREE.Color) color.copy(data[i]._c);  // Copy the color if it's already a THREE.Color instance
+        else console.warn("Unknown color format:", data[i]._c);
 
         mesh.setColorAt(i, color);
 
-        if (data[i].materialType == "Emissive") 
-        {
+        // Handle emissive materials (commented out since not being used)
+        if (data[i]._mt == "Emissive") {
             //mesh.material.emissive.set(color); // Set the emissive color
             //mesh.material.emissiveIntensity = (data[i].emissiveIntensity * 1); 
         }
@@ -342,17 +392,18 @@ function CreateInstancedVoxelMesh(mesh, data)
 function RecreateInstancedVoxelMesh(mesh, data) 
 {
     let dummy = new THREE.Object3D();
-    
+
     for (let i = 0; i < data.length; i++) 
     {
-        // Convert color from decimal to hex string and then to THREE.Color
-        const colorDecimal = data[i].color;
-        const colorHex = '#' + colorDecimal.toString(16).padStart(6, '0').toUpperCase();
-        const color = new THREE.Color(colorHex);
+        const color = new THREE.Color();
+
+        if (typeof data[i]._c === 'string' || typeof data[i]._c === 'number') color.set(data[i]._c);  // Handle string or number color formats
+        else if (data[i]._c instanceof THREE.Color) color.copy(data[i]._c);  // Copy the color if it's already a THREE.Color instance
+        else console.warn("Unknown color format:", data[i]._c);
 
         mesh.setColorAt(i, color);
 
-        dummy.position.copy(data[i].position);
+        dummy.position.copy(data[i]._p);
         dummy.updateMatrix();
         mesh.setMatrixAt(i, dummy.matrix);
     }
@@ -360,6 +411,7 @@ function RecreateInstancedVoxelMesh(mesh, data)
     mesh.instanceColor.needsUpdate = true;
     mesh.instanceMatrix.needsUpdate = true;
 }
+
 
 async function GetOriginalModel() 
 {
@@ -410,9 +462,9 @@ function CreateVoxelGrid(width, depth, spacing) {
     return instancedMesh;
 }
 
-function MinY() {return Math.min(...voxels.map(v => v.position.y)) - params.boxSize / 2;}
-function MaxY() {return Math.max(...voxels.map(v => v.position.y)) + params.boxSize / 2;}
-function VoxelHeight() {return ((MaxY() - MinY()) / params.boxSize);}
+function MinY() {return Math.min(...voxels.map(v => v._p.y)) - params.voxelSize / 2;}
+function MaxY() {return Math.max(...voxels.map(v => v._p.y)) + params.voxelSize / 2;}
+function VoxelHeight() {return ((MaxY() - MinY()) / params.voxelSize);}
 function Metadata() {return metadata;}
 
 export default {GetVoxelGeometry, VoxelizeMesh, SaveVoxelData, LoadVoxelData, RecreateInstancedVoxelMesh, GetOriginalModel, CreateVoxelGrid, MinY, MaxY, VoxelHeight, Metadata}; 

@@ -16,13 +16,16 @@ export default class ObjectPortfolio
 {
     constructor(objectMethod, jsonPath = null, glbPath = null, defaultParams = null)
     {
-        this.metadata = [];
-        this.metadataPorfolio = []; 
-        this.projectData = []; 
-        this.originalMesh = null;
+        this.objectMethod = objectMethod;
 
-        // Voxel Object
-        this.params = [];
+        // Project-Related Data
+        this.projectMetadata = []; 
+        this.projectContent = []; 
+
+        // Model-Related Data
+        this.originalMesh = null;
+        this.voxelMetadata = [];
+        this.voxelParams = [];
         this.meshes = [];
         this.voxels = [];
         this.voxelizedMesh = null;
@@ -30,7 +33,6 @@ export default class ObjectPortfolio
         this.voxelStartAnimationOver = false;
         this.voxelAnimationInitialized = false;  
 
-        this.objectMethod = objectMethod;
         this.jsonPath = jsonPath;
         this.glbPath = glbPath;
         this.defaultParams = defaultParams; 
@@ -53,7 +55,7 @@ export default class ObjectPortfolio
     {
         await this.LoadJsonData(this.jsonPath);
 
-        this.voxelizedMesh = await Voxel.GetVoxelGeometry(this.params, this.voxels.length);
+        this.voxelizedMesh = await Voxel.GetVoxelGeometry(this.voxelParams, this.voxels.length);
         Voxel.RecreateInstancedVoxelMesh(this.voxelizedMesh, this.voxels);
 
         await this.LoadCompliantOriginalModel();
@@ -66,25 +68,29 @@ export default class ObjectPortfolio
         this.voxelizedMesh.frustumCulled = false; 
     }
 
-    async LoadJsonData(json) 
+    async LoadJsonData(jsonPath) 
     {
-        const response = await fetch(json);
-        const data = await response.json();
+        const response_project = await fetch(jsonPath);
+        const project_data = await response_project.json();
 
-        this.metadata = data.metadata;
-        this.metadataPorfolio = data.portfolioMetadata
-        this.params = data.params;
-        this.projectData = data.projectData; 
-        this.voxels = data.voxels;
+        this.projectMetadata = project_data.metadata;
+        this.projectContent = project_data.content; 
+
+        const response_voxel = await fetch(this.projectMetadata.voxelPath); 
+        const voxel_data = await response_voxel.json(); 
+
+        this.voxelMetadata = voxel_data.metadata; 
+        this.voxelParams = voxel_data.params;
+        this.voxels = voxel_data.voxels;
     }
 
     async LoadCompliantOriginalModel() 
     {
-        const model = await Loader.LoadGLTFMesh(this.metadata.originalMeshPath);
+        const model = await Loader.LoadGLTFMesh(this.voxelMetadata.originalMeshPath);
 
         let boundingBox = new THREE.Box3().setFromObject(model);
         const size = boundingBox.getSize(new THREE.Vector3());
-        const scaleFactor = this.params.modelSize / size.length();
+        const scaleFactor = this.voxelParams.modelSize / size.length();
         const center = boundingBox.getCenter(new THREE.Vector3()).multiplyScalar(-scaleFactor);
 
         model.scale.multiplyScalar(scaleFactor);
@@ -119,37 +125,37 @@ export default class ObjectPortfolio
 
     // Voxel Methods
     MinY() {
-        if (!this.voxels || !this.params) return 0;
-        return Math.min(...this.voxels.map(v => v.position.y)) - this.params.boxSize / 2;
+        if (!this.voxels || !this.voxelParams) return 0;
+        return Math.min(...this.voxels.map(v => v._p.y)) - this.voxelParams.voxelSize / 2;
     }
 
     MinX() {
-        if (!this.voxels || !this.params) return 0;
-        return Math.min(...this.voxels.map(v => v.position.x)) - this.params.boxSize / 2;
+        if (!this.voxels || !this.voxelParams) return 0;
+        return Math.min(...this.voxels.map(v => v._p.x)) - this.voxelParams.voxelSize / 2;
     }
 
     MinZ() {
-        if (!this.voxels || !this.params) return 0;
-        return Math.min(...this.voxels.map(v => v.position.z)) + this.params.boxSize / 2;
+        if (!this.voxels || !this.voxelParams) return 0;
+        return Math.min(...this.voxels.map(v => v._p.z)) + this.voxelParams.voxelSize / 2;
     }
     
     MaxY() {
-        if (!this.voxels || !this.params) return 0;
-        return Math.max(...this.voxels.map(v => v.position.y)) + this.params.boxSize / 2;
+        if (!this.voxels || !this.voxelParams) return 0;
+        return Math.max(...this.voxels.map(v => v._p.y)) + this.voxelParams.voxelSize / 2;
     }
 
     MaxX() {
-        if (!this.voxels || !this.params) return 0;
-        return Math.max(...this.voxels.map(v => v.position.x)) + this.params.boxSize / 2;
+        if (!this.voxels || !this.voxelParams) return 0;
+        return Math.max(...this.voxels.map(v => v._p.x)) + this.voxelParams.voxelSize / 2;
     }
 
     MaxZ() {
-        if (!this.voxels || !this.params) return 0;
-        return Math.max(...this.voxels.map(v => v.position.z)) + this.params.boxSize / 2;
+        if (!this.voxels || !this.voxelParams) return 0;
+        return Math.max(...this.voxels.map(v => v._p.z)) + this.voxelParams.voxelSize / 2;
     }
     
     VoxelHeight() {
-        if (!this.voxels || !this.params) return 0;
-        return (this.MaxY() - this.MinY()) / this.params.boxSize;
+        if (!this.voxels || !this.voxelParams) return 0;
+        return (this.MaxY() - this.MinY()) / this.voxelParams.voxelSize;
     }
 }
