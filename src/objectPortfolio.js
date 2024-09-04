@@ -3,18 +3,9 @@ import Helpers from './helpers';
 import Loader from './loader'; 
 import Voxel from './voxel'; 
 
-export class ObjectMethod 
-{
-    static Load = new ObjectMethod("Load"); 
-    static Create = new ObjectMethod("Create"); 
-
-    constructor(name) {this.name = name;}
-    toString() {return `ObjectMethod.${this.name}`;}
-}
-
 export default class ObjectPortfolio 
 {
-    constructor(objectMethod, jsonPath = null, glbPath = null, defaultParams = null)
+    constructor(objectMethod = "Create", jsonPath = null, glbPath = null, defaultParams = null)
     {
         this.objectMethod = objectMethod;
 
@@ -40,11 +31,11 @@ export default class ObjectPortfolio
 
     async load() 
     {
-        if (this.objectMethod === ObjectMethod.Create.name) 
+        if (this.objectMethod == "Create") 
         {
             await this.CreateObject();
         } 
-        else if (this.objectMethod === ObjectMethod.Load.name) 
+        else if (this.objectMethod == "Load") 
         {
             await this.LoadObject();
         }
