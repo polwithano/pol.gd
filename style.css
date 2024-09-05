@@ -248,6 +248,7 @@ a:hover
   flex-direction: column; /* Stacks the rows vertically */
   gap: 10px; /* Adds spacing between the rows */
   pointer-events: none; /* Allows clicks to pass through */
+  overflow: hidden;
 }
 
 /* Container for the portfolio icons */
@@ -285,6 +286,14 @@ a:hover
   max-height: 48px;
 }
 
+.project-info-container 
+{
+  display: inline-block;
+  background-color: rgba(0, 0, 0, 0.75); /* Background with transparency */
+  border-radius: 5px; /* Rounded corners */
+  overflow: hidden;
+}
+
 .info-row {
   display: flex;
   justify-content: space-between; /* Positions content at the extreme ends */
@@ -314,7 +323,6 @@ a:hover
 
 #project-year, #project-name 
 {
-  background-color: rgba(0, 0, 0, 0.75); /* Background with transparency */
   padding: 4px 10px; /* Padding around the text */
   border-radius: 5px; /* Rounded corners */
 }
@@ -339,19 +347,17 @@ a:hover
   text-align: center;
   font-size: 18px;
   display: inline-block;
-  max-width: 80%;
   background-color: rgba(0, 0, 0, 0.6);
-  padding: 6px 10px;
+  padding: 2px 4px;
   border-radius: 5px;
   z-index: 999;
   pointer-events: auto;
   line-height: 1.4; /* Adjusts line height for better readability */
+  overflow: hidden;
 }
 
 /* Additional styles to ensure text is centered vertically and horizontally */
 #project-description p {
-  margin: 0;
-  padding: 0;
   font-size: 24px; /* Larger font size when hovered */
   text-align: center; /* Center text */
   line-height: 1.4;
@@ -398,6 +404,7 @@ a:hover
 
 /* Project Header */
 .project-header {
+  font-family: '0xProto Nerd Font Mono';
   text-align: center;
   margin-bottom: 20px;
   margin-top: 10px;

@@ -1,5 +1,6 @@
 import * as THREE from 'three'; 
 import * as CANNON from 'cannon';
+import SplitType from 'split-type'; 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GUI } from 'dat.gui'
 import gsap from 'gsap';
@@ -10,6 +11,7 @@ import HelpersBackground from './helpersBackground';
 import Loader from './loader'; 
 import Helpers from './helpers'; 
 import Voxel from './voxel'; 
+import Master from '../data/masterJSON'; 
 import ObjectPortfolio from './objectPortfolio';
 import { SimplexNoise } from 'three/examples/jsm/Addons.js';
 
@@ -36,14 +38,6 @@ const defaultParams = {
 
 const USE_JSON = true; 
 const DEFAULT_GLB_PATH = "../meshes/Biplane.glb";
-const PROJECT_DATAPATH_ARRAY = 
-[
-    '../data/projects/test_data.json',
-    '../data/projects/test_2_data.json',
-    '../data/projects/Spaceship_data.json',
-    '../data/projects/Spaceship_data.json',
-    '../data/projects/Spaceship_data.json',
-]
 
 export default class EnginePortfolio extends Engine 
 {
@@ -67,7 +61,7 @@ export default class EnginePortfolio extends Engine
         this.canRotateCamera = true; 
         this.animationStartTime = 0; 
 
-        this.defaultJsonPath = PROJECT_DATAPATH_ARRAY[this.currentProjectIndex]; 
+        this.defaultJsonPath = Master.projects[this.currentProjectIndex]; 
         this.defaultGLBPath = DEFAULT_GLB_PATH; 
 
         this.simplex = new SimplexNoise(); 
@@ -194,7 +188,7 @@ export default class EnginePortfolio extends Engine
         this.canvas.width = 512;
         this.canvas.height = 512;
 
-        Helpers.CreateCarouselDots(PROJECT_DATAPATH_ARRAY.length, this.currentProjectIndex);
+        Helpers.CreateCarouselDots(Master.projects.length, this.currentProjectIndex);
 
         //this.planeBuffer = Helpers.CreatePlaneBufferGeometry(100, 40); 
         //this.scene.add(this.planeBuffer); 
@@ -300,7 +294,107 @@ export default class EnginePortfolio extends Engine
         document.getElementById('project-year').textContent = projectMetadata.tasks;
         document.getElementById('project-description').textContent = projectMetadata.description;
         document.getElementById('copyright-model').innerHTML = `© Original Model • <a href="${voxelMetadata.modelLink}" target="_blank">${voxelMetadata.author}</a>`;
+
+        this.UpdateIcons(); 
     }
+
+    UpdateIcons() 
+    {
+        const iconsContainer = document.getElementById('portfolio-icons');
+        iconsContainer.innerHTML = '';
+    
+        this.currentPFObject.projectContent.icons.forEach(icon => {
+            const iconDiv = document.createElement('div');
+            iconDiv.className = 'icon';
+    
+            const img = document.createElement('img');
+            img.src = icon.image;
+            img.className = 'icon-img';
+    
+            const p = document.createElement('p');
+            p.textContent = icon.name;
+    
+            iconDiv.appendChild(img);
+            iconDiv.appendChild(p);
+    
+            iconsContainer.appendChild(iconDiv);
+        });
+    }
+
+    UpdateHTML() 
+    {
+        const projectMetadata = this.currentPFObject.projectMetadata;
+        const voxelMetadata = this.currentPFObject.voxelMetadata; 
+
+        const vsOpts = {
+            duration: 0.20,
+            lineHeight: 100
+        };
+    
+        const elements = {
+            projectName: document.getElementById('project-name'),
+            companyName: document.getElementById('company-name'),
+            authorName: document.getElementById('author-name'),
+            projectYear: document.getElementById('project-year'),
+            projectDescription: document.getElementById('project-description'),
+            copyrightModel: document.getElementById('copyright-model')
+        };
+    
+        // Function to update text with animations
+        const updateTextWithAnimation = (element, newText) => 
+        {
+            const splitInstance = new SplitType(element, { types: 'chars' });
+            const oldChars = splitInstance.chars;
+            
+            // Animate out the old text (slide up and fade out)
+            gsap.to(oldChars, 
+            {
+                duration: vsOpts.duration,
+                y: -vsOpts.lineHeight,
+                opacity: 0,
+                stagger: vsOpts.duration / 10,
+                ease: "steps(2)",
+
+                onComplete: () => 
+                {
+                    splitInstance.revert(); 
+                    // Update text content once old text is gone
+                    element.textContent = newText;
+                    
+                    // Re-split new text into characters
+                    const newSplitInstance = new SplitType(element, { types: 'chars' });
+                    const newChars = newSplitInstance.chars;
+    
+                    // Animate in the new text (slide down and fade in)
+                    gsap.from(newChars, 
+                    {
+                        duration: vsOpts.duration,
+                        y: vsOpts.lineHeight,
+                        opacity: 0,
+                        stagger: vsOpts.duration / 10,
+                        ease: "steps(2)",
+
+                        onComplete: () => 
+                        {
+                            splitInstance.revert();  
+                            element.innerHTML = ''; 
+                            element.textContent = newText;
+                        }
+                    });
+                }
+            });
+        };
+
+        updateTextWithAnimation(elements.projectName, projectMetadata.projectName);
+        updateTextWithAnimation(elements.projectYear, projectMetadata.tasks);
+        updateTextWithAnimation(elements.projectDescription, projectMetadata.description);
+
+        document.getElementById('company-name').textContent = projectMetadata.companyName;
+        document.getElementById('author-name').textContent = projectMetadata.yearString;
+        document.getElementById('copyright-model').innerHTML = `© Original Model • <a href="${voxelMetadata.modelLink}" target="_blank">${voxelMetadata.author}</a>`;
+
+        this.UpdateIcons();
+    }    
 
     InitializeGUI() 
     {
@@ -376,7 +470,7 @@ export default class EnginePortfolio extends Engine
 
         const darkOverlay = document.getElementById('darkOverlay');
         const projectDescription = document.getElementById('project-description');
-        const projectContainer = document.getElementById('project-container'); 
+        const projectContainer = document.getElementById('project-container');
 
         const expandTimeline = gsap.timeline({ 
             paused: true,
@@ -396,19 +490,17 @@ export default class EnginePortfolio extends Engine
             duration: 0.1,
             opacity: '0.5'
         }).to(projectDescription, {
-            duration: 0.33,
+            duration: 0.20,
             color: 'rgb(0, 0, 0, 0)', 
             backgroundColor: 'rgb(0, 0, 0, 0.9)',
             width: '100%',
-            maxWidth: '100%',
-            padding: '0px 0px',
             bottom: '-18px',
             borderRadius: '0px',
-        }, "+=0.2") // Starts 0.5 seconds after the previous animation ends
+        }, "+=0.1") // Starts 0.5 seconds after the previous animation ends
         .to(projectDescription, {
-            duration: 0.33,
+            duration: 0.30,
             height: '100%',
-        }, "+=0.2") // Starts 0.3 seconds after the previous animation ends
+        }, "+=0.1") // Starts 0.3 seconds after the previous animation ends
         .to(projectContainer, {
             duration: 0.2,
             opacity: '1',
@@ -418,7 +510,7 @@ export default class EnginePortfolio extends Engine
         const reverseSpeedMultiplier = 1.5; // Speed up reverse by 2x
 
         projectDescription.addEventListener('mouseenter', () => {
-            expandTimeline.timeScale(1).play(); // Normal speed for forward animation
+            expandTimeline.timeScale(1.1).play(); // Normal speed for forward animation
         });
 
         projectContainer.addEventListener('mouseleave', () => {
@@ -562,7 +654,7 @@ export default class EnginePortfolio extends Engine
     async SwitchToNextObject() 
     {
         if (!this.canSwitchObject) return; 
-        if (this.currentProjectIndex < PROJECT_DATAPATH_ARRAY.length - 1) 
+        if (this.currentProjectIndex < Master.projects.length - 1) 
         {
             this.currentProjectIndex++;
             await this.SwitchObject(1, 0.5); 
@@ -575,10 +667,14 @@ export default class EnginePortfolio extends Engine
         this.canRotateCamera = false; 
     
         // Load the next portfolio object
-        this.nextPFObject = new ObjectPortfolio("Load", PROJECT_DATAPATH_ARRAY[this.currentProjectIndex]);
+        this.nextPFObject = new ObjectPortfolio("Load", Master.projects[this.currentProjectIndex]);
         await this.nextPFObject.load();
 
-        this.SmoothGradientTransition(this.currentPFObject.projectMetadata.gradientBackground, this.nextPFObject.projectMetadata.gradientBackground, duration);
+        // Update the background
+        this.SmoothGradientTransition(
+            this.currentPFObject.projectMetadata.gradientBackground, 
+            this.nextPFObject.projectMetadata.gradientBackground, 
+            duration);
     
         // Calculate the camera's left and right direction vectors
         const cameraDirection = new THREE.Vector3();
@@ -609,27 +705,30 @@ export default class EnginePortfolio extends Engine
             x: 0, y: 0, z: 0,
             duration: duration,
             ease: "power2.inOut",
-            onComplete: () => {
-                // Clean up old object and finalize the switch
+            onComplete: () => 
+            {
                 this.ClearPortfolioObject();
                 this.currentPFObject = this.nextPFObject;
-                this.currentPFObject.voxelStartAnimationOver = true; 
-                this.InitializeHTML(); 
-                this.canSwitchObject = true;
-                this.canRotateCamera = true; 
-                this.animationStartTime = 0; 
+
+                this.UpdateHTML(); 
+                this.RenderProjectPage(this.currentPFObject.projectContent); 
                 Helpers.UpdateCarouselDots(this.currentProjectIndex);  
+
+                this.animationStartTime = 0; 
+                this.currentPFObject.voxelStartAnimationOver = true; 
+                this.canRotateCamera = true; 
+                this.canSwitchObject = true;
             }
         });
     
         // Update shadow plane (if necessary)
-        gsap.to(this.shadowPlane.position, {
+        gsap.to(this.shadowPlane.position, 
+        {
             y: this.nextPFObject.MinY(),
             duration: duration,
             ease: "power2.inOut"
         });
     }
-    
     // #endregion 
 
     ClearPortfolioObject() 
@@ -882,7 +981,7 @@ export default class EnginePortfolio extends Engine
     RenderProjectPage(projectData) 
     {
         const container = document.getElementById('project-container');
-    
+
         // Clear previous content
         container.innerHTML = '';
     

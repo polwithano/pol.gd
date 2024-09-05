@@ -2,11 +2,11 @@
   "metadata": {
     "tag": "video game",
     "projectName": "test_2",
-    "companyName": "companyName",
-    "yearString": "1970",
+    "companyName": "Klabater",
+    "yearString": "2023",
     "yearID": "1970",
-    "tasks": "tasksList",
-    "description": "A short description of the project.",
+    "tasks": "Game Design",
+    "description": "Ay lmaoo.",
     "isFavorite": false,
     "voxelPath": "../data/voxels/test_2_voxel.json",
     "gradientBackground": [
@@ -20,8 +20,22 @@
     ]
   },
   "content": {
+    "icons": [
+      {
+          "name": "Unity",
+          "image": "media/portfolio-icons/unity.png"
+      },
+      {
+          "name": "VR",
+          "image": "media/portfolio-icons/vr.png"
+      },
+      {
+          "name": "Blender",
+          "image": "media/portfolio-icons/blender.png"
+      }
+    ],
     "title": "test_2",
-    "tagline": "Project Tagline",
+    "tagline": "This is a super cool tagline.",
     "sections": [
       {
         "type": "text-image",

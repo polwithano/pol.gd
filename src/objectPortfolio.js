@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import Helpers from './helpers';  
 import Loader from './loader'; 
 import Voxel from './voxel'; 
+import Master from '../data/masterJSON'; 
 
 export default class ObjectPortfolio 
 {
@@ -49,30 +50,35 @@ export default class ObjectPortfolio
         this.voxelizedMesh = await Voxel.GetVoxelGeometry(this.voxelParams, this.voxels.length);
         Voxel.RecreateInstancedVoxelMesh(this.voxelizedMesh, this.voxels);
 
-        await this.LoadCompliantOriginalModel();
+        //await this.LoadCompliantOriginalModel();
 
         Helpers.CloneMeshMaterials(this.voxelizedMesh);
-        Helpers.CloneMeshMaterials(this.originalMesh);
+        //Helpers.CloneMeshMaterials(this.originalMesh);
 
         this.voxelizedMesh.castShadow = true;
         this.voxelizedMesh.receiveShadow = false;
         this.voxelizedMesh.frustumCulled = false; 
     }
 
-    async LoadJsonData(jsonPath) 
+    async LoadJsonData(projectName) 
     {
-        const response_project = await fetch(jsonPath);
-        const project_data = await response_project.json();
-
-        this.projectMetadata = project_data.metadata;
-        this.projectContent = project_data.content; 
-
-        const response_voxel = await fetch(this.projectMetadata.voxelPath); 
-        const voxel_data = await response_voxel.json(); 
-
-        this.voxelMetadata = voxel_data.metadata; 
-        this.voxelParams = voxel_data.params;
-        this.voxels = voxel_data.voxels;
+        try 
+        {
+            const data = await Master.LoadProjectData(projectName);
+            const project_data = data.project; 
+            const voxel_data = data.voxel; 
+    
+            this.projectMetadata = project_data.metadata;
+            this.projectContent = project_data.content;   
+    
+            this.voxelMetadata = voxel_data.metadata; 
+            this.voxelParams = voxel_data.params;
+            this.voxels = voxel_data.voxels;
+        }
+        catch (error) 
+        {
+            console.error("Failed to import JSON:", error);
+        }
     }
 
     async LoadCompliantOriginalModel() 

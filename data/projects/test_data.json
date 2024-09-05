@@ -1,18 +1,32 @@
 {
   "metadata": {
-    "projectName": "test",
+    "projectName": "Stellar Pulse",
     "companyName": "companyName",
     "yearString": "1970",
     "yearID": "1970",
-    "tasks": "tasksList",
+    "tasks": "GD, LD, 3D",
     "description": "A short description of the project.",
     "isFavorite": false,
     "voxelPath": "../data/voxels/test_voxel.json",
-    "gradientBackground": ["#000000", "#000000", "#000000"], 
+    "gradientBackground": ["#FFFFFF", "#FFFFFF", "#FFFFFF"], 
     "gradientGrid": ["#9bafd9", "#2B2B2B", "#103783"]
   },
   "content": {
-    "title": "test",
+    "icons": [
+      {
+          "name": "Unreal",
+          "image": "media/portfolio-icons/unreal.png"
+      },
+      {
+          "name": "VR",
+          "image": "media/portfolio-icons/vr.png"
+      },
+      {
+          "name": "Blender",
+          "image": "media/portfolio-icons/blender.png"
+      }
+    ],
+    "title": "Stellar Pulse",
     "tagline": "Project Tagline",
     "sections": [
       {
