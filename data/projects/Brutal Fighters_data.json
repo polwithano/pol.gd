@@ -1,0 +1,95 @@
+{
+  "metadata": {
+    "tag": "video game",
+    "projectName": "Brutal Fighters",
+    "companyName": "Isart Digital",
+    "yearString": "2018",
+    "yearID": "2018",
+    "tasks": "GD • LD",
+    "description": "A short description of the project.",
+    "isFavorite": false,
+    "voxelPath": "../data/voxels/Brutal Fighters_voxel.json",
+    "gradientBackground": [
+      "#000000",
+      "#2B2B2B",
+      "#FFFFFF"
+    ],
+    "gradientGrid": [
+      "#000000",
+      "#2B2B2B",
+      "#FFFFFF"
+    ]
+  },
+  "content": {
+    "title": "Brutal Fighters",
+    "tagline": "Project Tagline",
+    "background": "media/placeholder-image.jpg",
+    "icons": [
+      {
+        "name": "Unity",
+        "image": "media/portfolio-icons/unity.png"
+      },
+      {
+        "name": "Windows",
+        "image": "media/portfolio-icons/windows.png"
+      },
+      {
+        "name": "Controller",
+        "image": "media/portfolio-icons/controller.png"
+      }
+    ],
+    "sections": [
+      {
+        "type": "category",
+        "content": {
+          "title": "Description"
+        }
+      },
+      {
+        "type": "spacer"
+      },
+      {
+        "type": "text-image",
+        "content": {
+          "paragraph": "This is a paragraph.",
+          "image": {
+            "src": "media/placeholder-image.jpg",
+            "alt": "project image",
+            "position": "left"
+          }
+        }
+      },
+      {
+        "type": "spacer"
+      },
+      {
+        "type": "text-image",
+        "content": {
+          "paragraph": "This is a paragraph.",
+          "image": {
+            "src": "media/placeholder-image.jpg",
+            "alt": "project image",
+            "position": "right"
+          }
+        }
+      },
+      {
+        "type": "spacer"
+      },
+      {
+        "type": "video",
+        "content": {
+          "videoId": "dQw4w9WgXcQ",
+          "caption": "This is a caption for the video."
+        }
+      },
+      {
+        "type": "spacer"
+      }
+    ],
+    "download": {
+      "url": "https://github.com/polwithano",
+      "label": "Git Repository"
+    }
+  }
+}

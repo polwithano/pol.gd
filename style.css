@@ -11,6 +11,15 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'DIN';
+  src: url('fonts/DIN.woff2') format('woff2'),
+      url('fonts/DIN.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --menu-container-width: 300px; /* Set this to the width of your menu container */
   --desktop-header-height: 100px;
@@ -260,7 +269,7 @@ a:hover
   display: flex;
   background-color: rgba(0, 0, 0, 0.75);
   padding: 0px 8px;
-  border-radius: 4px;
+  border-radius: 16px;
   flex-direction: column;
   align-items: center; /* Center icons horizontally */
   z-index: 10; /* Ensure it appears above other content */
@@ -272,8 +281,8 @@ a:hover
 }
 
 .icon p {
-  font-family: '0xProto Nerd Font Mono';
-  font-size: 12px;
+  font-family: 'DIN';
+  font-size: 14px;
   color: whitesmoke; 
   margin-top: -2px;
   margin-bottom: 1px;
@@ -317,8 +326,9 @@ a:hover
 
 /* Smaller font for company name and author name */
 #company-name, #author-name {
+  color:rgb(0, 0, 0);
   font-size: 24px;
-  font-weight: normal;
+  font-weight: bold;
 }
 
 #project-year, #project-name 
@@ -348,12 +358,13 @@ a:hover
   font-size: 18px;
   display: inline-block;
   background-color: rgba(0, 0, 0, 0.6);
-  padding: 2px 4px;
+  padding: 4px 8px;
   border-radius: 5px;
   z-index: 999;
   pointer-events: auto;
   line-height: 1.4; /* Adjusts line height for better readability */
   overflow: hidden;
+  width: auto;
 }
 
 /* Additional styles to ensure text is centered vertically and horizontally */
@@ -402,52 +413,66 @@ a:hover
   display: none;
 }
 
-/* Project Header */
+/* Container for the project header */
 .project-header {
   font-family: '0xProto Nerd Font Mono';
-  text-align: center;
-  margin-bottom: 20px;
-  margin-top: 10px;
+  position: relative; /* So child elements can be absolutely positioned */
+  background-image: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0)), url('/media/placeholder-image.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 260px; /* Adjust the height as needed */
+  width: 100%;
+  color: white; /* For the text color */
   display: flex;
-  flex-direction: column; /* Stack items vertically */
-  align-items: center; /* Center items horizontally */
-  justify-content: center; /* Center items vertically if needed */
-  margin-bottom: 50px;
+  align-items: flex-end; /* Aligns title to bottom */
+  padding: 20px;
+  border-radius: 8px; /* Optional: For rounded corners */
+  margin-bottom: 30px;
 }
 
+/* Title style */
 .project-title {
-  font-size: 34px;
-  font-weight: bold;
-  margin-bottom: 1px; /* Space between title and tagline */
+  position: absolute;
+  bottom: 40px; /* Adjust to control distance from the bottom */
+  left: 3.5%; /* Adjust to control distance from the left */
+  font-size: 3rem; /* Adjust size as needed */
+  margin: 0;
+  z-index: 1; /* Ensure it's on top of the gradient */
 }
 
+/* Tagline below the header */
 .project-tagline {
-  font-size: 18px;
-  font-weight: 200;
-  color: #666;
+  position: absolute;
+  bottom: 10px; /* Adjust to control distance from the bottom */
+  left: 3.5%; /* Adjust to control distance from the left */
+  font-size: 1.5em; /* Adjust size as needed */
+  margin: 0;
+  z-index: 1; /* Ensure it's on top of the gradient */
+  color: #FFA500;
 }
 
 /* Content Sections */
 .content-section {
+  font-family: 'DIN';
   display: flex;
   flex-wrap: wrap; /* Wrap content on smaller screens */
   align-items: flex-start; /* Align items to the top */
   justify-content: center; /* Center items horizontally */
-  margin-bottom: 60px;
   width: 100%;
-  max-width: 90%; /* Ensure it doesn’t stretch too wide */
-  gap: 20px; /* Space between image and paragraph */
+  max-width: 85%; /* Ensure it doesn’t stretch too wide */
+  gap: 10px;
 }
 
 .content-image {
   max-width: 40%;
-  max-width: 200px;
+  max-width: 250px;
   border-radius: 8px;
+  align-self: center;
 }
 
 .content-paragraph {
   flex: 1;
-  font-size: 16px;
+  font-size: 1.1rem;
   line-height: 1.6;
   color: #c4c4c4;
 }
@@ -463,13 +488,34 @@ a:hover
 
 /* Video Section */
 .video-section {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
 .content-video {
   max-width: 100%;
   border-radius: 8px;
+}
+
+.content-subtitle {
+  font-size: 1rem; 
+  font-weight: lighter;
+  margin-top: 2px;
+}
+
+/* Category Section */
+.category-section {
+  justify-content: left; /* Center items horizontally */
+  text-align: left; /* Center text */
+}
+
+.category-title {
+  font-size: 1.8rem;
+  color: #dfdfdf;
+} 
+
+.content-spacer {
+  height: 20px; 
 }
 
 /* Download Section */
@@ -480,17 +526,20 @@ a:hover
 
 .download-button {
   display: inline-block;
-  padding: 10px 20px;
-  font-size: 18px;
-  background-color: #007bff;
-  color: white;
-  border-radius: 5px;
+  padding: 12px 12px;
+  font-size: 20px;
+  font-weight: bolder;
+  background-color: #FFA500;
+  color: #664200;
+  border-radius: 32px;
   text-decoration: none;
   transition: background-color 0.3s ease;
 }
 
 .download-button:hover {
-  background-color: #0056b3;
+  background-color: #d68b00;
+  color: #533600;
+  text-decoration: none;
 }
 /* PORTFOLIO PROJECT CONTENT */
 
@@ -588,7 +637,7 @@ a:hover
 }
 
 #arrow-down:hover {
-  transform: translateX(-50%) translateY(5px); /* Slight downward movement on hover */
+  transform: translateX(-50%) translateY(10px); /* Slight downward movement on hover */
 }
 
 /* General Menu Container Styles */
@@ -767,15 +816,13 @@ a:hover
 
 /* Optional: style for the star icon */
 .project.favorite::after {
-  content: '⭐'; /* Add a star icon before the text */
+  content: '  ✦'; /* Add a star icon before the text */
   margin-right: 8px; /* Space between the star and the text */
   color: #FFA500; /* Color of the star, can match the text color */
 }
 
 .project.selected {
   color: rgb(211, 211, 211); 
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 /* FOLDER MENU */
@@ -871,11 +918,11 @@ a:hover
 }
 
 input:checked + .slider {
-  background-color: #f38721;
+  background-color: #FFA500;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #f38721;;
+  box-shadow: 0 0 1px #FFA500;;
 }
 
 input:checked + .slider:before {

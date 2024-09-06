@@ -26,7 +26,7 @@ const orbitSpeed = .1; // Speed of the rotation
 const orbitHeight = 1;   // Height of the camera relative to the object
 
 const xyCoef = 15; 
-const zCoef = 2; 
+const zCoef = 3; 
 
 const defaultParams = {
     gridSize:          .10,
@@ -59,6 +59,7 @@ export default class EnginePortfolio extends Engine
         this.canSwitchObject = true; 
         this.useJsonData = USE_JSON;  
         this.canRotateCamera = true; 
+        this.canOpenPage = false; 
         this.animationStartTime = 0; 
 
         this.defaultJsonPath = Master.projects[this.currentProjectIndex]; 
@@ -107,7 +108,11 @@ export default class EnginePortfolio extends Engine
         this.stats.dom.style.left = '0%';       
         this.stats.dom.style.zIndex = '1'; 
 
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        if (!this.useJsonData) 
+        {
+            this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+            this.controls.mouseButtons = { MIDDLE: THREE.MOUSE.ROTATE }
+        }
     }
 
     InitializeRenderTarget(pixelated) 
@@ -150,12 +155,7 @@ export default class EnginePortfolio extends Engine
 
         this.camera.position.set(0, 1, 0); // Adjust the position as needed
         this.camera.lookAt(0, 1, 0);
-
-        this.controls.mouseButtons = 
-        {
-            MIDDLE: THREE.MOUSE.ROTATE
-        }
-
+    
         // Directional light setup
         this.directionalLight = new THREE.DirectionalLight(0xffffff, 4);
         this.directionalLight.position.set(10, 10, 10); 
@@ -231,6 +231,7 @@ export default class EnginePortfolio extends Engine
 
                     this.currentPFObject.voxelizedMesh.position.x = 0;
                     this.currentPFObject.voxelizedMesh.position.z = 0; 
+                    this.currentPFObject.voxelizedMesh.rotation.y = this.currentPFObject.voxelMetadata.startingRotation  * (Math.PI / 180); 
 
                     Helpers.AnimateVoxels(this.currentPFObject, 20);
                     this.InitializeCamera(); 
@@ -295,6 +296,7 @@ export default class EnginePortfolio extends Engine
         document.getElementById('project-description').textContent = projectMetadata.description;
         document.getElementById('copyright-model').innerHTML = `© Original Model • <a href="${voxelMetadata.modelLink}" target="_blank">${voxelMetadata.author}</a>`;
 
+        this.canOpenPage = true; 
         this.UpdateIcons(); 
     }
 
@@ -325,6 +327,7 @@ export default class EnginePortfolio extends Engine
     {
         const projectMetadata = this.currentPFObject.projectMetadata;
         const voxelMetadata = this.currentPFObject.voxelMetadata; 
+        this.canOpenPage = false; 
 
         const vsOpts = {
             duration: 0.20,
@@ -379,6 +382,7 @@ export default class EnginePortfolio extends Engine
                             splitInstance.revert();  
                             element.innerHTML = ''; 
                             element.textContent = newText;
+                            this.canOpenPage = true; 
                         }
                     });
                 }
@@ -481,6 +485,17 @@ export default class EnginePortfolio extends Engine
                 projectContainer.style.pointerEvents = 'auto';  // Enable interaction after animation
             },
             onReverseComplete: () => {
+                this.canSwitchObject = true; 
+                
+                gsap.to(projectDescription, {
+                    duration: 0.2, // Control the duration of the smooth transition
+                    width: 'auto',
+                    onComplete: () => {
+                        // Remove the inline width after the animation completes
+                        gsap.set(projectDescription, { clearProps: "width" });
+                    }
+                });
+
                 projectContainer.classList.remove('visible');
                 projectContainer.classList.add('hidden');
                 projectContainer.style.pointerEvents = 'none';  // Enable interaction after animation
@@ -493,9 +508,11 @@ export default class EnginePortfolio extends Engine
             duration: 0.20,
             color: 'rgb(0, 0, 0, 0)', 
             backgroundColor: 'rgb(0, 0, 0, 0.9)',
-            width: '100%',
+            width: projectDescription.parentElement.offsetWidth + 'px',
             bottom: '-18px',
+            padding: '4px 8px',
             borderRadius: '0px',
+            autoRound: false
         }, "+=0.1") // Starts 0.5 seconds after the previous animation ends
         .to(projectDescription, {
             duration: 0.30,
@@ -510,7 +527,9 @@ export default class EnginePortfolio extends Engine
         const reverseSpeedMultiplier = 1.5; // Speed up reverse by 2x
 
         projectDescription.addEventListener('mouseenter', () => {
-            expandTimeline.timeScale(1.1).play(); // Normal speed for forward animation
+            if (!this.canOpenPage) return; 
+            this.canSwitchObject = false; 
+            expandTimeline.timeScale(1.1).play(); // Play the animation at normal speed
         });
 
         projectContainer.addEventListener('mouseleave', () => {
@@ -690,6 +709,7 @@ export default class EnginePortfolio extends Engine
 
         // Set initial position of the new object
         this.nextPFObject.voxelizedMesh.position.copy(spawnPosition);
+        this.nextPFObject.voxelizedMesh.rotation.y = this.nextPFObject.voxelMetadata.startingRotation  * (Math.PI / 180); 
         this.scene.add(this.nextPFObject.voxelizedMesh);
     
         // Animate the current object out of the scene
@@ -991,7 +1011,9 @@ export default class EnginePortfolio extends Engine
         header.innerHTML = `
             <h1 class="project-title">${projectData.title}</h1>
             <p class="project-tagline">${projectData.tagline}</p>
+            <p class="content-spacer"></p>
         `;
+        header.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url('${projectData.background}')`;
         container.appendChild(header);
     
         // Create and add content sections
@@ -1004,15 +1026,27 @@ export default class EnginePortfolio extends Engine
                     <img src="${section.content.image.src}" alt="${section.content.image.alt}" class="content-image ${section.content.image.position}">
                     <p class="content-paragraph">${section.content.paragraph}</p>
                 `;
-            } else if (section.type === 'video') {
+            } 
+            else if (section.type === 'video') {
                 sectionDiv.innerHTML = `
                     <div class="video-section">
                         <iframe width="560" height="315" src="https://www.youtube.com/embed/${section.content.videoId}" frameborder="0" allowfullscreen></iframe>
-                        <p class="content-paragraph">${section.content.caption || ''}</p>
+                        <p class="content-subtitle">${section.content.caption || ''}</p>
                     </div>
                 `;
             }
-            
+            else if (section.type === 'category') {
+                sectionDiv.innerHTML = `
+                    <div class="category-section">
+                        <h2 class="category-title">${section.content.title}</h2>
+                    </div>
+                `;
+            }
+            else if (section.type === 'spacer') {
+                sectionDiv.innerHTML = `
+                    <p class="content-paragraph"></p>
+                `;
+            }
             container.appendChild(sectionDiv);
         });
     

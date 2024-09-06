@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "tag": "video game",
+    "projectName": "Space Architect",
+    "companyName": "Isart Digital",
+    "yearString": "2016",
+    "yearID": "2016",
+    "tasks": "One-man project",
+    "description": "A puzzle, one-button game.",
+    "isFavorite": false,
+    "voxelPath": "../data/voxels/Space Architect_voxel.json",
+    "gradientBackground": [
+      "#DDDDDD",
+      "#FFFFFF",
+      "#FFFFFF"
+    ],
+    "gradientGrid": [
+      "#00FF00",
+      "#00BB00",
+      "#008800"
+    ]
+  },
+  "content": {
+    "title": "Space Architect",
+    "tagline": "A puzzle, one-button game.",
+    "background": "media/placeholder-image.jpg",
+    "icons": [
+      {
+        "name": "Unity",
+        "image": "media/portfolio-icons/unity.png"
+      },
+      {
+        "name": "Windows",
+        "image": "media/portfolio-icons/windows.png"
+      }
+    ],
+    "sections": [
+      {
+        "type": "category",
+        "content": {
+          "title": "Description"
+        }
+      },
+      {
+        "type": "spacer"
+      },
+      {
+        "type": "text-image",
+        "content": {
+          "paragraph": "This is a paragraph.",
+          "image": {
+            "src": "media/placeholder-image.jpg",
+            "alt": "project image",
+            "position": "left"
+          }
+        }
+      },
+      {
+        "type": "spacer"
+      },
+      {
+        "type": "text-image",
+        "content": {
+          "paragraph": "This is a paragraph.",
+          "image": {
+            "src": "media/placeholder-image.jpg",
+            "alt": "project image",
+            "position": "right"
+          }
+        }
+      },
+      {
+        "type": "spacer"
+      },
+      {
+        "type": "video",
+        "content": {
+          "videoId": "dQw4w9WgXcQ",
+          "caption": "This is a caption for the video."
+        }
+      },
+      {
+        "type": "spacer"
+      }
+    ],
+    "download": {
+      "url": "https://github.com/polwithano",
+      "label": "Git Repository"
+    }
+  }
+}

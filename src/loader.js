@@ -75,6 +75,7 @@ function CreateVoxelDataFiles(voxelObject, voxelParams, projectName, modelName)
         modelLink: "https://google.com",
         originalMeshFolder: "../meshes/",
         originalMeshPath: "",
+        startingRotation: "0"
     };
     voxelMetadata.originalMeshPath = voxelMetadata.originalMeshFolder + voxelMetadata.modelName + ".glb";
 
@@ -127,7 +128,30 @@ function DefaultProjectContent(projectName)
     {
         title: projectName, 
         tagline: "Project Tagline", 
-        sections: [{
+        background: "media/placeholder-image.jpg",
+        icons: [
+        {
+            name: "Name", 
+            image: "media/portfolio-icons/unreal.png"
+        },
+        {
+            name: "Name", 
+            image: "media/portfolio-icons/unreal.png"
+        },
+        {
+            name: "Name", 
+            image: "media/portfolio-icons/unreal.png"
+        }],
+        sections: [
+            {
+                type: "category", 
+                content: 
+                {
+                    title: "Description"
+                }
+            },
+            { type: "spacer" },
+            {
                 type: "text-image",
                 content: {
                     paragraph: "This is a paragraph.", 
@@ -138,6 +162,7 @@ function DefaultProjectContent(projectName)
                     }
                 }
             },
+            { type: "spacer" },
             {
                 type: "text-image",
                 content: {
@@ -149,16 +174,19 @@ function DefaultProjectContent(projectName)
                     }
                 }
             },
+            { type: "spacer" },
             {
                 type: "video",
                 content: {
                     videoId: "dQw4w9WgXcQ",
                     caption: "This is a caption for the video."
                 }
-            }],
+            },
+            { type: "spacer"}
+            ],
         download: {
-            url: "download-link.zip", 
-            label: "Download Project"
+            url: "https://github.com/polwithano", 
+            label: "Git Repository"
         }
     }    
     
