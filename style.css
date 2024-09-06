@@ -646,17 +646,27 @@ a:hover
   position: absolute;
   width: var(--menu-container-width);
   height: calc(100% - 100px);
-  top: 100px; /* Adjusted for header */
+  top: var(--desktop-header-height); /* Adjusted for header */
   left: 0;
   background-color: #333;
   color: #fff;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex: 1; 
 }
 
 .sub-menu-container {
   width: calc(100% - 2px); 
   border: 1px solid #666666;
   padding-bottom: 4px; 
+}
+
+.sub-menu-container-explorer {
+  width: calc(100% - 2px); 
+  border: 1px solid #666666;
+  padding-bottom: 4px; 
+  flex: 1;
 }
 
 /* Title Block */
@@ -755,7 +765,8 @@ a:hover
 .explorer {
   margin-top: 10px;
   margin-left: 10px;
-  min-height: 713px;
+  min-height: 0;
+  flex: 1;
 }
 
 .explorer-header {

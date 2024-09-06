@@ -11,7 +11,8 @@ import HelpersBackground from './helpersBackground';
 import Loader from './loader'; 
 import Helpers from './helpers'; 
 import Voxel from './voxel'; 
-import Master from '../data/masterJSON'; 
+import JSON from '../data/masterJSON'; 
+import ICON from '../media/portfolio-icons/masterICONS';
 import ObjectPortfolio from './objectPortfolio';
 import { SimplexNoise } from 'three/examples/jsm/Addons.js';
 
@@ -62,7 +63,7 @@ export default class EnginePortfolio extends Engine
         this.canOpenPage = false; 
         this.animationStartTime = 0; 
 
-        this.defaultJsonPath = Master.projects[this.currentProjectIndex]; 
+        this.defaultJsonPath = JSON.projects[this.currentProjectIndex]; 
         this.defaultGLBPath = DEFAULT_GLB_PATH; 
 
         this.simplex = new SimplexNoise(); 
@@ -188,7 +189,7 @@ export default class EnginePortfolio extends Engine
         this.canvas.width = 512;
         this.canvas.height = 512;
 
-        Helpers.CreateCarouselDots(Master.projects.length, this.currentProjectIndex);
+        Helpers.CreateCarouselDots(JSON.projects.length, this.currentProjectIndex);
 
         //this.planeBuffer = Helpers.CreatePlaneBufferGeometry(100, 40); 
         //this.scene.add(this.planeBuffer); 
@@ -310,7 +311,9 @@ export default class EnginePortfolio extends Engine
             iconDiv.className = 'icon';
     
             const img = document.createElement('img');
-            img.src = icon.image;
+            const iconSrc = ICON.LoadIcon(icon.image);
+            console.log(icon.image); 
+            img.src = iconSrc;
             img.className = 'icon-img';
     
             const p = document.createElement('p');
@@ -673,7 +676,7 @@ export default class EnginePortfolio extends Engine
     async SwitchToNextObject() 
     {
         if (!this.canSwitchObject) return; 
-        if (this.currentProjectIndex < Master.projects.length - 1) 
+        if (this.currentProjectIndex < JSON.projects.length - 1) 
         {
             this.currentProjectIndex++;
             await this.SwitchObject(1, 0.5); 
@@ -686,7 +689,7 @@ export default class EnginePortfolio extends Engine
         this.canRotateCamera = false; 
     
         // Load the next portfolio object
-        this.nextPFObject = new ObjectPortfolio("Load", Master.projects[this.currentProjectIndex]);
+        this.nextPFObject = new ObjectPortfolio("Load", JSON.projects[this.currentProjectIndex]);
         await this.nextPFObject.load();
 
         // Update the background
