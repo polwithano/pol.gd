@@ -854,7 +854,7 @@ a:hover
 
 #copyright-model {
   position: fixed; /* Fixes the position relative to the viewport */
-  bottom: 30px; /* Distance from the bottom of the screen */
+  bottom: 35px; /* Distance from the bottom of the screen */
   right: 5px; /* Distance from the right side of the screen */
   font-size: 12px; /* Font size */
   color: #ffffff; /* Text color */
@@ -863,6 +863,23 @@ a:hover
   border-radius: 5px; /* Rounded corners */
   z-index: 1000; /* Ensure it stays above most elements */
   pointer-events: auto; /* Prevents it from blocking clicks on other elements */
+}
+
+@media only screen and (max-width: 1024px) {
+  .menu-container {
+    display: none;
+  }
+  /* Ensure canvas container takes full width when menu is hidden */
+  #canvas-container {
+    left: 0; /* No offset from the left */
+    width: 100%; /* Full width when the menu is hidden */
+  }
+
+  /* Ensure flexbox layout for the canvas container */
+  .canvas-container {
+    flex-grow: 1; /* Make the canvas container expand */
+    width: 100%; /* Full width */
+  }
 }
 
 @media only screen and (max-width: 767px) {
@@ -890,10 +907,9 @@ a:hover
 
 .switch-img {
   position: relative;
-  width: 48px;
-  height: 48px; 
+  width: 32px;
+  height: 32px; 
   left: 64px; 
-  bottom: 6px; 
 }
 
 /* Hide default HTML checkbox */

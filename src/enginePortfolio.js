@@ -12,7 +12,7 @@ import Loader from './loader';
 import Helpers from './helpers'; 
 import Voxel from './voxel'; 
 import JSON from '../data/masterJSON'; 
-import ICON from '../media/portfolio-icons/masterICONS';
+import ICON from '../media/portfolio-icons/masterICON';
 import ObjectPortfolio from './objectPortfolio';
 import { SimplexNoise } from 'three/examples/jsm/Addons.js';
 
