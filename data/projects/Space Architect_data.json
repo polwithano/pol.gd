@@ -27,11 +27,11 @@
     "icons": [
       {
         "name": "Unity",
-        "image": "media/portfolio-icons/unity.png"
+        "image": "unity"
       },
       {
         "name": "Windows",
-        "image": "media/portfolio-icons/windows.png"
+        "image": "windows"
       }
     ],
     "sections": [

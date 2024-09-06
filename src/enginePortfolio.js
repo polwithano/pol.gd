@@ -311,18 +311,22 @@ export default class EnginePortfolio extends Engine
             iconDiv.className = 'icon';
     
             const img = document.createElement('img');
-            const iconSrc = ICON.LoadIcon(icon.image);
-            console.log(icon.image); 
-            img.src = iconSrc;
             img.className = 'icon-img';
-    
-            const p = document.createElement('p');
-            p.textContent = icon.name;
-    
-            iconDiv.appendChild(img);
-            iconDiv.appendChild(p);
-    
-            iconsContainer.appendChild(iconDiv);
+            
+            ICON.LoadIcon(icon.image).then(iconSrc => {
+                img.src = iconSrc.default || iconSrc;  // Set the image source after resolution
+                img.className = 'icon-img';
+
+                const p = document.createElement('p');
+                p.textContent = icon.name;
+
+                iconDiv.appendChild(img);
+                iconDiv.appendChild(p);
+
+                iconsContainer.appendChild(iconDiv);
+            }).catch(error => {
+                console.error('Failed to load icon:', error);
+            });
         });
     }
 

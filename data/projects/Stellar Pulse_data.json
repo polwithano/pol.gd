@@ -27,15 +27,15 @@
     "icons": [
       {
         "name": "Unreal",
-        "image": "media/portfolio-icons/unreal.png"
+        "image": "unreal"
       },
       {
         "name": "VR",
-        "image": "media/portfolio-icons/vr.png"
+        "image": "vr"
       },
       {
         "name": "Oculus",
-        "image": "media/portfolio-icons/oculus.png"
+        "image": "oculus"
       }
     ],
     "sections": [
