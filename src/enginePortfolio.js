@@ -610,6 +610,7 @@ export default class EnginePortfolio extends Engine
         document.addEventListener('mousedown', this.mouseDownListener);    
         document.addEventListener('mouseup', this.mouseUpListener); 
         document.addEventListener('mousemove', this.mouseMoveListener); 
+        document.addEventListener('wheel', (event) => this.OnScroll(event));
 
         document.addEventListener('keydown', this.keyDownListener); 
     }
@@ -622,6 +623,7 @@ export default class EnginePortfolio extends Engine
         document.removeEventListener('mousedown', this.mouseDownListener);
         document.removeEventListener('mouseup', this.mouseUpListener);
         document.removeEventListener('mousemove', this.mouseMoveListener);
+        document.removeEventListener('wheel', (event) => this.OnScroll(event));
 
         document.removeEventListener('keydown', this.keyDownListener); 
     }
@@ -670,6 +672,19 @@ export default class EnginePortfolio extends Engine
     {
         if (event.key === 'ArrowLeft') this.SwitchToPreviousObject(); 
         else if (event.key === 'ArrowRight') this.SwitchToNextObject();
+    }
+
+    OnScroll(event) 
+    {
+        console.log(event.deltaX); 
+        // Check if horizontal scroll (deltaX) or vertical scroll (deltaY) is detected
+        if (event.deltaX < 0) {
+            // Scrolling left (negative deltaX)
+            this.SwitchToPreviousObject();
+        } else if (event.deltaX > 0) {
+            // Scrolling right (positive deltaX)
+            this.SwitchToNextObject();
+        }
     }
 
     async SwitchToPreviousObject() 
