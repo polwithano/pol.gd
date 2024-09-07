@@ -211,7 +211,7 @@ export default class EnginePortfolio extends Engine
             if (PFObject.voxelizedMesh != null) 
             {
                 PFObject.voxelizedMesh.position.x = 0; 
-                PFObject.voxelizedMesh.position.y = 0; 
+                PFObject.voxelizedMesh.position.y = (PFObject.MinY() + PFObject.MaxY()) / 2; 
                 PFObject.voxelizedMesh.rotation.y = PFObject.voxelMetadata.startingRotation * (Math.PI / 180); 
 
                 this.scene.add(PFObject.voxelizedMesh); 
@@ -877,7 +877,7 @@ export default class EnginePortfolio extends Engine
             const z = orbitRadius * Math.cos((this.animationStartTime) * orbitSpeed);
     
             // Set the camera's initial position
-            this.camera.position.set(x, orbitHeight, z);
+            this.camera.position.set(x, 1.5, z);
 
             const lookAtY = this.currentPFObject.MaxY() / 2;
             this.currentLookAt.set(this.currentPFObject.voxelizedMesh.position.x, lookAtY, this.currentPFObject.voxelizedMesh.position.z);
@@ -898,10 +898,19 @@ export default class EnginePortfolio extends Engine
 
             // Calculate the new camera position based on elapsed time
             const x = orbitRadius * Math.sin(-elapsedTime);
-            const z = orbitRadius * Math.cos(-elapsedTime);  
+            const z = orbitRadius * Math.cos(-elapsedTime);
+            
+            // Calculate the vertical Y position with up-and-down oscillation
+            const minY = -0.5;
+            const maxY = 3.5;
+            const midpointY = (minY + maxY) / 2;
+            const amplitudeY = (maxY - minY) / 2;
+            const frequency = 2; // Adjust for the speed of the vertical motion
+
+            const y = midpointY + amplitudeY * Math.sin(frequency * elapsedTime);
 
             // Set the camera's position
-            this.camera.position.set(x, orbitHeight, z);
+            this.camera.position.set(x, y, z);
 
             // Set the camera to look at the initial position of the target object
             this.camera.lookAt(this.currentLookAt);
