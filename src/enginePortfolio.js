@@ -6,6 +6,11 @@ import { GUI } from 'dat.gui'
 import gsap from 'gsap';
 import Stats from 'three/addons/libs/stats.module.js';
 
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
+import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js'; 
+
 import Engine from './engine'; 
 import HelpersBackground from './helpersBackground';
 import Loader from './loader'; 
@@ -22,7 +27,7 @@ const DEFAULT_RENDER_SCALE = 1;
 const LOFI_RENDER_SCALE = 4;  
 
 // Define the parameters for the camera's orbit
-const orbitRadius = 8;  // Distance from the object
+const orbitRadius = 6;  // Distance from the object
 const orbitSpeed = .1; // Speed of the rotation
 const orbitHeight = 1;   // Height of the camera relative to the object
 
@@ -97,7 +102,7 @@ export default class EnginePortfolio extends Engine
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.autoClear = true;
 
-        this.camera = new THREE.PerspectiveCamera(80, 2, 0.0001, 100000);
+        this.camera = new THREE.PerspectiveCamera(80, 2, 1, 1000);
         this.InitializeRenderTarget(this.lofi);
 
         this.stats = new Stats();  
@@ -135,7 +140,7 @@ export default class EnginePortfolio extends Engine
             depthWrite: false
         });
 
-        this.renderPlane = new THREE.PlaneGeometry( window.innerWidth, window.innerHeight );
+        this.renderPlane = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
 
         if (this.quad != null) this.dummyScene.remove(this.quad); 
         this.quad = new THREE.Mesh(this.renderPlane, this.materialScreen);
@@ -852,7 +857,6 @@ export default class EnginePortfolio extends Engine
             if (this.frameCounter % 4 == 0) this.AnimateVoxelGrid(this.voxelGrid, this.simplex, 0.00015, xyCoef, zCoef);  
             this.AnimateVoxelizedMesh();
             this.AnimateCamera(); 
-            this.renderer.shadowMap.needsUpdate = true;
         }
 
         // 2. Render the voxelized objects at lower resolution

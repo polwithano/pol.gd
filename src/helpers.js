@@ -210,8 +210,8 @@ function AnimateVoxels(objectPortfolio, offset)
     const voxelizedMesh = objectPortfolio.voxelizedMesh; 
     const voxelCount = voxelizedMesh.count;
 
-    // 0.25 per 20k
-    const duration = 0.25 / (voxelCount / 20000); 
+    // 0.25 per 40k
+    const duration = 0.15 / (voxelCount / 40000); 
 
     voxelizedMesh.position.y += offset; 
  
@@ -242,7 +242,7 @@ function AnimateVoxels(objectPortfolio, offset)
                 voxelizedMesh.instanceMatrix.needsUpdate = true; 
                 voxelizedMesh.needsUpdate = true; 
             }
-        }, (i / 256) * 0.1);
+        }, (i / 512) * 0.05);
     }
 }
 

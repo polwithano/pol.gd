@@ -55,6 +55,7 @@ export default class Engine
     {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setClearColor(0x000000); 
+        this.HandleWindowResize(); 
     }
 
     CreateButtons() {}
@@ -63,7 +64,6 @@ export default class Engine
     GameLoop() 
     {
         if (!this.isRunning) return;
-        this.HandleWindowResize(); 
 
         this.animationFrameID = requestAnimationFrame(() => this.GameLoop());
 

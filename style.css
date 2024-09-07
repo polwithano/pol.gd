@@ -167,7 +167,9 @@ body
 {
   font-family: "Poppins", sans-serif;  
   color: white; 
+  overflow: hidden;
 }
+
 
 html 
 {
@@ -654,6 +656,7 @@ a:hover
   display: flex;
   flex-direction: column;
   flex: 1; 
+  overflow: hidden;
 }
 
 .sub-menu-container {
