@@ -34,7 +34,11 @@ function CreateMultiGradientTexture(colors, context, canvas)
     context.fillStyle = gradient;
     context.fillRect(0, 0, canvas.height, canvas.height);
 
-    return new THREE.CanvasTexture(canvas);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.magFilter = THREE.LinearFilter; // Ensures sharpness when scaling up
+    texture.minFilter = THREE.LinearFilter; // Ensures sharpness when scaling down
+
+    return texture;
 }
 
 function CreateChartPieTexture(color1, color2, segments, context, canvas) 

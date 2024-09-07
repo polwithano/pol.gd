@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import Helpers from './helpers';  
-import Loader from './loader'; 
-import Voxel from './voxel'; 
-import Master from '../data/masterJSON'; 
+import Helpers from '../helpers';  
+import Loader from '../loader'; 
+import Voxel from '../voxel'; 
+import Master from '../../data/masterJSON'; 
 
 export default class ObjectPortfolio 
 {
@@ -16,11 +16,11 @@ export default class ObjectPortfolio
 
         // Model-Related Data
         this.originalMesh = null;
+        this.voxelizedMesh = null;
         this.voxelMetadata = [];
         this.voxelParams = [];
         this.meshes = [];
         this.voxels = [];
-        this.voxelizedMesh = null;
 
         this.voxelStartAnimationOver = false;
         this.voxelAnimationInitialized = false;  
@@ -30,16 +30,10 @@ export default class ObjectPortfolio
         this.defaultParams = defaultParams; 
     }
 
-    async load() 
+    async Load() 
     {
-        if (this.objectMethod == "Create") 
-        {
-            await this.CreateObject();
-        } 
-        else if (this.objectMethod == "Load") 
-        {
-            await this.LoadObject();
-        }
+        if (this.objectMethod == "Create") await this.CreateObject();
+        else if (this.objectMethod == "Load") await this.LoadObject();
         return this;
     }
 

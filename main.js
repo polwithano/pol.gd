@@ -1,7 +1,7 @@
 import './style.css';
 
 import * as THREE from 'three';
-import EnginePortfolio from './src/enginePortfolio';
+import EnginePortfolio from './src/portfolio/enginePortfolio';
 
 // ELEMENTS
 const canvasID = '#bg';  

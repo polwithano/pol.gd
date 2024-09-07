@@ -7,38 +7,43 @@ import gsap from 'gsap';
 import Stats from 'three/addons/libs/stats.module.js';
 import { SimplexNoise } from 'three/examples/jsm/Addons.js'
 
-import Engine from './engine'; 
-import HelpersBackground from './helpersBackground';
-import Loader from './loader'; 
-import Helpers from './helpers'; 
-import Voxel from './voxel'; 
-import JSON from '../data/masterJSON'; 
-import ICON from '../media/portfolio-icons/masterICON';
-import ObjectPortfolio from './objectPortfolio';;
+import Engine from '../engine'; 
+import Backgrounds from './helpers/backgrounds';
+import Loader from '../loader'; 
+import Helpers from '../helpers'; 
+import Voxel from '../voxel'; 
+import JSON from '../../data/masterJSON'; 
+import ICON from '../../media/portfolio-icons/masterICON';
+import ObjectPortfolio from './objectPortfolio';
 
 /* ENGINE STATES CONST */
-const worldStepValue = 1/60;
+const WORLD_STEP_VALUE = 1/60;
 const DEFAULT_RENDER_SCALE = 1; 
-const LOFI_RENDER_SCALE = 4;  
+const LOFI_RENDER_SCALE = 4; 
+const USE_JSON = true; 
+const DEFAULT_GLB_PATH = "../meshes/Biplane.glb"; 
 
 // Define the parameters for the camera's orbit
 const orbitRadius = 6;  // Distance from the object
 const orbitSpeed = .1; // Speed of the rotation
 const orbitHeight = 1;   // Height of the camera relative to the object
 
-const xyCoef = 15; 
-const zCoef = 3; 
+const paramsGrid = {
+    coefXY:          15,
+    coefZ:            3,
+    voxelSize:      0.4,
+    animSpeed: 0.000015,
+    radius:          40,
+    gridType:    "circ",
+}
 
-const defaultParams = {
+const paramsGen = {
     gridSize:          .10,
     modelSize:          10,
     voxelSize :        .10,
     enableRoundness: false,
     voxelRoundess:    .025,
 };
-
-const USE_JSON = true; 
-const DEFAULT_GLB_PATH = "../meshes/Biplane.glb";
 
 export default class EnginePortfolio extends Engine 
 {
@@ -72,7 +77,6 @@ export default class EnginePortfolio extends Engine
         this.simplex = new SimplexNoise(); 
         this.gridMinY = Infinity;
         this.gridMaxY = -Infinity;
-        this.gridSize = 0.4; 
 
         this.Initialize(); 
         this.GameLoop(this.currentTimestamp); 
@@ -158,7 +162,7 @@ export default class EnginePortfolio extends Engine
         super.InitializeGame(); 
 
         this.camera.position.set(0, 1, 0); // Adjust the position as needed
-        this.camera.lookAt(0, 1, 0);
+        this.camera.lookAt(0, 0, 0);
     
         // Directional light setup
         this.directionalLight = new THREE.DirectionalLight(0xffffff, 4);
@@ -166,82 +170,93 @@ export default class EnginePortfolio extends Engine
 
         // Add the light to the scene
         this.scene.add(this.directionalLight);
-        this.scene.fog = new THREE.Fog(0x2B2B2B, 0.5, 45); 
+        this.scene.fog = new THREE.Fog(0x2B2B2B, 2, 25); 
 
         this.canvas = document.createElement('canvas');
         this.context = this.canvas.getContext('2d', {willReadFrequently: true});
-        this.canvas.width = 512;
-        this.canvas.height = 512;
+        this.canvas.width = 2048;
+        this.canvas.height = 2048;
 
         if (this.useJsonData) 
         {
-            try 
-            {
-                this.currentPFObject = new ObjectPortfolio("Load", this.defaultJsonPath);
-                
-                // Load the object asynchronously
-                await this.currentPFObject.load();
+            this.currentPFObject = await this.LoadPortfolioObject(this.defaultJsonPath); 
 
-                this.gradientTexture = HelpersBackground.CreateMultiGradientTexture(this.currentPFObject.projectMetadata.gradientBackground, this.context, this.canvas);
-                //this.gradientTexture = HelpersBackground.CreateCheckerboardTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 2, 2, this.context, this.canvas); 
-                //this.gradientTexture = HelpersBackground.CreateChartPieTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 24, this.context, this.canvas); 
-                this.scene.background = this.gradientTexture; 
-
-                this.voxelGrid = Voxel.CreateVoxelCircle(40, this.gridSize);  
-                this.scene.add(this.voxelGrid);
-        
-                // Ensure that the meshes are not null
-                if (this.currentPFObject.voxelizedMesh) 
-                {
-                    this.currentPFObject.voxelizedMesh.position.x = 0;
-                    this.currentPFObject.voxelizedMesh.position.z = 0; 
-                    this.currentPFObject.voxelizedMesh.rotation.y = this.currentPFObject.voxelMetadata.startingRotation  * (Math.PI / 180); 
-
-                    Helpers.AnimateVoxels(this.currentPFObject, 20);
-                    this.InitializeCamera(); 
-
-                    this.scene.add(this.currentPFObject.voxelizedMesh);
-
-                    this.InitializeHTML(); 
-                    this.RenderProjectPage(this.currentPFObject.projectContent); 
-                }
-                else 
-                {
-                    console.error('Meshes are not loaded correctly.');
-                }
-            } 
-            catch (error) 
-            {
-                console.error('Failed to load JSON:', error);
-            }
+            this.SetScene();
+            this.InitializeCamera(); 
+            this.InitializeHTML(); 
+            this.RenderProjectPage(this.currentPFObject.projectContent); 
+            Helpers.AnimateVoxels(this.currentPFObject, 20);  
         }
         else 
         {
-            try 
-            {
-                this.currentPFObject = new ObjectPortfolio("Create", this.defaultJsonPath, this.defaultGLBPath, defaultParams);
+            this.currentPFObject = await this.CreatePortfolioObject(); 
+            
+            this.gridHelper = new THREE.GridHelper(paramsGen.modelSize, paramsGen.modelSize / paramsGen.gridSize); 
+            this.gridHelper.position.x += paramsGen.voxelSize / 2; 
+            this.gridHelper.position.z += paramsGen.voxelSize / 2; 
+            this.gridHelper.position.y += paramsGen.voxelSize / 2; 
+            
+            this.scene.add(this.gridHelper); 
+        }
+    }
 
-                await this.currentPFObject.load();
+    async LoadPortfolioObject(path) 
+    {
+        try 
+        {
+            const PFObject = new ObjectPortfolio("Load", path);
+            await PFObject.Load(); 
 
-                if (this.currentPFObject.originalMesh && this.currentPFObject.voxelizedMesh) 
-                {
-                    this.gridHelper = new THREE.GridHelper(defaultParams.modelSize, defaultParams.modelSize / defaultParams.gridSize); 
-                    this.gridHelper.position.x += defaultParams.voxelSize / 2; 
-                    this.gridHelper.position.z += defaultParams.voxelSize / 2; 
-                    this.gridHelper.position.y += defaultParams.voxelSize / 2; 
-                    
-                    this.scene.add(this.gridHelper); 
-                    this.scene.add(this.currentPFObject.voxelizedMesh);
-                }
-                else 
-                {
-                    console.error('Meshes are not loaded correctly.');
-                }
-            } 
-            catch (error) 
+            if (PFObject.voxelizedMesh != null) 
             {
-                console.error('Failed to create ObjectPortfolio:', error);
+                PFObject.voxelizedMesh.position.x = 0; 
+                PFObject.voxelizedMesh.position.y = 0; 
+                PFObject.voxelizedMesh.rotation.y = PFObject.voxelMetadata.startingRotation * (Math.PI / 180); 
+
+                this.scene.add(PFObject.voxelizedMesh); 
+
+                return PFObject; 
             }
+            else console.error('ObjectPortfolio could not load voxelized mesh.')
+        }
+        catch (e)
+        {
+            console.error(`ObjectPortfolio failed to load JSON: ${e}`); 
+        }
+    }
+
+    async CreatePortfolioObject() 
+    {
+        try 
+        {
+            const PFObject = new ObjectPortfolio("Create", this.defaultJsonPath, this.defaultGLBPath, paramsGen); 
+            await PFObject.Load(); 
+
+            if (PFObject.voxelizedMesh != null) 
+            {
+                this.scene.add(PFObject.voxelizedMesh);
+
+                return PFObject; 
+            }
+            else console.error('Voxelized Mesh was not loaded correctly.'); 
+        }
+        catch (e) 
+        {
+            console.error(`ObjectPortfolio creation failed: ${e}`); 
+        }
+    }
+
+    SetScene() 
+    {
+        if (this.gradientTexture == null) 
+        {
+            this.gradientTexture = Backgrounds.CreateMultiGradientTexture(this.currentPFObject.projectMetadata.gradientBackground, this.context, this.canvas);
+            this.scene.background = this.gradientTexture; 
+        }
+        if (this.voxelGrid == null) 
+        {
+            this.voxelGrid = Voxel.CreateVoxelCircle(paramsGrid.radius, paramsGrid.voxelSize);  
+            this.scene.add(this.voxelGrid);
         }
     }
 
@@ -415,11 +430,11 @@ export default class EnginePortfolio extends Engine
             this.gui.updateDisplay(); 
             this.UpdateVoxelization();
         })
-        this.gui.add(defaultParams, 'gridSize', 0.01, 1).name('Grid Size').onChange(this.UpdateVoxelization.bind(this));
-        this.gui.add(defaultParams, 'modelSize', 1, 100).name('Model Size').onChange(this.UpdateVoxelization.bind(this));
-        this.gui.add(defaultParams, 'voxelSize', 0.01, 1).name('Voxel Size').onChange(this.UpdateVoxelization.bind(this));
-        this.gui.add(defaultParams, 'enableRoundness').name('Roundess').onChange(this.UpdateVoxelization.bind(this));
-        this.gui.add(defaultParams, 'voxelRoundess', 0.01, 1).name('Voxel Roundness').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(paramsGen, 'gridSize', 0.01, 1).name('Grid Size').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(paramsGen, 'modelSize', 1, 100).name('Model Size').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(paramsGen, 'voxelSize', 0.01, 1).name('Voxel Size').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(paramsGen, 'enableRoundness').name('Roundess').onChange(this.UpdateVoxelization.bind(this));
+        this.gui.add(paramsGen, 'voxelRoundess', 0.01, 1).name('Voxel Roundness').onChange(this.UpdateVoxelization.bind(this));
         this.gui.add(guiParams, 'enableLofi').name('Lo-Fi').onChange(value => this.InitializeRenderTarget(value));
         this.gui.add(guiParams, 'enableWireframe').name('Wireframe').onChange(this.UpdateVoxelization.bind(this));
         this.gui.add(guiParams, 'enableAO').name('AO').onChange(this.UpdateVoxelization.bind(this));
@@ -427,8 +442,8 @@ export default class EnginePortfolio extends Engine
         this.gui.add(guiParams, 'modelName').name('Model Name').onChange(value => guiParams.modelName = value);
         this.gui.add(guiParams, 'projectName').name('Project Name');
 
-        this.gui.add({save: () => Loader.CreateVoxelDataFiles(this.currentPFObject, defaultParams, guiParams.projectName, guiParams.modelName) }, 'save').name('Save Voxel Data');
-        this.gui.add({save: () => Loader.CreateProjectDataFiles(this.currentPFObject, defaultParams, guiParams.projectName, guiParams.modelName) }, 'save').name('Save Project Data');
+        this.gui.add({save: () => Loader.CreateVoxelDataFiles(this.currentPFObject, paramsGen, guiParams.projectName, guiParams.modelName) }, 'save').name('Save Voxel Data');
+        this.gui.add({save: () => Loader.CreateProjectDataFiles(this.currentPFObject, paramsGen, guiParams.projectName, guiParams.modelName) }, 'save').name('Save Project Data');
     }
 
     SetupEventListeners() 
@@ -623,7 +638,7 @@ export default class EnginePortfolio extends Engine
         if (this.currentProjectIndex < JSON.projects.length - 1) 
         {
             this.currentProjectIndex++;
-            await this.SwitchObject(1, 0.5); 
+            await this.SwitchObject(1, 0.66); 
         } 
     }
 
@@ -631,33 +646,20 @@ export default class EnginePortfolio extends Engine
     {
         this.canSwitchObject = false; 
         this.canRotateCamera = false; 
+
+        const perpDirection = this.camera.position.clone().applyAxisAngle(this.camera.up, direction * Math.PI / 2);         
+        // Calculate spawn position for the new object (a bit to the left or right of the current object)
+        const spawnDistance = window.innerWidth * 0.0025;
+        const spawnPosition = perpDirection.multiplyScalar(spawnDistance);
     
         // Load the next portfolio object
-        this.nextPFObject = new ObjectPortfolio("Load", JSON.projects[this.currentProjectIndex]);
-        await this.nextPFObject.load();
-
-        // Update the background
-        this.SmoothGradientTransition(
-            this.currentPFObject.projectMetadata.gradientBackground, 
-            this.nextPFObject.projectMetadata.gradientBackground, 
-            duration);
-    
-        // Calculate the camera's left and right direction vectors
-        const cameraDirection = new THREE.Vector3();
-        this.camera.getWorldDirection(cameraDirection);
-        
-        // Calculate the perpendicular direction (left or right)
-        let perpendicularDirection = this.camera.position.clone();
-        perpendicularDirection.applyAxisAngle(this.camera.up, direction * Math.PI / 2);
-
-        // Calculate spawn position for the new object (a bit to the left or right of the current object)
-        const spawnDistance = window.innerWidth * 0.1;
-        const spawnPosition = perpendicularDirection.multiplyScalar(spawnDistance);
-
+        this.nextPFObject = await this.LoadPortfolioObject(JSON.projects[this.currentProjectIndex]);
         // Set initial position of the new object
         this.nextPFObject.voxelizedMesh.position.copy(spawnPosition);
         this.nextPFObject.voxelizedMesh.rotation.y = this.nextPFObject.voxelMetadata.startingRotation  * (Math.PI / 180); 
-        this.scene.add(this.nextPFObject.voxelizedMesh);
+
+        // Update the background
+        this.SmoothGradientTransition(this.currentPFObject.projectMetadata.gradientBackground, this.nextPFObject.projectMetadata.gradientBackground, duration);
     
         // Animate the current object out of the scene
         gsap.to(this.currentPFObject.voxelizedMesh.position, {
@@ -687,14 +689,6 @@ export default class EnginePortfolio extends Engine
                 this.canSwitchObject = true;
             }
         });
-    
-        // Update shadow plane (if necessary)
-        gsap.to(this.shadowPlane.position, 
-        {
-            y: this.nextPFObject.MinY(),
-            duration: duration,
-            ease: "power2.inOut"
-        });
     }
     // #endregion 
 
@@ -711,8 +705,8 @@ export default class EnginePortfolio extends Engine
         duration *= 1000; // Convert seconds to milliseconds
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-        canvas.width = 512;
-        canvas.height = 512;
+        canvas.width = 2048;
+        canvas.height = 2048;
     
         let startTime = null;
     
@@ -761,13 +755,13 @@ export default class EnginePortfolio extends Engine
     GameLoop() 
     {
         super.GameLoop();
-        this.world.step(worldStepValue);
+        this.world.step(WORLD_STEP_VALUE);
         this.stats.update(); 
 
         //this.AnimatePlane();
         if (this.useJsonData) 
         {
-            if (this.frameCounter % 4 == 0) this.AnimateVoxelGrid(this.voxelGrid, this.simplex, 0.00015, xyCoef, zCoef);  
+            if (this.frameCounter % 4 == 0) this.AnimateVoxelGrid();  
             this.AnimateVoxelizedMesh();
             this.AnimateCamera(); 
         }
@@ -785,8 +779,6 @@ export default class EnginePortfolio extends Engine
 
     AnimateVoxelizedMesh() 
     {
-        if (this.gravityEnabled) return; 
-
         if (this.currentPFObject != null && 
             this.currentPFObject.voxelStartAnimationOver === true && 
             this.currentPFObject.voxelAnimationInitialized === false) 
@@ -824,19 +816,17 @@ export default class EnginePortfolio extends Engine
         }
     }
 
-    AnimateVoxelGrid(instancedMesh, simplex, timeFactor, xyCoef, zCoef) 
+    AnimateVoxelGrid() 
     {
-        if (instancedMesh == null) return; 
-        
-        const time = Date.now() * timeFactor;
-        const voxelCount = instancedMesh.count;
-
+        if (this.voxelGrid == null) return; 
         const gradient = this.currentPFObject.projectMetadata.gradientGrid; 
-
         if (gradient == undefined) return; 
+        
+        const time = Date.now() * paramsGrid.animSpeed;
+        const voxelCount = this.voxelGrid.count;
 
-        const colorGradientStart = new THREE.Color(gradient[gradient.length - 1]);
-        const colorGradientEnd = new THREE.Color(gradient[0]);
+        const colorStart = new THREE.Color(gradient[gradient.length - 1]);
+        const colorEnd = new THREE.Color(gradient[0]);
     
         const matrix = new THREE.Matrix4();
         const position = new THREE.Vector3();
@@ -844,34 +834,38 @@ export default class EnginePortfolio extends Engine
 
         for (let i = 0; i < voxelCount; i++) 
         {            
-            instancedMesh.getMatrixAt(i, matrix); 
+            this.voxelGrid.getMatrixAt(i, matrix); 
             position.setFromMatrixPosition(matrix);
     
             // Compute the new Y position using Simplex noise, adjusted to the nearest multiple of gridSize
-            position.y = Math.round(simplex.noise4d(position.x / xyCoef, position.z / xyCoef, time, 2) * zCoef / this.gridSize) * this.gridSize - 5;
+            position.y = Math.round(this.simplex.noise4d(
+                position.x / paramsGrid.coefXY, 
+                position.z / paramsGrid.coefXY, time, 
+                2) * paramsGrid.coefZ / paramsGrid.voxelSize) 
+                * paramsGrid.voxelSize - 5;
 
             if (position.y < this.gridMinY) this.gridMinY = position.y;
             if (position.y > this.gridMaxY) this.gridMaxY = position.y;
 
             matrix.setPosition(position); 
-            instancedMesh.setMatrixAt(i, matrix); 
+            this.voxelGrid.setMatrixAt(i, matrix); 
         }
 
         for (let i = 0; i < voxelCount; i++) 
         {
-            instancedMesh.getMatrixAt(i, matrix); 
+            this.voxelGrid.getMatrixAt(i, matrix); 
             position.setFromMatrixPosition(matrix);
 
             const normalizedY = (position.y - this.gridMinY) / (this.gridMaxY - this.gridMinY);
-            color.lerpColors(colorGradientStart, colorGradientEnd, normalizedY); 
+            color.lerpColors(colorStart, colorEnd, normalizedY); 
 
             matrix.setPosition(position);
-            instancedMesh.setMatrixAt(i, matrix);
-            instancedMesh.setColorAt(i, color)
+            this.voxelGrid.setMatrixAt(i, matrix);
+            this.voxelGrid.setColorAt(i, color)
         }
 
-        instancedMesh.instanceMatrix.needsUpdate = true; 
-        instancedMesh.instanceColor.needsUpdate = true; 
+        this.voxelGrid.instanceMatrix.needsUpdate = true; 
+        this.voxelGrid.instanceColor.needsUpdate = true; 
     }
 
     InitializeCamera() {
