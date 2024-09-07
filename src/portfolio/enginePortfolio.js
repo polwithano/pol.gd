@@ -67,6 +67,7 @@ export default class EnginePortfolio extends Engine
         this.canSwitchObject = true; 
         this.useJsonData = USE_JSON;  
         this.canRotateCamera = true; 
+        this.currentLookAt = new THREE.Vector3(); 
         this.canOpenPage = false; 
         this.animationStartTime = 0;
 
@@ -219,10 +220,7 @@ export default class EnginePortfolio extends Engine
             }
             else console.error('ObjectPortfolio could not load voxelized mesh.')
         }
-        catch (e)
-        {
-            console.error(`ObjectPortfolio failed to load JSON: ${e}`); 
-        }
+        catch (e) {console.error(`ObjectPortfolio failed to load JSON: ${e}`);} 
     }
 
     async CreatePortfolioObject() 
@@ -240,10 +238,7 @@ export default class EnginePortfolio extends Engine
             }
             else console.error('Voxelized Mesh was not loaded correctly.'); 
         }
-        catch (e) 
-        {
-            console.error(`ObjectPortfolio creation failed: ${e}`); 
-        }
+        catch (e) {console.error(`ObjectPortfolio creation failed: ${e}`);}
     }
 
     SetScene() 
@@ -645,15 +640,17 @@ export default class EnginePortfolio extends Engine
     async SwitchObject(direction, duration) 
     {
         this.canSwitchObject = false; 
-        this.canRotateCamera = false; 
+        this.canRotateCamera = true; 
 
         const perpDirection = this.camera.position.clone().applyAxisAngle(this.camera.up, direction * Math.PI / 2);         
         // Calculate spawn position for the new object (a bit to the left or right of the current object)
         const spawnDistance = window.innerWidth * 0.0025;
-        const spawnPosition = perpDirection.multiplyScalar(spawnDistance);
+        const spawnPosition = perpDirection.multiplyScalar(spawnDistance); 
     
         // Load the next portfolio object
         this.nextPFObject = await this.LoadPortfolioObject(JSON.projects[this.currentProjectIndex]);
+        // Store camera next LookAt
+        const newLookAtY = (this.nextPFObject.MinY() + this.nextPFObject.MaxY()) / 2;
         // Set initial position of the new object
         this.nextPFObject.voxelizedMesh.position.copy(spawnPosition);
         this.nextPFObject.voxelizedMesh.rotation.y = this.nextPFObject.voxelMetadata.startingRotation  * (Math.PI / 180); 
@@ -683,10 +680,16 @@ export default class EnginePortfolio extends Engine
                 this.RenderProjectPage(this.currentPFObject.projectContent); 
                 Helpers.UpdateCarouselDots(this.currentProjectIndex);  
 
-                this.animationStartTime = 0; 
+                //this.animationStartTime = 0; 
                 this.currentPFObject.voxelStartAnimationOver = true; 
                 this.canRotateCamera = true; 
                 this.canSwitchObject = true;
+ 
+                gsap.to(this.currentLookAt, {
+                    y: newLookAtY,
+                    duration: duration,
+                    ease: "power2.inOut"
+                });
             }
         });
     }
@@ -762,7 +765,7 @@ export default class EnginePortfolio extends Engine
         if (this.useJsonData) 
         {
             if (this.frameCounter % 4 == 0) this.AnimateVoxelGrid();  
-            this.AnimateVoxelizedMesh();
+            //this.AnimateVoxelizedMesh();
             this.AnimateCamera(); 
         }
 
@@ -875,9 +878,12 @@ export default class EnginePortfolio extends Engine
     
             // Set the camera's initial position
             this.camera.position.set(x, orbitHeight, z);
+
+            const lookAtY = this.currentPFObject.MaxY() / 2;
+            this.currentLookAt.set(this.currentPFObject.voxelizedMesh.position.x, lookAtY, this.currentPFObject.voxelizedMesh.position.z);
     
             // Set the camera to look at the initial position of the target object
-            this.camera.lookAt(this.currentPFObject.voxelizedMesh.position.x, this.currentPFObject.MaxY() / 2, this.currentPFObject.voxelizedMesh.position.z);
+            this.camera.lookAt(this.currentLookAt);
         }
     }
 
@@ -892,13 +898,13 @@ export default class EnginePortfolio extends Engine
 
             // Calculate the new camera position based on elapsed time
             const x = orbitRadius * Math.sin(-elapsedTime);
-            const z = orbitRadius * Math.cos(-elapsedTime);
+            const z = orbitRadius * Math.cos(-elapsedTime);  
 
             // Set the camera's position
             this.camera.position.set(x, orbitHeight, z);
 
             // Set the camera to look at the initial position of the target object
-            this.camera.lookAt(this.currentPFObject.voxelizedMesh.position.x, this.currentPFObject.MaxY() / 2, this.currentPFObject.voxelizedMesh.position.z);
+            this.camera.lookAt(this.currentLookAt);
         }
     }
 
