@@ -165,7 +165,8 @@ export default class EnginePortfolio extends Engine
         const metadatas = await JSON.FetchProjectsMetadata();
         const explorerContainer = document.querySelector('.explorer')
         const folders = {}; 
-        const title = document.createElement('h1'); 
+        const title = document.createElement('h1');
+        const folderIcon = await ICON.LoadIcon('folder');  
         title.innerHTML = `<h1 class="explorer-header">explorer</h1>`;
         explorerContainer.innerHTML = ''; 
         explorerContainer.appendChild(title); 
@@ -184,7 +185,7 @@ export default class EnginePortfolio extends Engine
                 folders[yearID].innerHTML = `
                 <div class="folder-header" data-folder-id="folder-${yearID}">
                     <span class="arrow">&#9654;</span>
-                    <img src="media/folder.png" alt="Folder Icon" class="folder-icon"> ${yearID}/
+                    <img src="${folderIcon.default || folderIcon}" alt="Folder Icon" class="folder-icon"> ${yearID}/
                 </div>
                 <ul class="folder-content" id="folder-${yearID}"></ul>`;
                 explorerContainer.appendChild(folders[yearID]); 
