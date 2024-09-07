@@ -60,7 +60,8 @@ export default class EnginePortfolio extends Engine
 
         // Rendering 
         this.composer = null; 
-        this.lofi = false; 
+        this.useLofi = false; 
+        this.useGrid = true; 
         
         // Portfolio States
         this.currentPFObject = null; 
@@ -109,7 +110,7 @@ export default class EnginePortfolio extends Engine
         this.renderer.autoClear = true;
 
         this.camera = new THREE.PerspectiveCamera(80, 2, 1, 1000);
-        this.InitializeRenderTarget(this.lofi);
+        this.InitializeRenderTarget(this.useLofi);
 
         this.stats = new Stats();  
         document.getElementById('canvas-container').appendChild(this.stats.dom);
@@ -537,11 +538,29 @@ export default class EnginePortfolio extends Engine
 
     SetupEventListeners() 
     {
-        const switchElement = document.getElementById('switch');
+        const switches = document.querySelectorAll('input[type="checkbox"]');
 
-        switchElement.addEventListener('change', (event) => {
-            this.lofi = event.target.checked; 
-            this.InitializeRenderTarget(this.lofi);
+        switches.forEach((switchElement) => {
+            const isLofiSwitch = switchElement.closest('.switch').classList.contains('lofi');
+            const isGridSwitch = switchElement.closest('.switch').classList.contains('grid');
+
+            // Set the checked state based on current boolean values
+            if (isLofiSwitch) {
+                switchElement.checked = this.useLofi;
+            } else if (isGridSwitch) {
+                switchElement.checked = this.useGrid;
+            }
+
+            // Attach event listeners for state changes
+            switchElement.addEventListener('change', (event) => {
+                if (isLofiSwitch) {
+                    this.useLofi = event.target.checked;
+                    this.InitializeRenderTarget(this.useLofi);
+                } else if (isGridSwitch) {
+                    this.useGrid = event.target.checked;
+                    this.useGrid ? this.scene.add(this.voxelGrid) : this.scene.remove(this.voxelGrid);
+                }
+            });
         });
 
         const darkOverlay = document.getElementById('darkOverlay');

@@ -910,11 +910,18 @@ a:hover
  /* The switch - the box around the slider */
  .switch {
   position: absolute;
-  left: 1%;
-  bottom: 2%; 
   display: inline-block;
   width: 60px;
   height: 34px;
+  left: 1%;
+}
+
+.switch.lofi { 
+  bottom: 2% 
+}
+
+.switch.grid { 
+  bottom: 7% 
 }
 
 .switch-img {
