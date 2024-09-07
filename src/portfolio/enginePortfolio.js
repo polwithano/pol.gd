@@ -1019,9 +1019,10 @@ export default class EnginePortfolio extends Engine
         }
     }
 
-    RenderProjectPage(projectData) 
+    async RenderProjectPage(projectData) 
     {
         const container = document.getElementById('project-container');
+        const placeholder = await ICON.LoadIcon('placeholder'); 
 
         // Clear previous content
         container.innerHTML = '';
@@ -1034,7 +1035,7 @@ export default class EnginePortfolio extends Engine
             <p class="project-tagline">${projectData.tagline}</p>
             <p class="content-spacer"></p>
         `;
-        header.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url('${projectData.background}')`;
+        header.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url('${placeholder.default || placeholder}')`;
         container.appendChild(header);
     
         // Create and add content sections
@@ -1044,7 +1045,7 @@ export default class EnginePortfolio extends Engine
             
             if (section.type === 'text-image') {
                 sectionDiv.innerHTML = `
-                    <img src="${section.content.image.src}" alt="${section.content.image.alt}" class="content-image ${section.content.image.position}">
+                    <img src="${placeholder.default || placeholder}" alt="${section.content.image.alt}" class="content-image ${section.content.image.position}">
                     <p class="content-paragraph">${section.content.paragraph}</p>
                 `;
             } 

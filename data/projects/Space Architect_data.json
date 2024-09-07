@@ -15,9 +15,9 @@
       "#FFFFFF"
     ],
     "gradientGrid": [
-      "#3e196e",
-      "#00BB00",
-      "#ffc07c"
+      "#000000",
+      "#2B2B2B",
+      "#FFFFFF"
     ]
   },
   "content": {
@@ -47,7 +47,7 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "This is a paragraph.",
+          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
           "image": {
             "src": "media/placeholder-image.jpg",
             "alt": "project image",
@@ -61,7 +61,7 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "This is a paragraph.",
+          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
           "image": {
             "src": "media/placeholder-image.jpg",
             "alt": "project image",
