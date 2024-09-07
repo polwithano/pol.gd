@@ -15,6 +15,7 @@ import Voxel from '../voxel';
 import JSON from '../../data/masterJSON'; 
 import ICON from '../../media/portfolio-icons/masterICON';
 import ObjectPortfolio from './objectPortfolio';
+import TagManager from './tagManager'; 
 
 /* ENGINE STATES CONST */
 const WORLD_STEP_VALUE = 1/60;
@@ -175,7 +176,7 @@ export default class EnginePortfolio extends Engine
         metadatas.sort((a, b) => parseInt(b.yearID) - parseInt(a.yearID));
 
         metadatas.forEach(metadata => {
-            const {yearID, projectName, isFavorite} = metadata; 
+            const {yearID, projectName, isFavorite, tag} = metadata; 
 
             // Create a new folder for a new yearID
             if (!folders[yearID]) 
@@ -197,6 +198,7 @@ export default class EnginePortfolio extends Engine
             projectItem.setAttribute('data-project-name', projectName);
             if (isFavorite) projectItem.classList.add('favorite'); 
             projectItem.textContent = projectName; 
+            projectItem.appendChild(TagManager.TagElement(tag, "small-tag")); 
 
             // Append project item to the corresponding folder
             folders[yearID].querySelector('.folder-content').appendChild(projectItem);
@@ -351,6 +353,7 @@ export default class EnginePortfolio extends Engine
         const voxelMetadata = this.currentPFObject.voxelMetadata; 
 
         document.getElementById('project-name').textContent = projectMetadata.projectName;
+        document.getElementById('project-tag').appendChild(TagManager.TagElement(projectMetadata.tag, "tag")); 
         document.getElementById('company-name').textContent = projectMetadata.companyName;
         document.getElementById('author-name').textContent = projectMetadata.yearString;
         document.getElementById('project-year').textContent = projectMetadata.tasks;

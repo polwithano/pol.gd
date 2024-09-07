@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "tag": "video game",
+    "tag": "video_game",
     "projectName": "Stellar Pulse",
     "companyName": "Isart Digital",
     "yearString": "2019",
@@ -10,8 +10,8 @@
     "isFavorite": false,
     "voxelPath": "../data/voxels/Stellar Pulse_voxel.json",
     "gradientBackground": [
-      "#000000",
-      "#2B2B2B",
+      "#FFFFFF",
+      "#FFFFFF",
       "#FFFFFF"
     ],
     "gradientGrid": [

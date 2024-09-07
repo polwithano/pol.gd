@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "tag": "video game",
+    "tag": "video_game",
     "projectName": "Brutal Fighters",
     "companyName": "Isart Digital",
     "yearString": "2018",
@@ -10,8 +10,8 @@
     "isFavorite": true,
     "voxelPath": "../data/voxels/Brutal Fighters_voxel.json",
     "gradientBackground": [
-      "#000000",
-      "#2B2B2B",
+      "#FFFFFF",
+      "#FFFFFF",
       "#FFFFFF"
     ],
     "gradientGrid": [

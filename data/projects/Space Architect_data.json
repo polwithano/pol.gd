@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "tag": "video game",
+    "tag": "video_game",
     "projectName": "Space Architect",
     "companyName": "Isart Digital",
     "yearString": "2016",
@@ -10,7 +10,7 @@
     "isFavorite": false,
     "voxelPath": "../data/voxels/Space Architect_voxel.json",
     "gradientBackground": [
-      "#DDDDDD",
+      "#FFFFFF",
       "#FFFFFF",
       "#FFFFFF"
     ],

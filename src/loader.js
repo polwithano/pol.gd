@@ -94,7 +94,7 @@ function CreateProjectDataFiles(voxelObject, voxelParams, projectName, modelName
 {
     const voxelPath = "../data/voxels/" + projectName + "_voxel.json";
     const projectMetadata = {
-        tag: "video game",
+        tag: "Video Game",
         projectName: projectName, 
         companyName: "companyName",
         yearString: "1970",

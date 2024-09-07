@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "tag": "video game",
+    "tag": "video_game",
     "projectName": "Because I Love You",
     "companyName": "Isart Digital",
     "yearString": "2020",
@@ -10,8 +10,8 @@
     "isFavorite": true,
     "voxelPath": "../data/voxels/Because I Love You_voxel.json",
     "gradientBackground": [
-      "#000000",
-      "#2B2B2B",
+      "#FFFFFF",
+      "#FFFFFF",
       "#FFFFFF"
     ],
     "gradientGrid": [

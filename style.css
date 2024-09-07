@@ -615,6 +615,12 @@ a:hover
   transition: all 0.3s ease;
 }
 
+.dot:hover 
+{
+  width: 14px;
+  height: 14px; 
+}
+
 .dot.active {
   height: 14px;
   width: 14px;
@@ -804,7 +810,7 @@ a:hover
 /* Hide the folder contents by default */
 .folder-content {
   display: none;
-  margin-left: 20px;
+  margin-left: 0px;
   margin-top: 4px;
 }
 
@@ -821,14 +827,12 @@ a:hover
 
 /* Style for favorite projects */
 .project.favorite {
+  list-style-type: circle;
   color: #FFA500; /* Yellow/orange color for favorite projects */
-  font-weight: bold; /* Make the text bold, if desired */
 }
 
 /* Optional: style for the star icon */
-.project.favorite::after {
-  content: '  ✦'; /* Add a star icon before the text */
-  margin-right: 8px; /* Space between the star and the text */
+.project.favorite::before {
   color: #FFA500; /* Color of the star, can match the text color */
 }
 
@@ -974,6 +978,28 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 } 
+
+/* TAGS */ 
+.small-tag {
+  display: inline-block;
+  padding: 2px 5px;
+  font-size: 10px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #3498db; /* Default color, overridden dynamically */
+  border-radius: 6px;
+  margin-left: 10px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 5px 10px;
+  font-size: 14px;
+  font-weight: normal;
+  color: #fff;
+  background-color: #3498db; /* Default color, overridden dynamically */
+  border-radius: 10px;
+}
 
 /* ANIMATION */ 
 @keyframes breathing {
