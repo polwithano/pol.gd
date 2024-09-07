@@ -465,7 +465,7 @@ function CreateVoxelGrid(width, depth, spacing) {
 function CreateVoxelCircle(radius, spacing) {
     const voxelSize = spacing;
     const voxelGeometry = new THREE.BoxGeometry(voxelSize, voxelSize, voxelSize);
-    const voxelMaterial = new THREE.MeshBasicMaterial({ color: '#ffffff', wireframe: false });
+    const voxelMaterial = new THREE.MeshBasicMaterial({ color: '#ffffff', wireframe: false});
 
     // Estimate the number of voxels needed (approximately the area of the circle divided by voxel area)
     const numVoxels = Math.ceil(Math.PI * Math.pow(radius, 2) / Math.pow(voxelSize, 2));
@@ -492,7 +492,7 @@ function CreateVoxelCircle(radius, spacing) {
         }
     }
 
-    instancedMesh.receiveShadow = false;
+    instancedMesh.receiveShadow = true;
     return instancedMesh;
 }
 

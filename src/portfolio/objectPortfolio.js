@@ -50,7 +50,7 @@ export default class ObjectPortfolio
         //Helpers.CloneMeshMaterials(this.originalMesh);
 
         this.voxelizedMesh.castShadow = true;
-        this.voxelizedMesh.receiveShadow = false;
+        this.voxelizedMesh.receiveShadow = true;
         this.voxelizedMesh.frustumCulled = false; 
     }
 

@@ -7,7 +7,7 @@
     "yearID": "2018",
     "tasks": "GD • LD",
     "description": "A short description of the project.",
-    "isFavorite": false,
+    "isFavorite": true,
     "voxelPath": "../data/voxels/Brutal Fighters_voxel.json",
     "gradientBackground": [
       "#000000",

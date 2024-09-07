@@ -26,14 +26,15 @@ const DEFAULT_GLB_PATH = "../meshes/Biplane.glb";
 // Define the parameters for the camera's orbit
 const orbitRadius = 6;  // Distance from the object
 const orbitSpeed = .1; // Speed of the rotation
-const orbitHeight = 1;   // Height of the camera relative to the object
+const orbitMinheight = 0; 
+const orbitMaxHeight = 5;
 
 const paramsGrid = {
-    coefXY:          15,
+    coefXY:          20,
     coefZ:            3,
-    voxelSize:      0.4,
-    animSpeed: 0.000015,
-    radius:          40,
+    voxelSize:      .75,
+    animSpeed:  .000015,
+    radius:          50,
     gridType:    "circ",
 }
 
@@ -81,7 +82,6 @@ export default class EnginePortfolio extends Engine
 
         this.Initialize(); 
         this.GameLoop(this.currentTimestamp); 
-        this.SetupEventListeners(); 
     }
 
     // #region Initialize Methods
@@ -90,8 +90,10 @@ export default class EnginePortfolio extends Engine
         super.Initialize();
 
         this.InitializeCannon();
-        if (!this.useJsonData) this.InitializeGUI();   
+        if (!this.useJsonData) this.InitializeGUI();
+        this.InitializeFileExplorer();    
         this.InitializeGame(); 
+        this.SetupEventListeners(); 
     }
 
     InitializeThreeJS() 
@@ -158,6 +160,57 @@ export default class EnginePortfolio extends Engine
         this.world.gravity.set(0, -9.81, 0); // Set gravity to zero initially
     }
 
+    async InitializeFileExplorer() 
+    {
+        const metadatas = await JSON.FetchProjectsMetadata();
+        const explorerContainer = document.querySelector('.explorer')
+        const folders = {}; 
+        const title = document.createElement('h1'); 
+        title.innerHTML = `<h1 class="explorer-header">explorer</h1>`;
+        explorerContainer.innerHTML = ''; 
+        explorerContainer.appendChild(title); 
+
+        // Sort metadatas by yearID in descending order (newest first)
+        metadatas.sort((a, b) => parseInt(b.yearID) - parseInt(a.yearID));
+
+        metadatas.forEach(metadata => {
+            const {yearID, projectName, isFavorite} = metadata; 
+
+            // Create a new folder for a new yearID
+            if (!folders[yearID]) 
+            {
+                folders[yearID] = document.createElement('div'); 
+                folders[yearID].classList.add('folder');
+                folders[yearID].innerHTML = `
+                <div class="folder-header" data-folder-id="folder-${yearID}">
+                    <span class="arrow">&#9654;</span>
+                    <img src="media/folder.png" alt="Folder Icon" class="folder-icon"> ${yearID}/
+                </div>
+                <ul class="folder-content" id="folder-${yearID}"></ul>`;
+                explorerContainer.appendChild(folders[yearID]); 
+            }
+
+            // Create a project item
+            const projectItem = document.createElement('li'); 
+            projectItem.classList.add('project'); 
+            if (isFavorite) projectItem.classList.add('favorite'); 
+            projectItem.textContent = projectName; 
+
+            // Append project item to the corresponding folder
+            folders[yearID].querySelector('.folder-content').appendChild(projectItem);
+        });
+
+        // Setup listener for all the folders. 
+        document.querySelectorAll('.folder-header').forEach(header => {
+            header.addEventListener('click', (event) => {
+                const target = event.target.closest('.folder-header');
+                const folderId = target.getAttribute('data-folder-id');
+                console.log(`Folder ID: ${folderId}`);
+                this.ToggleFolder(folderId);
+            });
+        });
+    }
+
     async InitializeGame() 
     {
         super.InitializeGame(); 
@@ -171,7 +224,7 @@ export default class EnginePortfolio extends Engine
 
         // Add the light to the scene
         this.scene.add(this.directionalLight);
-        this.scene.fog = new THREE.Fog(0x2B2B2B, 2, 25); 
+        this.scene.fog = new THREE.Fog(0xFFFFFF, 10, paramsGrid.radius * 0.95); 
 
         this.canvas = document.createElement('canvas');
         this.context = this.canvas.getContext('2d', {willReadFrequently: true});
@@ -512,15 +565,6 @@ export default class EnginePortfolio extends Engine
 
         projectContainer.addEventListener('mouseleave', () => {
             expandTimeline.timeScale(reverseSpeedMultiplier).reverse(); // Faster reverse speed
-        });
-    
-        document.querySelectorAll('.folder-header').forEach(header => {
-            header.addEventListener('click', (event) => {
-                const target = event.target.closest('.folder-header');
-                const folderId = target.getAttribute('data-folder-id');
-                console.log(`Folder ID: ${folderId}`);
-                this.ToggleFolder(folderId);
-            });
         });
     }    
 
@@ -877,7 +921,7 @@ export default class EnginePortfolio extends Engine
             const z = orbitRadius * Math.cos((this.animationStartTime) * orbitSpeed);
     
             // Set the camera's initial position
-            this.camera.position.set(x, 1.5, z);
+            this.camera.position.set(x, (orbitMinheight + orbitMaxHeight) / 2, z);
 
             const lookAtY = this.currentPFObject.MaxY() / 2;
             this.currentLookAt.set(this.currentPFObject.voxelizedMesh.position.x, lookAtY, this.currentPFObject.voxelizedMesh.position.z);
@@ -901,10 +945,8 @@ export default class EnginePortfolio extends Engine
             const z = orbitRadius * Math.cos(-elapsedTime);
             
             // Calculate the vertical Y position with up-and-down oscillation
-            const minY = -0.5;
-            const maxY = 3.5;
-            const midpointY = (minY + maxY) / 2;
-            const amplitudeY = (maxY - minY) / 2;
+            const midpointY = (orbitMinheight + orbitMaxHeight) / 2;
+            const amplitudeY = (orbitMinheight - orbitMaxHeight) / 2;
             const frequency = 2; // Adjust for the speed of the vertical motion
 
             const y = midpointY + amplitudeY * Math.sin(frequency * elapsedTime);

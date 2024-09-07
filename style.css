@@ -250,7 +250,7 @@ a:hover
   font-family: '0xProto Nerd Font Mono'; 
   color: rgb(255, 255, 255); 
   position: absolute;
-  top: 35px; /* Adjusts the distance from the top of the canvas */
+  top: 3%; /* Adjusts the distance from the top of the canvas */
   left: 0;
   right: 0;
   max-width: 66%; /* Sets a maximum width for the container */
@@ -265,7 +265,7 @@ a:hover
 /* Container for the portfolio icons */
 #portfolio-icons {
   position: fixed;
-  right: 32px; /* Adjust as needed to create space from the right edge */
+  right: 1%; /* Adjust as needed to create space from the right edge */
   top: 50%; /* Center vertically */
   transform: translateY(-50%); /* Adjust vertical centering */
   display: flex;
@@ -357,23 +357,20 @@ a:hover
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  font-size: 18px;
   display: inline-block;
   background-color: rgba(0, 0, 0, 0.6);
-  padding: 4px 8px;
+  padding: 4px 4px;
   border-radius: 5px;
   z-index: 999;
   pointer-events: auto;
-  line-height: 1.4; /* Adjusts line height for better readability */
   overflow: hidden;
   width: auto;
 }
 
 /* Additional styles to ensure text is centered vertically and horizontally */
 #project-description p {
-  font-size: 24px; /* Larger font size when hovered */
+  font-size: 20px; /* Larger font size when hovered */
   text-align: center; /* Center text */
-  line-height: 1.4;
 }
 /* PORTFOLIO PROJECT INFO */
 
@@ -598,7 +595,7 @@ a:hover
 /* CAROUSEL */ 
 #carousel-dots {
   position: absolute;
-  bottom: 36px; /* Adjust this value to control how far from the bottom the dots are placed */
+  bottom: 3%; /* Adjust this value to control how far from the bottom the dots are placed */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -910,8 +907,8 @@ a:hover
  /* The switch - the box around the slider */
  .switch {
   position: absolute;
-  left: 5px;
-  bottom: 10px; 
+  left: 1%;
+  bottom: 2%; 
   display: inline-block;
   width: 60px;
   height: 34px;
