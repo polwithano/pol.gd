@@ -488,6 +488,7 @@ export default class EnginePortfolio extends Engine
             '../meshes/UFO.glb',
             '../meshes/Knight.glb',
             '../meshes/Airplane.glb',
+            '../meshes/Bear.glb',
         ];
         const modelOptions = {selectedModel: models[0]}; 
 

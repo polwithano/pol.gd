@@ -132,15 +132,15 @@ function DefaultProjectContent(projectName)
         icons: [
         {
             name: "Name", 
-            image: "media/portfolio-icons/unreal.png"
+            image: "name"
         },
         {
             name: "Name", 
-            image: "media/portfolio-icons/unreal.png"
+            image: "name"
         },
         {
             name: "Name", 
-            image: "media/portfolio-icons/unreal.png"
+            image: "name"
         }],
         sections: [
             {
@@ -154,7 +154,7 @@ function DefaultProjectContent(projectName)
             {
                 type: "text-image",
                 content: {
-                    paragraph: "This is a paragraph.", 
+                    paragraph: "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.", 
                     image: {
                         src: "media/placeholder-image.jpg", 
                         alt: "project image", 
@@ -166,7 +166,7 @@ function DefaultProjectContent(projectName)
             {
                 type: "text-image",
                 content: {
-                    paragraph: "This is a paragraph.", 
+                    paragraph: "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.", 
                     image: {
                         src: "media/placeholder-image.jpg", 
                         alt: "project image", 
@@ -179,7 +179,7 @@ function DefaultProjectContent(projectName)
                 type: "video",
                 content: {
                     videoId: "dQw4w9WgXcQ",
-                    caption: "This is a caption for the video."
+                    caption: "This is a caption illustrating the content shown in the video."
                 }
             },
             { type: "spacer"}
