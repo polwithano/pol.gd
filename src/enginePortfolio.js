@@ -5,11 +5,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GUI } from 'dat.gui'
 import gsap from 'gsap';
 import Stats from 'three/addons/libs/stats.module.js';
-
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
-import { SSAOPass } from 'three/addons/postprocessing/SSAOPass.js'; 
+import { SimplexNoise } from 'three/examples/jsm/Addons.js'
 
 import Engine from './engine'; 
 import HelpersBackground from './helpersBackground';
@@ -18,8 +14,7 @@ import Helpers from './helpers';
 import Voxel from './voxel'; 
 import JSON from '../data/masterJSON'; 
 import ICON from '../media/portfolio-icons/masterICON';
-import ObjectPortfolio from './objectPortfolio';
-import { SimplexNoise } from 'three/examples/jsm/Addons.js';
+import ObjectPortfolio from './objectPortfolio';;
 
 /* ENGINE STATES CONST */
 const worldStepValue = 1/60;
@@ -56,21 +51,24 @@ export default class EnginePortfolio extends Engine
         this.mouseMoveListener = (event) => this.OnMouseMove(event);
         this.keyDownListener = (event) => this.OnKeyDown(event); 
 
+        // Rendering 
         this.composer = null; 
         this.lofi = false; 
+        
+        // Portfolio States
         this.currentPFObject = null; 
         this.nextPFObject = null; 
-        this.clippingPlane = null; 
         this.currentProjectIndex = 0; 
         this.canSwitchObject = true; 
         this.useJsonData = USE_JSON;  
         this.canRotateCamera = true; 
         this.canOpenPage = false; 
-        this.animationStartTime = 0; 
+        this.animationStartTime = 0;
 
         this.defaultJsonPath = JSON.projects[this.currentProjectIndex]; 
         this.defaultGLBPath = DEFAULT_GLB_PATH; 
 
+        // Voxel Grid
         this.simplex = new SimplexNoise(); 
         this.gridMinY = Infinity;
         this.gridMaxY = -Infinity;
@@ -166,25 +164,6 @@ export default class EnginePortfolio extends Engine
         this.directionalLight = new THREE.DirectionalLight(0xffffff, 4);
         this.directionalLight.position.set(10, 10, 10); 
 
-        // Enable shadows
-        this.directionalLight.castShadow = true;
-
-        // Configure shadow map size for better resolution
-        this.directionalLight.shadow.mapSize.width = 2048;
-        this.directionalLight.shadow.mapSize.height = 2048;
-
-        // Adjust shadow bias to minimize artifacts
-        this.directionalLight.shadow.bias = -0.005; // Start with a small negative value
-        this.directionalLight.shadow.normalBias = 0.02;  // Adjust based on your model
-
-        // Adjust shadow camera settings for more precise shadows
-        this.directionalLight.shadow.camera.near = 10;
-        this.directionalLight.shadow.camera.far = 100;
-        this.directionalLight.shadow.camera.left = -20;
-        this.directionalLight.shadow.camera.right = 20;
-        this.directionalLight.shadow.camera.top = 20;
-        this.directionalLight.shadow.camera.bottom = -20;
-
         // Add the light to the scene
         this.scene.add(this.directionalLight);
         this.scene.fog = new THREE.Fog(0x2B2B2B, 0.5, 45); 
@@ -193,11 +172,6 @@ export default class EnginePortfolio extends Engine
         this.context = this.canvas.getContext('2d', {willReadFrequently: true});
         this.canvas.width = 512;
         this.canvas.height = 512;
-
-        Helpers.CreateCarouselDots(JSON.projects.length, this.currentProjectIndex);
-
-        //this.planeBuffer = Helpers.CreatePlaneBufferGeometry(100, 40); 
-        //this.scene.add(this.planeBuffer); 
 
         if (this.useJsonData) 
         {
@@ -211,30 +185,14 @@ export default class EnginePortfolio extends Engine
                 this.gradientTexture = HelpersBackground.CreateMultiGradientTexture(this.currentPFObject.projectMetadata.gradientBackground, this.context, this.canvas);
                 //this.gradientTexture = HelpersBackground.CreateCheckerboardTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 2, 2, this.context, this.canvas); 
                 //this.gradientTexture = HelpersBackground.CreateChartPieTexture(this.currentPFObject.metadata.gradientStart, this.currentPFObject.metadata.gradientEnd, 24, this.context, this.canvas); 
-
                 this.scene.background = this.gradientTexture; 
-                //this.voxelGrid = Voxel.CreateVoxelGrid(120, 120, this.gridSize);
+
                 this.voxelGrid = Voxel.CreateVoxelCircle(40, this.gridSize);  
                 this.scene.add(this.voxelGrid);
-                this.voxelGrid.receiveShadow = true;  
         
                 // Ensure that the meshes are not null
                 if (this.currentPFObject.voxelizedMesh) 
                 {
-                    /*
-                    this.clippingPlane1 = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
-                    this.clippingPlane1.constant = this.currentPFObject.MaxY();
-                    this.clippingPlane2 = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
-                    this.clippingPlane2.constant = this.currentPFObject.MinY();
-        
-                    Helpers.AddClippingPlaneToMaterials(this.currentPFObject.originalMesh, this.clippingPlane1);
-                    Helpers.AddClippingPlaneToMaterials(this.currentPFObject.voxelizedMesh, this.clippingPlane2);
-                    */
-
-                    //this.scene.add(this.currentPFObject.originalMesh);
-                    this.shadowPlane = Helpers.CreateShadowPlane(this.currentPFObject.MinY());
-                    this.reflectorPlane = Helpers.CreateReflectorPlane(this.currentPFObject.MinY());
-
                     this.currentPFObject.voxelizedMesh.position.x = 0;
                     this.currentPFObject.voxelizedMesh.position.z = 0; 
                     this.currentPFObject.voxelizedMesh.rotation.y = this.currentPFObject.voxelMetadata.startingRotation  * (Math.PI / 180); 
@@ -242,8 +200,6 @@ export default class EnginePortfolio extends Engine
                     Helpers.AnimateVoxels(this.currentPFObject, 20);
                     this.InitializeCamera(); 
 
-                    //this.scene.add(this.shadowPlane);
-                    //this.scene.add(this.reflectorPlane); 
                     this.scene.add(this.currentPFObject.voxelizedMesh);
 
                     this.InitializeHTML(); 
@@ -276,7 +232,6 @@ export default class EnginePortfolio extends Engine
                     
                     this.scene.add(this.gridHelper); 
                     this.scene.add(this.currentPFObject.voxelizedMesh);
-                    //this.scene.add(this.currentPFObject.originalMesh); 
                 }
                 else 
                 {
@@ -302,8 +257,10 @@ export default class EnginePortfolio extends Engine
         document.getElementById('project-description').textContent = projectMetadata.description;
         document.getElementById('copyright-model').innerHTML = `© Original Model • <a href="${voxelMetadata.modelLink}" target="_blank">${voxelMetadata.author}</a>`;
 
-        this.canOpenPage = true; 
-        this.UpdateIcons(); 
+        Helpers.CreateCarouselDots(JSON.projects.length, this.currentProjectIndex); 
+        this.UpdateIcons();
+
+        this.canOpenPage = true;  
     }
 
     UpdateIcons() 
@@ -470,7 +427,6 @@ export default class EnginePortfolio extends Engine
         this.gui.add(guiParams, 'modelName').name('Model Name').onChange(value => guiParams.modelName = value);
         this.gui.add(guiParams, 'projectName').name('Project Name');
 
-        //this.gui.add({save: () => Voxel.SaveVoxelData(this.currentPFObject, metadata, portfolioMetadata, defaultParams, projectData) }, 'save').name('Save Voxel Data');
         this.gui.add({save: () => Loader.CreateVoxelDataFiles(this.currentPFObject, defaultParams, guiParams.projectName, guiParams.modelName) }, 'save').name('Save Voxel Data');
         this.gui.add({save: () => Loader.CreateProjectDataFiles(this.currentPFObject, defaultParams, guiParams.projectName, guiParams.modelName) }, 'save').name('Save Project Data');
     }
@@ -610,7 +566,6 @@ export default class EnginePortfolio extends Engine
         document.addEventListener('mousedown', this.mouseDownListener);    
         document.addEventListener('mouseup', this.mouseUpListener); 
         document.addEventListener('mousemove', this.mouseMoveListener); 
-        document.addEventListener('wheel', (event) => this.OnScroll(event));
 
         document.addEventListener('keydown', this.keyDownListener); 
     }
@@ -623,50 +578,15 @@ export default class EnginePortfolio extends Engine
         document.removeEventListener('mousedown', this.mouseDownListener);
         document.removeEventListener('mouseup', this.mouseUpListener);
         document.removeEventListener('mousemove', this.mouseMoveListener);
-        document.removeEventListener('wheel', (event) => this.OnScroll(event));
 
         document.removeEventListener('keydown', this.keyDownListener); 
     }
     // #endregion
 
     // #region Mouse Events
-    OnRightMouseDown(event) 
-    {
-
-    }
-
-    OnRightMouseUp(event) 
-    {
-
-    }
-
-    OnMouseMove(event) 
-    {
-        this.mouseX = event.clientX; 
-        this.mouseY = event.clientY;
-
-        if (this.currentPFObject && this.clippingPlane1 && this.clippingPlane2) 
-        {
-            const margin = 0.33;
-            const heightMargin = window.innerHeight * margin;
-            let mouseY = 0;  
-            
-            if (event.clientY >= heightMargin & event.clientY <= window.innerHeight - heightMargin) 
-            {
-                mouseY = (event.clientY - heightMargin) / (window.innerHeight - heightMargin * 2); // This gives a value between 0 and 1
-            }
-            else if (event.clientY < heightMargin) 
-            {
-                mouseY = 0;
-            }
-            else if (event.clientY >= window.innerHeight - heightMargin) 
-            {
-                mouseY = 1; 
-            }
-
-            this.UpdateClippingPlanes(mouseY); 
-        }
-    }
+    OnRightMouseDown(event) {}
+    OnRightMouseUp(event) {}
+    OnMouseMove(event) {}
 
     OnKeyDown(event) 
     {
@@ -676,7 +596,7 @@ export default class EnginePortfolio extends Engine
 
     OnScroll(event) 
     {
-        console.log(event.deltaX); 
+        console.log("deltaX: ", event.deltaX, "deltaY: ", event.deltaY);
         // Check if horizontal scroll (deltaX) or vertical scroll (deltaY) is detected
         if (event.deltaX < 0) {
             // Scrolling left (negative deltaX)
@@ -837,28 +757,6 @@ export default class EnginePortfolio extends Engine
     
         requestAnimationFrame(animate);
     }
-
-    UpdateClippingPlanes(mouseY) 
-    {
-        const minY = this.currentPFObject.MinY(); 
-        const maxY = this.currentPFObject.MaxY();
-        const voxelHeight = this.currentPFObject.VoxelHeight() + 1;
-        
-        // Calculate the step size based on the number of voxel layers
-        const stepSize = 1 / (voxelHeight - 1);  // "-1" because we're considering intervals between layers
-        
-        // Snap mouseY to the nearest step
-        const normalizedMouseY = Math.floor(mouseY / stepSize) * stepSize;
-
-        const meshHeight = maxY - minY;
-
-        const planeHeight1 = minY + normalizedMouseY * meshHeight;
-        const planeHeight2 = maxY - normalizedMouseY * meshHeight;
-
-        // Update clipping plane constants w/o Z-fighting
-        this.clippingPlane1.constant = planeHeight1 + 0.0001;
-        this.clippingPlane2.constant = planeHeight2 + 0.0001;
-    }
     
     GameLoop() 
     {
@@ -924,20 +822,6 @@ export default class EnginePortfolio extends Engine
                 }
             }, .1); // Start immediately after .1 second
         }
-    }
-
-    AnimatePlane() 
-    {
-        const time = Date.now() * 0.0002;
-        const gArray = this.planeBuffer.geometry.attributes.position.array; 
-
-        for (let i = 0; i < gArray.length; i += 3) 
-        {
-            gArray[i + 2] = this.simplex.noise4d(gArray[i] / xyCoef,
-                gArray[i + 1] / xyCoef, time, 2) * zCoef; 
-        }
-
-        this.planeBuffer.geometry.attributes.position.needsUpdate = true; 
     }
 
     AnimateVoxelGrid(instancedMesh, simplex, timeFactor, xyCoef, zCoef) 
