@@ -27,7 +27,7 @@ const DEFAULT_GLB_PATH = "../meshes/Biplane.glb";
 const orbitRadius = 6;  // Distance from the object
 const orbitSpeed = .1; // Speed of the rotation
 const orbitMinheight = 0; 
-const orbitMaxHeight = 5;
+const orbitMaxHeight = 3;
 
 const paramsGrid = {
     coefXY:          20,
@@ -194,12 +194,15 @@ export default class EnginePortfolio extends Engine
             // Create a project item
             const projectItem = document.createElement('li'); 
             projectItem.classList.add('project'); 
+            projectItem.setAttribute('data-project-name', projectName);
             if (isFavorite) projectItem.classList.add('favorite'); 
             projectItem.textContent = projectName; 
 
             // Append project item to the corresponding folder
             folders[yearID].querySelector('.folder-content').appendChild(projectItem);
         });
+
+        this.UpdateExplorerSelectedProject(); 
 
         // Setup listener for all the folders. 
         document.querySelectorAll('.folder-header').forEach(header => {
@@ -210,7 +213,40 @@ export default class EnginePortfolio extends Engine
                 this.ToggleFolder(folderId);
             });
         });
+        document.querySelectorAll('.project').forEach(project => {
+            project.addEventListener('click', (event) => {
+                const target = event.target.closest('.project');
+                const projectName = target.getAttribute('data-project-name');
+                const newIndex = JSON.projects.indexOf(projectName);
+
+                if (newIndex == this.currentProjectIndex) return; 
+
+                const direction = newIndex > this.currentProjectIndex ? 1 : -1;
+                this.currentProjectIndex = newIndex;  
+                this.SwitchObject(direction, 0.5); 
+                this.UpdateExplorerSelectedProject(); 
+            })
+        })
     }
+
+    UpdateExplorerSelectedProject() 
+    {
+        const currentProjectName = JSON.projects[this.currentProjectIndex];  // Get the current project name based on index
+    
+        // Loop through all the project elements
+        document.querySelectorAll('.project').forEach(project => {
+            const projectName = project.getAttribute('data-project-name');
+    
+            // If the project name matches the current project, add the 'selected' class
+            if (projectName === currentProjectName) {
+                project.classList.add('selected');
+            } 
+            // Otherwise, remove the 'selected' class
+            else {
+                project.classList.remove('selected');
+            }
+        });
+    }    
 
     async InitializeGame() 
     {
