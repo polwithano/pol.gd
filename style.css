@@ -886,6 +886,15 @@ a:hover
 }
 
 @media only screen and (max-width: 767px) {
+  .icon-img {
+    width: 20px; /* Adjust size of icons */
+    height: 40px; /* Adjust size of icons */
+    max-width: 20px;
+    max-height: 20px;
+  }
+  .icon p {
+    font-size: 10px;
+  }
   #copyright {
     font-size: 10px; /* Smaller font size for mobile */
     padding: 3px 8px; /* Adjusted padding for mobile */
