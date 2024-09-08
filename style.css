@@ -625,7 +625,18 @@ a:hover
 .dot.active {
   height: 14px;
   width: 14px;
-  background-color: #ffffff;
+  background-color: #FFFFFF;
+}
+
+/* Style for the countdown circle */
+svg circle {
+  stroke-dasharray: 113px;
+  stroke-dashoffset: 0px;
+  stroke-linecap: round;
+  stroke-width: 2px;
+  stroke: white;
+  fill: white;
+  animation: countdown 10s linear infinite forwards;
 }
 /* CAROUSEL */ 
 
@@ -1016,5 +1027,14 @@ input:checked + .slider:before {
   }
   50% {
     background-color: rgba(0, 0, 0, 0.8); /* Darker background color at peak of the animation */
+  }
+}
+
+@keyframes countdown {
+  from {
+    stroke-dashoffset: 113px;
+  }
+  to {
+    stroke-dashoffset: 0px;
   }
 }

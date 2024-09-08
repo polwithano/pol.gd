@@ -17,10 +17,12 @@ import ICON from '../../media/portfolio-icons/masterICON';
 import ObjectPortfolio from './objectPortfolio';
 import TagManager from './tagManager'; 
 
+
 /* ENGINE STATES CONST */
 const WORLD_STEP_VALUE = 1/60;
 const DEFAULT_RENDER_SCALE = 1; 
 const LOFI_RENDER_SCALE = 4; 
+const TIMER_SWITCH = 10; 
 const USE_JSON = true; 
 const DEFAULT_GLB_PATH = "../meshes/Biplane.glb"; 
 
@@ -37,6 +39,7 @@ const paramsGrid = {
     animSpeed:  .000015,
     radius:          50,
     gridType:    "circ",
+    frameSkip:        4,
 }
 
 const paramsGen = {
@@ -73,6 +76,7 @@ export default class EnginePortfolio extends Engine
         this.currentLookAt = new THREE.Vector3(); 
         this.canOpenPage = false; 
         this.animationStartTime = 0;
+        this.switchTimer = TIMER_SWITCH; 
 
         this.defaultJsonPath = JSON.projects[this.currentProjectIndex]; 
         this.defaultGLBPath = DEFAULT_GLB_PATH; 
@@ -111,7 +115,7 @@ export default class EnginePortfolio extends Engine
 
         this.camera = new THREE.PerspectiveCamera(80, 2, 1, 1000);
         this.InitializeRenderTarget(this.useLofi);
-
+        
         this.stats = new Stats();  
         document.getElementById('canvas-container').appendChild(this.stats.dom);
         this.stats.dom.style.position = 'relative'; 
@@ -134,26 +138,135 @@ export default class EnginePortfolio extends Engine
         this.dummyCamera.position.z = 1; 
         this.dummyScene = new THREE.Scene(); 
 
+        this.renderPlane = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
+
         this.rtTexture = new THREE.WebGLRenderTarget( 
             Math.floor(window.innerWidth / (pixelated ? LOFI_RENDER_SCALE : DEFAULT_RENDER_SCALE)),
             Math.floor(window.innerHeight / (pixelated ? LOFI_RENDER_SCALE : DEFAULT_RENDER_SCALE)),
-            { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat });
+            { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat });
+        
+        // Add a depth texture
+        this.rtTexture.depthTexture = new THREE.DepthTexture();
+        this.rtTexture.depthTexture.type = THREE.UnsignedShortType;
 
         this.uniforms = { tDiffuse: { value: this.rtTexture.texture }, iResolution: { value: new THREE.Vector3() }};
         this.materialScreen = new THREE.ShaderMaterial({
             uniforms: this.uniforms, // rtTexture = material from perspective camera
-            vertexShader: document.getElementById( 'vertexShader' ).textContent,
-            fragmentShader: document.getElementById( 'fragment_shader_screen' ).textContent,
+            vertexShader: document.getElementById('vertexShader').textContent,
+            fragmentShader: document.getElementById('fragment_shader_screen').textContent,
             depthWrite: false
         });
 
-        this.renderPlane = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
+        const pixelationScale = this.useLofi ? 0 : 1;
+
+        // Create a shader material for edge detection
+        const edgeDetectionMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                tDiffuse: { value: this.rtTexture.texture },
+                tDepth: { value: this.rtTexture.depthTexture },  // Depth texture
+                pixelationScale: { value: pixelationScale },  // Pixelation or screen resolution scale
+                cameraPosition: { value: this.camera.position },  // Camera's world position
+            },
+            vertexShader:`
+                varying vec2 vUv;
+                varying vec3 vWorldPosition;  // Pass world position to the fragment shader
+                varying vec3 vNormal;         // Pass normal to the fragment shader
+
+                void main() {
+                    vUv = uv;
+                    
+                    // Compute world position of the vertex
+                    vec4 worldPosition = modelViewMatrix * vec4(position, 1.0);
+                    vWorldPosition = worldPosition.xyz;
+
+                    // Pass the normal (which can be used for lighting or edge detection)
+                    vNormal = normalMatrix * normal;
+
+                    gl_Position = projectionMatrix * worldPosition;  // Standard position transformation
+                }
+            `,
+            fragmentShader:`
+                uniform sampler2D tDiffuse;   // Original pixelated scene texture
+                uniform sampler2D tDepth;     // Depth texture
+                uniform float pixelationScale; // Controls pixelation/texel size scale
+                varying vec2 vUv;
+                varying vec3 vWorldPosition;  // Received from vertex shader
+                varying vec3 vNormal;         // Received from vertex shader
+
+                vec3 getNormalFromDepth(vec2 uv) {
+                    // Calculate the texel size based on the current pixelation scale
+                    vec2 texelSize = vec2(pixelationScale) / vec2(textureSize(tDepth, 0));
+
+                    // Get depth at current and neighboring pixels
+                    float depth = texture2D(tDepth, uv).r;
+                    float depthX = texture2D(tDepth, uv + vec2(texelSize.x, 0.0)).r;
+                    float depthY = texture2D(tDepth, uv + vec2(0.0, texelSize.y)).r;
+
+                    // Calculate the position differences in screen space
+                    vec3 p0 = vec3(uv, depth);
+                    vec3 px = vec3(uv + vec2(texelSize.x, 0.0), depthX);
+                    vec3 py = vec3(uv + vec2(0.0, texelSize.y), depthY);
+
+                    // Compute the normal using cross product
+                    vec3 normal = normalize(cross(px - p0, py - p0));
+                    return normal;
+                }
+
+                void main() {
+                    float depth = texture2D(tDepth, vUv).r;
+
+                    // Use vWorldPosition and vNormal passed from the vertex shader
+                    vec3 worldPosition = vWorldPosition;
+                    vec3 normal = normalize(vNormal);
+
+                    // Compute view direction
+                    vec3 viewDir = normalize(worldPosition - cameraPosition);
+
+                    // Edge detection based on view direction (silhouette detection)
+                    float edgeStrength = 0.5 - abs(dot(viewDir, normal));  // Strong edges when view direction is perpendicular to the surface normal
+
+                    // Adjust the edge width using texel size
+                    vec2 texelSize = vec2(pixelationScale) / vec2(textureSize(tDiffuse, 0));
+                    float edgeWidth = 2.0;  // You can modify this to control line thickness
+                    float accumulatedEdgeStrength = 0.0;
+
+                    // Sample neighboring pixels to control edge thickness
+                    for (float x = -edgeWidth; x <= edgeWidth; x++) {
+                        for (float y = -edgeWidth; y <= edgeWidth; y++) {
+                            vec2 offset = vec2(x, y) * texelSize;
+                            float sampleDepth = texture2D(tDepth, vUv + offset).r;
+                            accumulatedEdgeStrength += abs(depth - sampleDepth);
+                        }
+                    }
+
+                    // Normalize the accumulated edge strength
+                    accumulatedEdgeStrength /= (edgeWidth * edgeWidth * 0.5);
+
+                    // Combine edge detection from silhouette and thickness
+                    edgeStrength = max(edgeStrength, accumulatedEdgeStrength);
+
+                    // Apply threshold to determine whether to draw the edge
+                    if (edgeStrength > 0.5) {
+                        gl_FragColor = vec4(0, 0, 0, 1.0);  // Draw the edge (black)
+                    } else {
+                        gl_FragColor = texture2D(tDiffuse, vUv);  // Original pixelated scene
+                    }
+                }
+            `,
+            depthWrite: false,
+        });
 
         if (this.quad != null) this.dummyScene.remove(this.quad); 
         this.quad = new THREE.Mesh(this.renderPlane, this.materialScreen);
-        this.quad.position.z = -100;
+        this.quad.position.z = -1000;
 
-        this.dummyScene.add(this.quad); 
+        // Create a quad for the final pass
+        if (this.outlineQuad != null) this.dummyScene.remove(this.outlineQuad); 
+        this.outlineQuad = new THREE.Mesh(this.renderPlane, edgeDetectionMaterial);
+        this.outlineQuad.position.z = -1000; 
+
+        this.dummyScene.add(this.quad);
+        this.dummyScene.add(this.outlineQuad); 
     }
 
     InitializeCannon() 
@@ -308,7 +421,7 @@ export default class EnginePortfolio extends Engine
                 PFObject.voxelizedMesh.rotation.y = PFObject.voxelMetadata.startingRotation * (Math.PI / 180); 
 
                 this.scene.add(PFObject.voxelizedMesh); 
-
+                
                 return PFObject; 
             }
             else console.error('ObjectPortfolio could not load voxelized mesh.')
@@ -558,7 +671,9 @@ export default class EnginePortfolio extends Engine
                     this.InitializeRenderTarget(this.useLofi);
                 } else if (isGridSwitch) {
                     this.useGrid = event.target.checked;
-                    this.useGrid ? this.scene.add(this.voxelGrid) : this.scene.remove(this.voxelGrid);
+                    if (this.voxelGrid != undefined) {
+                        this.useGrid ? this.scene.add(this.voxelGrid) : this.scene.remove(this.voxelGrid);
+                    }
                 }
             });
         });
@@ -868,58 +983,29 @@ export default class EnginePortfolio extends Engine
         //this.AnimatePlane();
         if (this.useJsonData) 
         {
-            if (this.frameCounter % 4 == 0) this.AnimateVoxelGrid();  
-            //this.AnimateVoxelizedMesh();
             this.AnimateCamera(); 
+            this.UpdateSwitchTimer();  
+            if (this.frameCounter % paramsGrid.frameSkip == 0) this.AnimateVoxelGrid(); 
         }
 
         // 2. Render the voxelized objects at lower resolution
-        this.renderer.setRenderTarget(this.rtTexture); 
+        this.renderer.setRenderTarget(this.rtTexture);  
         this.renderer.clear();  
         this.renderer.render(this.scene, this.camera);
 
         // 3. Composite the low-res voxelized render on top of the high-res background
         this.renderer.setRenderTarget(null); // render to the screen
         this.renderer.clearDepth(); // clear depth buffer so voxel render is not occluded by background
-        this.renderer.render(this.dummyScene, this.dummyCamera);  
+        this.renderer.render(this.dummyScene, this.dummyCamera); 
     }
 
-    AnimateVoxelizedMesh() 
+    UpdateSwitchTimer() 
     {
-        if (this.currentPFObject != null && 
-            this.currentPFObject.voxelStartAnimationOver === true && 
-            this.currentPFObject.voxelAnimationInitialized === false) 
+        this.switchTimer -= this.clock.getDelta(); 
+    
+        if (this.switchTimer <= 0) 
         {
-            this.currentPFObject.voxelAnimationInitialized = true; 
-    
-            // Log initial position and rotation
-            console.log("Initial Position:", this.currentPFObject.voxelizedMesh.position);
-            console.log("Initial Rotation:", this.currentPFObject.voxelizedMesh.rotation);
-    
-            const timeline = gsap.timeline({
-                repeat: -1,  // Repeat indefinitely
-                yoyo: true,  // Reverses the animation each time it repeats
-                ease: "none",  // Smoother easing
-                onStart: () => {
-                    console.log("Animation Start - Position:", this.currentPFObject.voxelizedMesh.position);
-                },
-                onComplete: () => {
-                    console.log("Animation Complete - Position:", this.currentPFObject.voxelizedMesh.position);
-                }
-            });
-
-            // Continuous rotation animation
-            timeline.to(this.currentPFObject.voxelizedMesh.position, {
-                y: "+=" + 1,
-                duration: 32,
-                ease: "linear",  // Linear rotation
-                onUpdate: () => {
-                    // Force update of rotation
-                    this.currentPFObject.voxelizedMesh.rotation.y += 0;
-                    this.currentPFObject.voxelizedMesh.updateMatrixWorld(true); 
-                    this.currentPFObject.voxelizedMesh.needsUpdate = true;
-                }
-            }, .1); // Start immediately after .1 second
+            this.switchTimer = TIMER_SWITCH; // Reset the timer
         }
     }
 
