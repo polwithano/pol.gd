@@ -379,6 +379,7 @@ export default class EnginePortfolio extends Engine
                 const newIndex = JSON.projects.indexOf(projectName);
 
                 if (newIndex == this.currentProjectIndex) return; 
+                if (!this.canSwitchObject) return; 
 
                 const direction = newIndex > this.currentProjectIndex ? 1 : -1;
                 this.currentProjectIndex = newIndex;  
@@ -524,6 +525,8 @@ export default class EnginePortfolio extends Engine
                 const projectIndex = parseInt(target.getAttribute('project-index'), 10); 
 
                 if (projectIndex == this.currentProjectIndex) return; 
+                if (!this.canSwitchObject) return;
+
                 this.currentProjectIndex = projectIndex; 
                 const direction = projectIndex > this.currentProjectIndex ? 1 : -1;
                 this.SwitchObject(direction, 0.5); 
@@ -747,6 +750,24 @@ export default class EnginePortfolio extends Engine
         const projectDescription = document.getElementById('project-description');
         const projectContainer = document.getElementById('project-container');
 
+        const bufferTimeline = gsap.timeline({
+            paused: true, 
+            ease: "expo.inOut",
+            onComplete: () => {
+                if (!this.canOpenPage) return; 
+                this.canSwitchObject = false;
+                this.switchTimer = TIMER_SWITCH;  
+                this.canUpdateTimer = false;  
+                expandTimeline.timeScale(1.15).play(); // Play the animation at normal speed
+            },
+        })
+
+        bufferTimeline.to(projectDescription, {
+            duration: 0.250,
+        }).to(projectDescription, {
+            duration: 0.500
+        })
+
         const expandTimeline = gsap.timeline({ 
             paused: true,
             ease: "expo.inOut",
@@ -764,7 +785,7 @@ export default class EnginePortfolio extends Engine
                     width: 'auto',
                     onComplete: () => {
                         // Remove the inline width after the animation completes
-                        gsap.set(projectDescription, { clearProps: "width" });
+                        gsap.set(projectDescription, {clearProps: "width"});
                     }
                 });
 
@@ -775,9 +796,10 @@ export default class EnginePortfolio extends Engine
 
         expandTimeline.to(darkOverlay, {
             duration: 0.1,
-            opacity: '0.5'
+            opacity: '0.8'
         }).to(projectDescription, {
             duration: 0.20,
+            opacity: 0.95,
             color: 'rgb(0, 0, 0, 0)', 
             backgroundColor: 'rgb(0, 0, 0, 0.9)',
             width: projectDescription.parentElement.offsetWidth + 'px',
@@ -795,19 +817,16 @@ export default class EnginePortfolio extends Engine
             opacity: '1',
         }, "+=0.2"); // Starts 0.4 seconds after the previous animation ends
             
-        // Adjust timeScale to speed up reverse
-        const reverseSpeedMultiplier = 1.5; // Speed up reverse by 2x
-
         projectDescription.addEventListener('mouseenter', () => {
-            if (!this.canOpenPage) return; 
-            this.canSwitchObject = false;
-            this.switchTimer = TIMER_SWITCH;  
-            this.canUpdateTimer = false; 
-            expandTimeline.timeScale(1.1).play(); // Play the animation at normal speed
+            bufferTimeline.timeScale(1).play(); 
+        });
+
+        projectDescription.addEventListener('mouseleave', () => {
+            bufferTimeline.timeScale(1).reverse(); 
         });
 
         projectContainer.addEventListener('mouseleave', () => {
-            expandTimeline.timeScale(reverseSpeedMultiplier).reverse(); // Faster reverse speed
+            expandTimeline.timeScale(1.60).reverse(); // Faster reverse speed
         });
     }    
 

@@ -359,13 +359,15 @@ a:hover
   transform: translateX(-50%);
   text-align: center;
   display: inline-block;
-  background-color: rgba(0, 0, 0, 0.6);
-  padding: 4px 4px;
+  background-color: rgba(0, 0, 0, 1);
+  opacity: 0.75;
+  padding: 4px 8px;
   border-radius: 5px;
   z-index: 999;
   pointer-events: auto;
   overflow: hidden;
   width: auto;
+  cursor: pointer;
 }
 
 /* Additional styles to ensure text is centered vertically and horizontally */
