@@ -550,7 +550,7 @@ export default class EnginePortfolio extends Engine
     {
         this.gui = new GUI({width: 300});  // Create a new GUI instance
 
-        this.gui.domElement.style.position = 'absolute';
+        this.gui.domElement.style.position = 'relative';
         this.gui.domElement.style.marginTop = '100px';
         this.gui.domElement.style.width = '300px';
 
