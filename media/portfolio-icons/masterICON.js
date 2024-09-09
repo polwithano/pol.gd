@@ -3,6 +3,7 @@ async function LoadIcon(key)
     if (key == "blender") return import('./blender.png'); 
     if (key == "controller") return import('./controller.png');
     if (key == "folder") return import('./folder.png'); 
+    if (key == "keyboard") return import('./keyboard.png')
     if (key == "oculus") return import('./oculus.png');
     if (key == "unity") return import('./unity.png');
     if (key == "unreal") return import('./unreal.png');

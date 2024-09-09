@@ -837,7 +837,6 @@ svg circle {
 
 /* Style for favorite projects */
 .project.favorite {
-  list-style-type: circle;
   color: #FFA500; /* Yellow/orange color for favorite projects */
 }
 

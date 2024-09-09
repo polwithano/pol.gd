@@ -28,7 +28,7 @@ const DEFAULT_GLB_PATH = "../meshes/Biplane.glb";
 
 // Define the parameters for the camera's orbit
 const orbitRadius = 6;  // Distance from the object
-const orbitSpeed = .1; // Speed of the rotation
+const orbitSpeed = .2; // Speed of the rotation
 const orbitMinheight = 0; 
 const orbitMaxHeight = 3;
 
@@ -67,6 +67,7 @@ export default class EnginePortfolio extends Engine
         this.useGrid = true; 
         
         // Portfolio States
+        this.activeWindow = true; 
         this.currentPFObject = null; 
         this.nextPFObject = null; 
         this.currentProjectIndex = 0; 
@@ -711,6 +712,15 @@ export default class EnginePortfolio extends Engine
 
     SetupEventListeners() 
     {
+        window.addEventListener('blur', () => {
+            this.activeWindow = false; 
+        });
+        
+        window.addEventListener('focus', () => {
+            this.activeWindow = true; 
+            this.GameLoop(); 
+        });
+
         const switches = document.querySelectorAll('input[type="checkbox"]');
 
         switches.forEach((switchElement) => {
@@ -1069,6 +1079,7 @@ export default class EnginePortfolio extends Engine
     
     GameLoop() 
     {
+        if (!this.activeWindow) return; 
         super.GameLoop();
         const delta = this.clock.getDelta(); 
         this.world.step(WORLD_STEP_VALUE);

@@ -6,6 +6,7 @@ const projects =
     "Agent X",
     "Stellar Pulse",
     "Because I Love You",
+    "Moonshine Inc."
 ]
 
 async function LoadProjectData(key) 
