@@ -17,7 +17,6 @@ import ICON from '../../media/portfolio-icons/masterICON';
 import ObjectPortfolio from './objectPortfolio';
 import TagManager from './tagManager'; 
 
-
 /* ENGINE STATES CONST */
 const WORLD_STEP_VALUE = 1/60;
 const DEFAULT_RENDER_SCALE = 1; 
@@ -27,10 +26,18 @@ const USE_JSON = true;
 const DEFAULT_GLB_PATH = "../meshes/Biplane.glb"; 
 
 // Define the parameters for the camera's orbit
-const orbitRadius = 6;  // Distance from the object
-const orbitSpeed = .2; // Speed of the rotation
+const orbitRadius = 8;  // Distance from the object
+const orbitSpeed = .25; // Speed of the rotation
 const orbitMinheight = 0; 
 const orbitMaxHeight = 3;
+
+let isDragging = false;
+let initialMouseX = 0;
+let initialMouseY = 0;
+let initialRotationX = 0;
+let initialRotationY = 0;
+const rotationLimit = Math.PI / 3; // Limit rotation to 45 degrees
+const rotationSpeed = 0.0025; // Speed of rotation
 
 const paramsGrid = {
     coefXY:          20,
@@ -67,7 +74,6 @@ export default class EnginePortfolio extends Engine
         this.useGrid = true; 
         
         // Portfolio States
-        this.activeWindow = true; 
         this.currentPFObject = null; 
         this.nextPFObject = null; 
         this.currentProjectIndex = 0; 
@@ -79,6 +85,7 @@ export default class EnginePortfolio extends Engine
         this.animationStartTime = 0;
         this.switchTimer = TIMER_SWITCH;
         this.canUpdateTimer = false;  
+        this.canPinch = false; 
 
         this.defaultJsonPath = JSON.projects[this.currentProjectIndex]; 
         this.defaultGLBPath = DEFAULT_GLB_PATH; 
@@ -712,15 +719,6 @@ export default class EnginePortfolio extends Engine
 
     SetupEventListeners() 
     {
-        window.addEventListener('blur', () => {
-            this.activeWindow = false; 
-        });
-        
-        window.addEventListener('focus', () => {
-            this.activeWindow = true; 
-            this.GameLoop(); 
-        });
-
         const switches = document.querySelectorAll('input[type="checkbox"]');
 
         switches.forEach((switchElement) => {
@@ -910,9 +908,48 @@ export default class EnginePortfolio extends Engine
     // #endregion
 
     // #region Mouse Events
-    OnRightMouseDown(event) {}
-    OnRightMouseUp(event) {}
-    OnMouseMove(event) {}
+    OnRightMouseDown(event) 
+    {
+        if (this.canPinch == false) return; 
+        if (this.currentPFObject && this.currentPFObject.voxelizedMesh) 
+        {
+            isDragging = true;
+            initialMouseX = event.clientX;
+            initialMouseY = event.clientY;
+            // Store the current rotation of the object when the drag starts, including the startingRotation
+            initialRotationX = this.currentPFObject.voxelizedMesh.rotation.x;
+            initialRotationY = this.currentPFObject.voxelizedMesh.rotation.y;
+        }
+    }
+    OnRightMouseUp(event) 
+    {
+        if (isDragging) {
+            isDragging = false;
+            // Animate the return to the default position when the mouse is released
+            gsap.to(this.currentPFObject.voxelizedMesh.rotation, {
+                x: 0,
+                y: this.currentPFObject.voxelMetadata.startingRotation * (Math.PI / 180),
+                duration: 1,
+                ease: "elastic.out(1, 0.5)" // "Rubber band" effect
+            });
+        }
+    }
+
+    OnMouseMove(event) 
+    {
+        if (isDragging) {
+            const deltaX = (event.clientX - initialMouseX) * rotationSpeed;
+            const deltaY = (event.clientY - initialMouseY) * rotationSpeed;
+    
+            // Apply rotation based on the initial rotation values saved on drag start
+            this.currentPFObject.voxelizedMesh.rotation.x = initialRotationX + deltaY;
+            this.currentPFObject.voxelizedMesh.rotation.y = initialRotationY + deltaX;
+    
+            // Ensure the new rotation stays within the defined limits (optional)
+            this.currentPFObject.voxelizedMesh.rotation.x = Math.max(-rotationLimit, Math.min(rotationLimit, this.currentPFObject.voxelizedMesh.rotation.x));
+            this.currentPFObject.voxelizedMesh.rotation.y = Math.max(-rotationLimit, Math.min(rotationLimit, this.currentPFObject.voxelizedMesh.rotation.y));
+        }
+    }
 
     OnKeyDown(event) 
     {
@@ -963,6 +1000,7 @@ export default class EnginePortfolio extends Engine
         this.canRotateCamera = true; 
         this.switchTimer = TIMER_SWITCH;  
         this.canUpdateTimer = false; 
+        this.canPinch = true; 
 
         const perpDirection = this.camera.position.clone().applyAxisAngle(this.camera.up, direction * Math.PI / 2);         
         // Calculate spawn position for the new object (a bit to the left or right of the current object)
@@ -1079,7 +1117,6 @@ export default class EnginePortfolio extends Engine
     
     GameLoop() 
     {
-        if (!this.activeWindow) return; 
         super.GameLoop();
         const delta = this.clock.getDelta(); 
         this.world.step(WORLD_STEP_VALUE);
