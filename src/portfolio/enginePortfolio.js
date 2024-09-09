@@ -852,25 +852,27 @@ export default class EnginePortfolio extends Engine
     OnScroll(event) 
     {
         const delta = Math.abs(event.deltaY); // Scroll amount
-        this.ScrollIntroPanel(delta); 
+        this.ScrollIntroPanel(delta / 10); 
     }
 
     OnTouchStart(event) 
     {
         touchStartX = event.changedTouches[0].screenX; 
         touchStartY = event.changedTouches[0].screenY; 
+
+        touchLastX = touchStartX;
+        touchLastY = touchStartY;
     }
 
     OnTouchMove(event) 
     {
+        event.preventDefault(); 
+
         touchLastX = event.changedTouches[0].screenX; 
         touchLastY = event.changedTouches[0].screenY; 
 
         deltaTouchX = Math.abs(touchLastX - touchStartX); 
         deltaTouchY = Math.abs(touchLastY - touchStartY); 
-
-        touchStartX = touchLastX; 
-        touchStartY = touchLastY; 
 
         console.log('Delta Touch X: ' + deltaTouchX); 
         console.log('Delta Touch Y: ' + deltaTouchY); 
@@ -931,7 +933,11 @@ export default class EnginePortfolio extends Engine
             introSection.pointerEvents = 'none'; 
             this.introPanelClosed = true; 
         }
-        else introSection.style.transform = `translateY(-${lastScrollTop}px)`;
+        else introSection.style.transform = `translateY(${-lastScrollTop}px)`;
+
+        // Update the starting point for the next move
+        touchStartX = touchLastX; 
+        touchStartY = touchLastY; 
     }
 
     async SwitchToPreviousObject() 

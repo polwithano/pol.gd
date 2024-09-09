@@ -38,7 +38,7 @@
   justify-content: center;
   align-items: center;
   z-index: 99; /* Make sure it's above all other content */
-  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+  transition: opacity 0.5s ease-in-out;
   pointer-events: none;
 }
 
