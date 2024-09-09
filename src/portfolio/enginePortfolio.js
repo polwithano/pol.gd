@@ -718,6 +718,14 @@ export default class EnginePortfolio extends Engine
             });
         });
 
+        document.getElementById('leftArrowSwitch').addEventListener('click', (event) => {
+            this.SwitchToPreviousObject(); 
+        });
+        
+        document.getElementById('rightArrowSwitch').addEventListener('click', (event) => {
+            this.SwitchToNextObject(); 
+        });
+
         const darkOverlay = document.getElementById('darkOverlay');
         const projectDescription = document.getElementById('project-description');
         const projectContainer = document.getElementById('project-container');

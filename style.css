@@ -998,6 +998,35 @@ input:checked + .slider:before {
   border-radius: 50%;
 } 
 
+.arrow-switch {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.left {
+  left: 15%; /* Position the left arrow */
+  transform: scaleX(-1);
+}
+
+.right {
+  right: 15%; /* Position the right arrow */
+}
+
+.arrow-switch img {
+  opacity: 0.5;
+  width: 50px; /* Adjust the size of the arrow images */
+  height: 50px;
+  user-select: none; /* Prevents the image from being selected */
+  transition: all 0.3s ease-in-out;
+}
+
+.arrow-switch:hover img {
+  width: 64px;
+  height: 64px; 
+  opacity: 1;
+}
+
 /* TAGS */ 
 .small-tag {
   display: inline-block;
