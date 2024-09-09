@@ -133,6 +133,7 @@ function CreateCarouselDots(projectCount, currentProjectIndex)
     {
         const dot = document.createElement('span');
         dot.className = 'dot';
+        dot.setAttribute('project-index', i); 
         if (i === currentProjectIndex) 
         {
             dot.classList.add('active'); // Highlight the current project

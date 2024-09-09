@@ -70,14 +70,14 @@ export default class EnginePortfolio extends Engine
         this.currentPFObject = null; 
         this.nextPFObject = null; 
         this.currentProjectIndex = 0; 
-        this.canSwitchObject = true; 
+        this.canSwitchObject = false; 
         this.useJsonData = USE_JSON;  
-        this.canRotateCamera = true; 
+        this.canRotateCamera = false; 
         this.currentLookAt = new THREE.Vector3(); 
         this.canOpenPage = false; 
         this.animationStartTime = 0;
         this.switchTimer = TIMER_SWITCH;
-        this.canUpdateTimer = true;  
+        this.canUpdateTimer = false;  
 
         this.defaultJsonPath = JSON.projects[this.currentProjectIndex]; 
         this.defaultGLBPath = DEFAULT_GLB_PATH; 
@@ -101,6 +101,10 @@ export default class EnginePortfolio extends Engine
         this.InitializeGame(); 
         this.SetupEventListeners();
         if (!this.useJsonData) this.InitializeGUI(); 
+
+        this.canUpdateTimer = true;
+        this.canRotateCamera = true; 
+        this.canSwitchObject = true;
     }
 
     InitializeThreeJS() 
@@ -514,6 +518,18 @@ export default class EnginePortfolio extends Engine
         document.getElementById('copyright-model').innerHTML = `© Original Model • <a href="${voxelMetadata.modelLink}" target="_blank">${voxelMetadata.author}</a>`;
 
         Helpers.CreateCarouselDots(JSON.projects.length, this.currentProjectIndex); 
+        document.querySelectorAll('.dot').forEach(dot => {
+            dot.addEventListener('click', (event) => {
+                const target = event.target.closest('.dot');
+                const projectIndex = parseInt(target.getAttribute('project-index'), 10); 
+
+                if (projectIndex == this.currentProjectIndex) return; 
+                this.currentProjectIndex = projectIndex; 
+                const direction = projectIndex > this.currentProjectIndex ? 1 : -1;
+                this.SwitchObject(direction, 0.5); 
+            })
+        })
+
         this.UpdateIcons();
 
         this.canOpenPage = true;  
@@ -912,12 +928,12 @@ export default class EnginePortfolio extends Engine
 
     async SwitchObject(direction, duration) 
     {
+        Helpers.UpdateCarouselDots(this.currentProjectIndex); 
+
         this.canSwitchObject = false; 
         this.canRotateCamera = true; 
         this.switchTimer = TIMER_SWITCH;  
         this.canUpdateTimer = false; 
-
-        Helpers.UpdateCarouselDots(this.currentProjectIndex); 
 
         const perpDirection = this.camera.position.clone().applyAxisAngle(this.camera.up, direction * Math.PI / 2);         
         // Calculate spawn position for the new object (a bit to the left or right of the current object)
