@@ -766,15 +766,13 @@ export default class EnginePortfolio extends Engine
                 this.canSwitchObject = false;
                 this.switchTimer = TIMER_SWITCH;  
                 this.canUpdateTimer = false;  
-                expandTimeline.timeScale(1.15).play(); // Play the animation at normal speed
+                expandTimeline.timeScale(1.2).play(); // Play the animation at normal speed
             },
         })
 
         bufferTimeline.to(projectDescription, {
-            duration: 0.250,
-        }).to(projectDescription, {
-            duration: 0.500
-        })
+            duration: 0.500,
+        });
 
         const expandTimeline = gsap.timeline({ 
             paused: true,
@@ -834,7 +832,7 @@ export default class EnginePortfolio extends Engine
         });
 
         projectContainer.addEventListener('mouseleave', () => {
-            expandTimeline.timeScale(1.60).reverse(); // Faster reverse speed
+            expandTimeline.timeScale(1.7).reverse(); // Faster reverse speed
         });
     }    
 
@@ -914,6 +912,8 @@ export default class EnginePortfolio extends Engine
         if (this.currentPFObject && this.currentPFObject.voxelizedMesh) 
         {
             isDragging = true;
+            this.switchTimer = TIMER_SWITCH; 
+            this.canUpdateTimer = false; 
             initialMouseX = event.clientX;
             initialMouseY = event.clientY;
             // Store the current rotation of the object when the drag starts, including the startingRotation
@@ -925,6 +925,7 @@ export default class EnginePortfolio extends Engine
     {
         if (isDragging) {
             isDragging = false;
+            this.canUpdateTimer = true; 
             // Animate the return to the default position when the mouse is released
             gsap.to(this.currentPFObject.voxelizedMesh.rotation, {
                 x: 0,
