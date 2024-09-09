@@ -118,28 +118,5 @@
 
     <div id="app"></div>
     <script type="module" src="/main.js"></script>
-    <script id="fragment_shader_screen" type="x-shader/x-fragment">
-        uniform sampler2D tDiffuse;
-        uniform vec3 iResolution;
-        
-        varying vec2 vUv;
-        
-        void main() 
-        {
-            // Simplified: directly sample the texture
-            vec4 color = texture2D(tDiffuse, vUv);
-            gl_FragColor = vec4(pow(color.rgb, vec3(1.0 / 2.2)), color.a);
-        }
-    </script>
-    <script id="vertexShader" type="x-shader/x-vertex">
-        varying vec2 vUv;
-
-        void main() {
-
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-
-        }
-	  </script>
 </body>
 </html>
