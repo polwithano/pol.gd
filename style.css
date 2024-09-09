@@ -25,6 +25,10 @@
   --desktop-header-height: 100px;
 }
 
+body {
+  overflow: hidden;
+}
+
 #intro-section {
   font-family: 'DIN';
   position: fixed;
@@ -155,6 +159,7 @@
   box-sizing: border-box; /* Ensure padding and border are included in the width and height calculations */
   transform: translateZ(0); 
   pointer-events: auto;
+  overflow: hidden;
 }
 
 .icons {
@@ -1031,7 +1036,6 @@ input:checked + .slider:before {
 
 .left {
   left: 15%; /* Position the left arrow */
-  transform: scaleX(-1);
 }
 
 .right {
