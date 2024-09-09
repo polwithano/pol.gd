@@ -96,10 +96,10 @@ export default class EnginePortfolio extends Engine
         super.Initialize();
 
         this.InitializeCannon();
-        if (!this.useJsonData) this.InitializeGUI();
         this.InitializeFileExplorer();    
         this.InitializeGame(); 
-        this.SetupEventListeners(); 
+        this.SetupEventListeners();
+        if (!this.useJsonData) this.InitializeGUI(); 
     }
 
     InitializeThreeJS() 
@@ -619,6 +619,8 @@ export default class EnginePortfolio extends Engine
 
         document.getElementById('company-name').textContent = projectMetadata.companyName;
         document.getElementById('author-name').textContent = projectMetadata.yearString;
+        document.getElementById('project-tag').innerHTML = '';  
+        document.getElementById('project-tag').appendChild(TagManager.TagElement(projectMetadata.tag, "tag")); 
         document.getElementById('copyright-model').innerHTML = `© Original Model • <a href="${voxelMetadata.modelLink}" target="_blank">${voxelMetadata.author}</a>`;
 
         this.UpdateIcons();
@@ -880,8 +882,9 @@ export default class EnginePortfolio extends Engine
         if (this.currentProjectIndex > 0) 
         {
             this.currentProjectIndex--;
-            await this.SwitchObject(-1, 0.5); 
         }
+        else this.currentProjectIndex = JSON.projects.length - 1; 
+        await this.SwitchObject(-1, 0.5); 
     }
 
     async SwitchToNextObject() 
@@ -890,8 +893,9 @@ export default class EnginePortfolio extends Engine
         if (this.currentProjectIndex < JSON.projects.length - 1) 
         {
             this.currentProjectIndex++;
-            await this.SwitchObject(1, 0.66); 
         } 
+        else this.currentProjectIndex = 0; 
+        await this.SwitchObject(1, 0.66); 
     }
 
     async SwitchObject(direction, duration) 
@@ -1073,7 +1077,7 @@ export default class EnginePortfolio extends Engine
                 position.x / paramsGrid.coefXY, 
                 position.z / paramsGrid.coefXY, time, 
                 2) * paramsGrid.coefZ / paramsGrid.voxelSize) 
-                * paramsGrid.voxelSize - 5;
+                * paramsGrid.voxelSize - 8;
 
             if (position.y < this.gridMinY) this.gridMinY = position.y;
             if (position.y > this.gridMaxY) this.gridMaxY = position.y;

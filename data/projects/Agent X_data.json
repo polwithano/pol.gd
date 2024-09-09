@@ -1,0 +1,95 @@
+{
+  "metadata": {
+    "tag": "board_game",
+    "projectName": "Agent X",
+    "companyName": "companyName",
+    "yearString": "2018",
+    "yearID": "2018",
+    "tasks": "Game Design",
+    "description": "A short description of the project.",
+    "isFavorite": false,
+    "voxelPath": "../data/voxels/Agent X_voxel.json",
+    "gradientBackground": [
+      "#FFFFFF",
+      "#FFFFFF",
+      "#FFFFFF"
+    ],
+    "gradientGrid": [
+      "#ffcf67",
+      "#2B2B2B",
+      "#d3321d"
+    ]
+  },
+  "content": {
+    "title": "Agent X",
+    "tagline": "Project Tagline",
+    "background": "media/placeholder-image.jpg",
+    "icons": [
+      {
+        "name": "Name",
+        "image": "name"
+      },
+      {
+        "name": "Name",
+        "image": "name"
+      },
+      {
+        "name": "Name",
+        "image": "name"
+      }
+    ],
+    "sections": [
+      {
+        "type": "category",
+        "content": {
+          "title": "Description"
+        }
+      },
+      {
+        "type": "spacer"
+      },
+      {
+        "type": "text-image",
+        "content": {
+          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "image": {
+            "src": "media/placeholder-image.jpg",
+            "alt": "project image",
+            "position": "left"
+          }
+        }
+      },
+      {
+        "type": "spacer"
+      },
+      {
+        "type": "text-image",
+        "content": {
+          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "image": {
+            "src": "media/placeholder-image.jpg",
+            "alt": "project image",
+            "position": "right"
+          }
+        }
+      },
+      {
+        "type": "spacer"
+      },
+      {
+        "type": "video",
+        "content": {
+          "videoId": "dQw4w9WgXcQ",
+          "caption": "This is a caption illustrating the content shown in the video."
+        }
+      },
+      {
+        "type": "spacer"
+      }
+    ],
+    "download": {
+      "url": "https://github.com/polwithano",
+      "label": "Git Repository"
+    }
+  }
+}

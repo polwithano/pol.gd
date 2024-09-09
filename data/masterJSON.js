@@ -3,8 +3,9 @@ const projects =
     "Space Architect",
     "Zer0 Day",
     "Brutal Fighters",
+    "Agent X",
     "Stellar Pulse",
-    "Because I Love You"
+    "Because I Love You",
 ]
 
 async function LoadProjectData(key) 
