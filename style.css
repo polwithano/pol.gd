@@ -42,15 +42,15 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 99; /* Make sure it's above all other content */
-  transition: transform 1.0s ease-in-out, opacity 0.5s ease-in-out;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .intro-content {
   text-align: center;
 }
 
-.scroll-indicator {
+#scroll-indicator {
   position: fixed; 
   bottom: 1%; 
   left: 50%; 

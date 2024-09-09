@@ -646,6 +646,10 @@ export default class EnginePortfolio extends Engine
             this.SwitchToNextObject(); 
         });
 
+        document.getElementById('scroll-indicator').addEventListener('click', (event) => {
+            this.ScrollIntroPanel(); 
+        })
+
         const darkOverlay = document.getElementById('darkOverlay');
         const projectDescription = document.getElementById('project-description');
         const projectContainer = document.getElementById('project-container');
@@ -852,7 +856,7 @@ export default class EnginePortfolio extends Engine
     OnScroll(event) 
     {
         const delta = Math.abs(event.deltaY); // Scroll amount
-        this.ScrollIntroPanel(delta / 10); 
+        this.ScrollIntroPanel(); 
     }
 
     OnTouchStart(event) 
@@ -904,7 +908,7 @@ export default class EnginePortfolio extends Engine
         console.log(`Vertical ${direction} Swipe`); 
         if (direction == 'up') 
         {
-            this.ScrollIntroPanel(deltaTouchY); 
+            this.ScrollIntroPanel(); 
         }
     }
 
@@ -914,30 +918,25 @@ export default class EnginePortfolio extends Engine
         console.log(`Horizontal ${direction} Swipe`); 
     }
 
-    ScrollIntroPanel(delta) 
+    ScrollIntroPanel() 
     {
         if (this.introPanelClosed) return; 
+        this.introPanelClosed = true;
         
         const introSection = document.getElementById('intro-section');
-
-        // Accumulate scroll position
-        lastScrollTop += delta;
         
         // Limit the scroll position so that it doesn't move beyond a certain point
         const maxScroll = window.innerHeight; // Adjust based on how far you want to move it
-        lastScrollTop = Math.max(Math.min(lastScrollTop, maxScroll), 0);
-
-        if (lastScrollTop >= maxScroll) 
-        {
-            introSection.style.opacity = 0; 
-            introSection.pointerEvents = 'none'; 
-            this.introPanelClosed = true; 
-        }
-        else introSection.style.transform = `translateY(${-lastScrollTop}px)`;
-
-        // Update the starting point for the next move
-        touchStartX = touchLastX; 
-        touchStartY = touchLastY; 
+    
+        // Use GSAP to animate the position and opacity smoothly
+        gsap.to(introSection, {
+            y: -maxScroll,   // equivalent to `translateY`
+            duration: 2,       // adjust for how smooth/fast you want it
+            ease: "power2.out",   // easing function for a smoother animation
+            onComplete: () => {
+                introSection.style.pointerEvents = 'none';  // Disable pointer events after fade out 
+            }
+        });
     }
 
     async SwitchToPreviousObject() 
