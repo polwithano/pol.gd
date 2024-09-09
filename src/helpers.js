@@ -1,7 +1,5 @@
 import * as THREE from 'three'; 
 import gsap from 'gsap';
-import { Reflector } from 'three/examples/jsm/Addons.js';
-import { ceilPowerOfTwo } from 'three/src/math/MathUtils.js';
 
 function CloneMeshMaterials(mesh) 
 {

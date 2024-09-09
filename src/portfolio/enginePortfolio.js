@@ -32,6 +32,7 @@ const orbitSpeed = .25; // Speed of the rotation
 const orbitMinheight = 0; 
 const orbitMaxHeight = 3;
 
+let lastScrollTop = 0; 
 let isDragging = false;
 let initialMouseX = 0;
 let initialMouseY = 0;
@@ -68,6 +69,7 @@ export default class EnginePortfolio extends Engine
         this.mouseUpListener = (event) => this.OnRightMouseUp(event);
         this.mouseMoveListener = (event) => this.OnMouseMove(event);
         this.keyDownListener = (event) => this.OnKeyDown(event); 
+        this.scrollListener = (event) => this.OnScroll(event); 
 
         // Rendering 
         this.composer = null; 
@@ -596,7 +598,7 @@ export default class EnginePortfolio extends Engine
     }
 
     SetupEventListeners() 
-    {
+    {   
         const switches = document.querySelectorAll('input[type="checkbox"]');
 
         switches.forEach((switchElement) => {
@@ -726,60 +728,48 @@ export default class EnginePortfolio extends Engine
     DefineListeners() 
     {
         super.DefineListeners(); 
-
+    
         this.mouseDownListener = (event) => {
-            if (!this.IsButton(event)) 
-            {
-                if (event.button == 0) 
-                {
-                    this.OnRightMouseDown(event); 
+            if (!this.IsButton(event)) {
+                if (event.button == 0) {
+                    this.OnRightMouseDown(event);
                 }
             }
-        }; 
-
-        this.mouseUpListener = (event) =>  {
-            if (!this.IsButton(event)) 
-            {
-                if (event.button == 0) 
-                {
-                    this.OnRightMouseUp(event); 
+        };
+    
+        this.mouseUpListener = (event) => {
+            if (!this.IsButton(event)) {
+                if (event.button == 0) {
+                    this.OnRightMouseUp(event);
                 }
             }
-        }; 
-
-        this.mouseMoveListener = (event) =>  
-        {
-            this.OnMouseMove(event); 
-        }; 
-
-        this.keyDownListener = event => 
-        {
-            if (this.useJsonData) this.OnKeyDown(event); 
-        }
+        };
+    
+        this.mouseMoveListener = (event) => {this.OnMouseMove(event);};
+        this.keyDownListener = (event) => {if (this.useJsonData) this.OnKeyDown(event);};
+        this.scrollListener = (event) => {if (this.useJsonData) this.OnScroll(event);};
     }
-
-    AddEventListeners() 
-    {
+    
+    AddEventListeners() {
         super.AddEventListeners(); 
-
-        // Add new event listeners to the buttons using stored references
+    
+        // Add new event listeners to the document using stored references
         document.addEventListener('mousedown', this.mouseDownListener);    
         document.addEventListener('mouseup', this.mouseUpListener); 
         document.addEventListener('mousemove', this.mouseMoveListener); 
-
-        document.addEventListener('keydown', this.keyDownListener); 
+        document.addEventListener('keydown', this.keyDownListener);
+        window.addEventListener('wheel', this.scrollListener, false);
     }
-
-    RemoveEventListeners() 
-    {
+    
+    RemoveEventListeners() {
         super.RemoveEventListeners(); 
-
-        // Remove existing event listeners for the buttons using stored references
+    
+        // Remove existing event listeners for the document using stored references
         document.removeEventListener('mousedown', this.mouseDownListener);
         document.removeEventListener('mouseup', this.mouseUpListener);
         document.removeEventListener('mousemove', this.mouseMoveListener);
-
-        document.removeEventListener('keydown', this.keyDownListener); 
+        document.removeEventListener('keydown', this.keyDownListener);
+        window.removeEventListener('wheel', this.scrollListener, false);
     }
     // #endregion
 
@@ -799,6 +789,7 @@ export default class EnginePortfolio extends Engine
             initialRotationY = this.currentPFObject.voxelizedMesh.rotation.y;
         }
     }
+
     OnRightMouseUp(event) 
     {
         if (isDragging) {
@@ -838,15 +829,24 @@ export default class EnginePortfolio extends Engine
 
     OnScroll(event) 
     {
-        console.log("deltaX: ", event.deltaX, "deltaY: ", event.deltaY);
-        // Check if horizontal scroll (deltaX) or vertical scroll (deltaY) is detected
-        if (event.deltaX < 0) {
-            // Scrolling left (negative deltaX)
-            this.SwitchToPreviousObject();
-        } else if (event.deltaX > 0) {
-            // Scrolling right (positive deltaX)
-            this.SwitchToNextObject();
+        const delta = Math.abs(event.deltaY); // Scroll amount
+
+        // Get the intro section
+        const introSection = document.getElementById('intro-section');
+    
+        // Accumulate scroll position
+        lastScrollTop += delta;
+        
+        // Limit the scroll position so that it doesn't move beyond a certain point
+        const maxScroll = window.innerHeight; // Adjust based on how far you want to move it
+        lastScrollTop = Math.max(Math.min(lastScrollTop, maxScroll), 0);
+
+        if (lastScrollTop >= maxScroll) 
+        {
+            introSection.style.opacity = 0; 
+            introSection.pointerEvents = 'none'; 
         }
+        else introSection.style.transform = `translateY(-${lastScrollTop}px)`;
     }
 
     async SwitchToPreviousObject() 

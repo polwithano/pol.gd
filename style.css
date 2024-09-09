@@ -25,6 +25,42 @@
   --desktop-header-height: 100px;
 }
 
+#intro-section {
+  font-family: 'DIN';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #000; /* Dark background */
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99; /* Make sure it's above all other content */
+  transition: transform 0.7s ease-in-out, opacity 1s ease-in-out;
+  pointer-events: none;
+}
+
+.intro-content {
+  text-align: center;
+}
+
+.scroll-indicator {
+  position: fixed; 
+  bottom: 1%; 
+  left: 50%; 
+  font-size: 2rem;
+  transform: translateX(-50%);
+}
+
+#info-scroll {
+  position: fixed; 
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 /* Dat GUI */ 
 .dg .property-name {
   font-family: '0xProto Nerd Font Mono';
@@ -118,6 +154,7 @@
   background-color: #000; /* Optional: Set a background color for visibility */
   box-sizing: border-box; /* Ensure padding and border are included in the width and height calculations */
   transform: translateZ(0); 
+  pointer-events: auto;
 }
 
 .icons {
@@ -164,19 +201,6 @@
 /* UI */
 
 /* GENERAL */
-body 
-{
-  font-family: "Poppins", sans-serif;  
-  color: white; 
-  overflow: hidden;
-}
-
-
-html 
-{
-  scroll-behavior: smooth;
-}
-
 p 
 {
   color: rgb(85, 85, 85); 
@@ -522,6 +546,7 @@ a:hover
 
 /* Download Section */
 .download-section {
+  font-family: 'DIN';
   text-align: center;
   margin-top: -40px;
 }
@@ -663,6 +688,7 @@ svg circle {
   height: calc(100% - 100px);
   top: var(--desktop-header-height); /* Adjusted for header */
   left: 0;
+  z-index: 1;
   background-color: #333;
   color: #fff;
   box-sizing: border-box;
@@ -852,6 +878,7 @@ svg circle {
 
 /* COPYRIGHT */
 #copyright {
+  font-family: 'DIN';
   position: fixed; /* Fixes the position relative to the viewport */
   bottom: 5px; /* Distance from the bottom of the screen */
   right: 5px; /* Distance from the right side of the screen */
@@ -860,11 +887,12 @@ svg circle {
   background-color: rgba(0, 0, 0, 0.2); /* Optional: Background with transparency */
   padding: 5px 8px; /* Padding around the text */
   border-radius: 5px; /* Rounded corners */
-  z-index: 1000; /* Ensure it stays above most elements */
+  z-index: 3; /* Ensure it stays above most elements */
   pointer-events: none; /* Prevents it from blocking clicks on other elements */
 }
 
 #copyright-model {
+  font-family: 'DIN';
   position: fixed; /* Fixes the position relative to the viewport */
   bottom: 35px; /* Distance from the bottom of the screen */
   right: 5px; /* Distance from the right side of the screen */
@@ -873,7 +901,7 @@ svg circle {
   background-color: rgba(0, 0, 0, 0.2); /* Optional: Background with transparency */
   padding: 5px 8px; /* Padding around the text */
   border-radius: 5px; /* Rounded corners */
-  z-index: 1000; /* Ensure it stays above most elements */
+  z-index: 3; /* Ensure it stays above most elements */
   pointer-events: auto; /* Prevents it from blocking clicks on other elements */
 }
 
