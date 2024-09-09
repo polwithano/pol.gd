@@ -32,13 +32,19 @@ const orbitSpeed = .25; // Speed of the rotation
 const orbitMinheight = 0; 
 const orbitMaxHeight = 3;
 
+let touchStartX = 0
+let touchEndX = 0
+let touchStartY = 0; 
+let touchEndY = 0; 
+let deltaTouchX = 0; 
+let deltaTouchY = 0; 
 let lastScrollTop = 0; 
 let isDragging = false;
 let initialMouseX = 0;
 let initialMouseY = 0;
 let initialRotationX = 0;
 let initialRotationY = 0;
-const rotationLimit = Math.PI / 3; // Limit rotation to 45 degrees
+const rotationLimit = Math.PI / 2; // Limit rotation to 45 degrees
 const rotationSpeed = 0.0025; // Speed of rotation
 
 const paramsGrid = {
@@ -70,6 +76,8 @@ export default class EnginePortfolio extends Engine
         this.mouseMoveListener = (event) => this.OnMouseMove(event);
         this.keyDownListener = (event) => this.OnKeyDown(event); 
         this.scrollListener = (event) => this.OnScroll(event); 
+        this.touchStartListener = (event) => this.OnTouchStart(event); 
+        this.touchEndListener = (event) => this.OnTouchEnd(event); 
 
         // Rendering 
         this.composer = null; 
@@ -748,6 +756,8 @@ export default class EnginePortfolio extends Engine
         this.mouseMoveListener = (event) => {this.OnMouseMove(event);};
         this.keyDownListener = (event) => {if (this.useJsonData) this.OnKeyDown(event);};
         this.scrollListener = (event) => {if (this.useJsonData) this.OnScroll(event);};
+        this.touchStartListener = (event) => this.OnTouchStart(event); 
+        this.touchEndListener = (event) => this.OnTouchEnd(event); 
     }
     
     AddEventListeners() {
@@ -759,6 +769,9 @@ export default class EnginePortfolio extends Engine
         document.addEventListener('mousemove', this.mouseMoveListener); 
         document.addEventListener('keydown', this.keyDownListener);
         window.addEventListener('wheel', this.scrollListener, false);
+
+        document.addEventListener('touchstart', this.touchStartListener); 
+        document.addEventListener('touchend', this.touchEndListener); 
     }
     
     RemoveEventListeners() {
@@ -770,6 +783,9 @@ export default class EnginePortfolio extends Engine
         document.removeEventListener('mousemove', this.mouseMoveListener);
         document.removeEventListener('keydown', this.keyDownListener);
         window.removeEventListener('wheel', this.scrollListener, false);
+
+        document.removeEventListener('touchstart', this.touchStartListener); 
+        document.removeEventListener('touchend', this.touchEndListener); 
     }
     // #endregion
 
@@ -830,10 +846,51 @@ export default class EnginePortfolio extends Engine
     OnScroll(event) 
     {
         const delta = Math.abs(event.deltaY); // Scroll amount
+        this.ScrollIntroPanel(delta); 
+    }
 
+    OnTouchStart(event) 
+    {
+        touchStartX = event.changedTouches[0].screenX; 
+        touchStartY = event.changedTouches[0].screenY; 
+    }
+
+    OnTouchEnd(event) 
+    {
+        touchEndX = event.changedTouches[0].screenX; 
+        touchEndY = event.changedTouches[0].screenY; 
+
+        deltaTouchX = Math.abs(touchEndX - touchStartX); 
+        deltaTouchY = Math.abs(touchEndY - touchStartY); 
+
+        console.log('Delta Touch X: ' + deltaTouchX); 
+        console.log('Delta Touch Y:' + deltaTouchY); 
+
+        if (deltaTouchY > deltaTouchX) this.SwipeVertical();
+        else this.SwipeHorizontal();  
+    }
+
+    SwipeVertical() 
+    {
+        const direction = touchEndY > touchStartY ? 'down' : 'up'; 
+        console.log(`Vertical ${direction} Swipe`); 
+        if (direction == 'up') 
+        {
+            this.ScrollIntroPanel(deltaTouchY * 2); 
+        }
+    }
+
+    SwipeHorizontal() 
+    {
+        const direction = touchEndX > touchStartX ? 'right' : 'left'; 
+        console.log(`Horizontal ${direction} Swipe`); 
+    }
+
+    ScrollIntroPanel(delta) 
+    {
         // Get the intro section
         const introSection = document.getElementById('intro-section');
-    
+
         // Accumulate scroll position
         lastScrollTop += delta;
         
