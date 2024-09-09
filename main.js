@@ -54,17 +54,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial load
     LoadEngine();
 
+    /*
     document.addEventListener('keydown', (event) => 
     {
         if (event.key === 'ArrowDown' ) 
         {
-            ChangeEngineIndex(-1);
+            //ChangeEngineIndex(-1);
         }
         if (event.key === 'ArrowUp') 
         {
-            ChangeEngineIndex(1); 
+            //ChangeEngineIndex(1); 
         } 
     }); 
+    */
 
     document.addEventListener('mousedown', () => 
     {
