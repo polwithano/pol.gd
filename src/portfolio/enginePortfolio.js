@@ -22,7 +22,7 @@ import TagManager from './tagManager';
 const WORLD_STEP_VALUE = 1/60;
 const DEFAULT_RENDER_SCALE = 1; 
 const LOFI_RENDER_SCALE = 4; 
-const TIMER_SWITCH = 10; 
+const TIMER_SWITCH = 15.0; 
 const USE_JSON = true; 
 const DEFAULT_GLB_PATH = "../meshes/Biplane.glb"; 
 
@@ -76,7 +76,8 @@ export default class EnginePortfolio extends Engine
         this.currentLookAt = new THREE.Vector3(); 
         this.canOpenPage = false; 
         this.animationStartTime = 0;
-        this.switchTimer = TIMER_SWITCH; 
+        this.switchTimer = TIMER_SWITCH;
+        this.canUpdateTimer = true;  
 
         this.defaultJsonPath = JSON.projects[this.currentProjectIndex]; 
         this.defaultGLBPath = DEFAULT_GLB_PATH; 
@@ -740,6 +741,7 @@ export default class EnginePortfolio extends Engine
             },
             onReverseComplete: () => {
                 this.canSwitchObject = true; 
+                this.canUpdateTimer = true; 
                 
                 gsap.to(projectDescription, {
                     duration: 0.2, // Control the duration of the smooth transition
@@ -782,7 +784,9 @@ export default class EnginePortfolio extends Engine
 
         projectDescription.addEventListener('mouseenter', () => {
             if (!this.canOpenPage) return; 
-            this.canSwitchObject = false; 
+            this.canSwitchObject = false;
+            this.switchTimer = TIMER_SWITCH;  
+            this.canUpdateTimer = false; 
             expandTimeline.timeScale(1.1).play(); // Play the animation at normal speed
         });
 
@@ -910,6 +914,10 @@ export default class EnginePortfolio extends Engine
     {
         this.canSwitchObject = false; 
         this.canRotateCamera = true; 
+        this.switchTimer = TIMER_SWITCH;  
+        this.canUpdateTimer = false; 
+
+        Helpers.UpdateCarouselDots(this.currentProjectIndex); 
 
         const perpDirection = this.camera.position.clone().applyAxisAngle(this.camera.up, direction * Math.PI / 2);         
         // Calculate spawn position for the new object (a bit to the left or right of the current object)
@@ -946,13 +954,13 @@ export default class EnginePortfolio extends Engine
                 this.currentPFObject = this.nextPFObject;
 
                 this.UpdateHTML(); 
-                this.RenderProjectPage(this.currentPFObject.projectContent); 
-                Helpers.UpdateCarouselDots(this.currentProjectIndex);  
+                this.RenderProjectPage(this.currentPFObject.projectContent);  
 
                 //this.animationStartTime = 0; 
                 this.currentPFObject.voxelStartAnimationOver = true; 
                 this.canRotateCamera = true; 
                 this.canSwitchObject = true;
+                this.canUpdateTimer = true; 
  
                 gsap.to(this.currentLookAt, {
                     y: newLookAtY,
@@ -1027,14 +1035,16 @@ export default class EnginePortfolio extends Engine
     GameLoop() 
     {
         super.GameLoop();
+        const delta = this.clock.getDelta(); 
         this.world.step(WORLD_STEP_VALUE);
         this.stats.update(); 
 
         //this.AnimatePlane();
         if (this.useJsonData) 
         {
-            this.AnimateCamera(); 
-            this.UpdateSwitchTimer();  
+            this.UpdateSwitchTimer(delta);  
+            this.AnimateCamera(delta); 
+            
             if (this.frameCounter % paramsGrid.frameSkip == 0) this.AnimateVoxelGrid(); 
         }
 
@@ -1049,13 +1059,18 @@ export default class EnginePortfolio extends Engine
         this.renderer.render(this.dummyScene, this.dummyCamera); 
     }
 
-    UpdateSwitchTimer() 
+    UpdateSwitchTimer(delta) 
     {
-        this.switchTimer -= this.clock.getDelta(); 
+        if (this.canUpdateTimer) this.switchTimer -= delta; 
+
+        const gradientPercentage = (1 - (this.switchTimer / TIMER_SWITCH)) * 100;  
+        const dot = document.querySelector('.dot.active'); // Select the dot with the active class
+        if (dot) dot.style.background = `conic-gradient(#949494 ${gradientPercentage}%, 0, #FFFFFF)`;
     
         if (this.switchTimer <= 0) 
         {
             this.switchTimer = TIMER_SWITCH; // Reset the timer
+            this.SwitchToNextObject(); 
         }
     }
 
@@ -1127,12 +1142,12 @@ export default class EnginePortfolio extends Engine
         }
     }
 
-    AnimateCamera() {
+    AnimateCamera(delta) {
         if (this.currentPFObject != null &&
             this.currentPFObject.voxelStartAnimationOver === true &&
             this.canRotateCamera)
         {
-            this.animationStartTime += this.clock.getDelta(); 
+            this.animationStartTime += delta; 
             // Calculate elapsed time since the animation started
             const elapsedTime = (this.animationStartTime) * orbitSpeed;
 

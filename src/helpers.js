@@ -147,9 +147,11 @@ function UpdateCarouselDots(currentProjectIndex)
 
     dots.forEach((dot, index) => {
         dot.classList.remove('active'); // Remove active class from all dots
+        dot.style.background = `conic-gradient(#949494 100%, 0, #FFFFFF)`;
         if (index === currentProjectIndex) 
         {
             dot.classList.add('active'); // Add active class to the current dot
+            dot.style.background = `conic-gradient(#949494 0%, 0, #FFFFFF)`;
         }
     });
 }

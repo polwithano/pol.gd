@@ -607,25 +607,25 @@ a:hover
 }
 
 .dot {
-  height: 10px;
-  width: 10px;
+  height: 12px;
+  width: 12px;
   background-color: #949494;
   border-radius: 50%;
   display: inline-block;
-  margin: 5px;
+  margin: 3px;
   transition: all 0.3s ease;
 }
 
 .dot:hover 
 {
-  width: 14px;
-  height: 14px; 
+  width: 16px;
+  height: 16px; 
 }
 
 .dot.active {
-  height: 14px;
-  width: 14px;
-  background-color: #FFFFFF;
+  height: 16px;
+  width: 16px;
+  background:conic-gradient(#949494 0%, 0, #FFFFFF)
 }
 
 /* Style for the countdown circle */
@@ -644,17 +644,13 @@ svg circle {
   position: absolute;
   color: white;
   font-size: 24px; /* Adjust size of the arrow */
-  top: calc(100% - 140px); /* Positions it above the project description */
+  top: calc(100% - 125px); /* Positions it above the project description */
   left: 50%;
   transform: translateX(-50%);
   z-index: 998;
   cursor: pointer;
   pointer-events: auto; /* Allows interaction with the arrow */
-  transition: transform 0.2s ease-in-out; /* Adds a hover effect */
-}
-
-#arrow-down:hover {
-  transform: translateX(-50%) translateY(10px); /* Slight downward movement on hover */
+  animation: bounce 2s ease-in-out infinite; /* Apply the bounce animation */
 }
 
 /* General Menu Container Styles */
@@ -1065,5 +1061,12 @@ input:checked + .slider:before {
   }
   to {
     stroke-dashoffset: 0px;
+  }
+}
+
+/* Add delay between each bounce */
+@keyframes bounce {
+  30%, 60% {
+    transform: translateX(-50%) translateY(-8px); /* Move up */
   }
 }
