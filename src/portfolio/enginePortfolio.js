@@ -34,6 +34,8 @@ const orbitMaxHeight = 3;
 
 let touchStartX = 0
 let touchEndX = 0
+let touchLastX = 0; 
+let touchLastY = 0; 
 let touchStartY = 0; 
 let touchEndY = 0; 
 let deltaTouchX = 0; 
@@ -78,6 +80,7 @@ export default class EnginePortfolio extends Engine
         this.scrollListener = (event) => this.OnScroll(event); 
         this.touchStartListener = (event) => this.OnTouchStart(event); 
         this.touchEndListener = (event) => this.OnTouchEnd(event); 
+        this.touchMoveListener = (event) => this.OnTouchMove(event)
 
         // Rendering 
         this.composer = null; 
@@ -97,6 +100,7 @@ export default class EnginePortfolio extends Engine
         this.switchTimer = TIMER_SWITCH;
         this.canUpdateTimer = false;  
         this.canPinch = false; 
+        this.introPanelClosed = false; 
 
         this.defaultJsonPath = JSON.projects[this.currentProjectIndex]; 
         this.defaultGLBPath = DEFAULT_GLB_PATH; 
@@ -771,7 +775,8 @@ export default class EnginePortfolio extends Engine
         window.addEventListener('wheel', this.scrollListener, false);
 
         document.addEventListener('touchstart', this.touchStartListener); 
-        document.addEventListener('touchend', this.touchEndListener); 
+        document.addEventListener('touchend', this.touchEndListener);
+        document.addEventListener('touchmove', this.touchMoveListener); 
     }
     
     RemoveEventListeners() {
@@ -786,6 +791,7 @@ export default class EnginePortfolio extends Engine
 
         document.removeEventListener('touchstart', this.touchStartListener); 
         document.removeEventListener('touchend', this.touchEndListener); 
+        document.removeEventListener('touchmove', this.touchMoveListener); 
     }
     // #endregion
 
@@ -855,8 +861,27 @@ export default class EnginePortfolio extends Engine
         touchStartY = event.changedTouches[0].screenY; 
     }
 
+    OnTouchMove(event) 
+    {
+        touchLastX = event.changedTouches[0].screenX; 
+        touchLastY = event.changedTouches[0].screenY; 
+
+        deltaTouchX = Math.abs(touchLastX - touchStartX); 
+        deltaTouchY = Math.abs(touchLastY - touchStartY); 
+
+        touchStartX = touchLastX; 
+        touchStartY = touchLastY; 
+
+        console.log('Delta Touch X: ' + deltaTouchX); 
+        console.log('Delta Touch Y: ' + deltaTouchY); 
+
+        if (deltaTouchY > deltaTouchX) this.SwipeVertical();
+        else this.SwipeHorizontal();  
+    }
+
     OnTouchEnd(event) 
     {
+        /*
         touchEndX = event.changedTouches[0].screenX; 
         touchEndY = event.changedTouches[0].screenY; 
 
@@ -864,10 +889,11 @@ export default class EnginePortfolio extends Engine
         deltaTouchY = Math.abs(touchEndY - touchStartY); 
 
         console.log('Delta Touch X: ' + deltaTouchX); 
-        console.log('Delta Touch Y:' + deltaTouchY); 
+        console.log('Delta Touch Y: ' + deltaTouchY); 
 
         if (deltaTouchY > deltaTouchX) this.SwipeVertical();
         else this.SwipeHorizontal();  
+        */
     }
 
     SwipeVertical() 
@@ -876,7 +902,7 @@ export default class EnginePortfolio extends Engine
         console.log(`Vertical ${direction} Swipe`); 
         if (direction == 'up') 
         {
-            this.ScrollIntroPanel(deltaTouchY * 2); 
+            this.ScrollIntroPanel(deltaTouchY); 
         }
     }
 
@@ -888,7 +914,8 @@ export default class EnginePortfolio extends Engine
 
     ScrollIntroPanel(delta) 
     {
-        // Get the intro section
+        if (this.introPanelClosed) return; 
+        
         const introSection = document.getElementById('intro-section');
 
         // Accumulate scroll position
@@ -902,6 +929,7 @@ export default class EnginePortfolio extends Engine
         {
             introSection.style.opacity = 0; 
             introSection.pointerEvents = 'none'; 
+            this.introPanelClosed = true; 
         }
         else introSection.style.transform = `translateY(-${lastScrollTop}px)`;
     }
