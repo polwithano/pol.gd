@@ -50,6 +50,10 @@ body {
   text-align: center;
 }
 
+#small-bio {
+  color: rgb(200, 200, 200);
+}
+
 #scroll-indicator {
   position: fixed; 
   bottom: 1%; 
@@ -63,6 +67,7 @@ body {
   bottom: 4%;
   left: 50%;
   transform: translateX(-50%);
+  color: rgb(200, 200, 200);
 }
 
 /* Dat GUI */ 
@@ -102,6 +107,11 @@ body {
   font-size: 30px;
   font-weight: bold;
   color: white;
+  cursor: pointer; 
+}
+
+#desktop-nav .logo:hover {
+  text-decoration: none;
 }
 
 .nav-links {

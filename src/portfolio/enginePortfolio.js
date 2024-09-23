@@ -1,22 +1,23 @@
-import * as THREE from 'three'; 
 import * as CANNON from 'cannon';
-import SplitType from 'split-type'; 
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GUI } from 'dat.gui'
-import gsap from 'gsap';
-import Stats from 'three/addons/libs/stats.module.js';
-import { SimplexNoise } from 'three/examples/jsm/Addons.js'
+import * as THREE from 'three';
 
-import Engine from '../engine'; 
 import Backgrounds from './helpers/backgrounds';
-import Loader from '../loader'; 
+import Engine from '../engine';
+import { GUI } from 'dat.gui'
 import Helpers from '../helpers';
-import Shaders from './shadersPortfolio';  
-import Voxel from '../voxel'; 
-import JSON from '../../data/masterJSON'; 
 import ICON from '../../media/portfolio-icons/masterICON';
+import JSON from '../../data/masterJSON';
+import Loader from '../loader';
+import MenuPortfolio from './menuPortfolio';
 import ObjectPortfolio from './objectPortfolio';
-import TagManager from './tagManager'; 
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import Shaders from './shadersPortfolio';
+import { SimplexNoise } from 'three/examples/jsm/Addons.js'
+import SplitType from 'split-type';
+import Stats from 'three/addons/libs/stats.module.js';
+import TagManager from './tagManager';
+import Voxel from '../voxel';
+import gsap from 'gsap';
 
 /* ENGINE STATES CONST */
 const WORLD_STEP_VALUE = 1/60;
@@ -46,7 +47,7 @@ let initialMouseX = 0;
 let initialMouseY = 0;
 let initialRotationX = 0;
 let initialRotationY = 0;
-const rotationLimit = Math.PI / 2; // Limit rotation to 45 degrees
+const rotationLimit = Math.PI / 1.33; // Limit rotation to 45 degrees
 const rotationSpeed = 0.0025; // Speed of rotation
 
 const paramsGrid = {
@@ -120,10 +121,14 @@ export default class EnginePortfolio extends Engine
         super.Initialize();
 
         this.InitializeCannon();
-        this.InitializeFileExplorer();    
+        this.InitializeMenu();    
         this.InitializeGame(); 
         this.SetupEventListeners();
-        if (!this.useJsonData) this.InitializeGUI(); 
+
+        if (!this.useJsonData) {
+            this.InitializeGUI();
+            this.ScrollIntroPanel(); 
+        } 
 
         this.canUpdateTimer = true;
         this.canRotateCamera = true; 
@@ -218,95 +223,38 @@ export default class EnginePortfolio extends Engine
         this.world.gravity.set(0, -9.81, 0); // Set gravity to zero initially
     }
 
-    async InitializeFileExplorer() 
+    async InitializeMenu() 
     {
-        const metadatas = await JSON.FetchProjectsMetadata();
-        const explorerContainer = document.querySelector('.explorer')
-        const folders = {}; 
-        const title = document.createElement('h1');
-        const folderIcon = await ICON.LoadIcon('folder');  
-        title.innerHTML = `<h1 class="explorer-header">explorer</h1>`;
-        explorerContainer.innerHTML = ''; 
-        explorerContainer.appendChild(title); 
+        this.menu = new MenuPortfolio(); 
+        await this.menu.Initialize(); 
 
-        // Sort metadatas by yearID in descending order (newest first)
-        metadatas.sort((a, b) => parseInt(b.yearID) - parseInt(a.yearID));
-
-        metadatas.forEach(metadata => {
-            const {yearID, projectName, isFavorite, tag} = metadata; 
-
-            // Create a new folder for a new yearID
-            if (!folders[yearID]) 
+        // Use event delegation for the explorer
+        document.querySelector('.explorer').addEventListener('click', (event) => 
+        {
+            const folderHeader = event.target.closest('.folder-header');
+            if (folderHeader) 
             {
-                folders[yearID] = document.createElement('div'); 
-                folders[yearID].classList.add('folder');
-                folders[yearID].innerHTML = `
-                <div class="folder-header" data-folder-id="folder-${yearID}">
-                    <span class="arrow">&#9654;</span>
-                    <img src="${folderIcon.default || folderIcon}" alt="Folder Icon" class="folder-icon"> ${yearID}/
-                </div>
-                <ul class="folder-content" id="folder-${yearID}"></ul>`;
-                explorerContainer.appendChild(folders[yearID]); 
+                const folderID = folderHeader.getAttribute('data-folder-id');
+                this.menu.ToggleFolder(folderID);
+                //console.log(`Folder ID: ${folderID}`);
+                return;
             }
 
-            // Create a project item
-            const projectItem = document.createElement('li'); 
-            projectItem.classList.add('project'); 
-            projectItem.setAttribute('data-project-name', projectName);
-            if (isFavorite) projectItem.classList.add('favorite'); 
-            projectItem.textContent = projectName; 
-            projectItem.appendChild(TagManager.TagElement(tag, "small-tag")); 
-
-            // Append project item to the corresponding folder
-            folders[yearID].querySelector('.folder-content').appendChild(projectItem);
-        });
-
-        this.UpdateExplorerSelectedProject(); 
-
-        // Setup listener for all the folders. 
-        document.querySelectorAll('.folder-header').forEach(header => {
-            header.addEventListener('click', (event) => {
-                const target = event.target.closest('.folder-header');
-                const folderId = target.getAttribute('data-folder-id');
-                console.log(`Folder ID: ${folderId}`);
-                this.ToggleFolder(folderId);
-            });
-        });
-        document.querySelectorAll('.project').forEach(project => {
-            project.addEventListener('click', (event) => {
-                const target = event.target.closest('.project');
-                const projectName = target.getAttribute('data-project-name');
+            const project = event.target.closest('.project');
+            if (project) 
+            {
+                const projectName = project.getAttribute('data-project-name');
                 const newIndex = JSON.projects.indexOf(projectName);
 
-                if (newIndex == this.currentProjectIndex) return; 
-                if (!this.canSwitchObject) return; 
+                if (newIndex === this.currentProjectIndex || !this.canSwitchObject) return;
 
                 const direction = newIndex > this.currentProjectIndex ? 1 : -1;
-                this.currentProjectIndex = newIndex;  
+                this.currentProjectIndex = newIndex;
                 this.SwitchObject(direction, 0.5); 
-                this.UpdateExplorerSelectedProject(); 
-            })
-        })
-    }
-
-    UpdateExplorerSelectedProject() 
-    {
-        const currentProjectName = JSON.projects[this.currentProjectIndex];  // Get the current project name based on index
-    
-        // Loop through all the project elements
-        document.querySelectorAll('.project').forEach(project => {
-            const projectName = project.getAttribute('data-project-name');
-    
-            // If the project name matches the current project, add the 'selected' class
-            if (projectName === currentProjectName) {
-                project.classList.add('selected');
-            } 
-            // Otherwise, remove the 'selected' class
-            else {
-                project.classList.remove('selected');
+                this.menu.UpdateSelectedProject(this.currentProjectIndex);
             }
         });
-    }    
+    }
 
     async InitializeGame() 
     {
@@ -1287,37 +1235,5 @@ export default class EnginePortfolio extends Engine
     
         // Show the container
         container.classList.remove('hidden');
-    }
-
-    ToggleFolder(folderId) 
-    {
-        console.log('Received Folder ID:', folderId);  // Debugging output
-    
-        if (!folderId) {
-            console.warn('folderId is null or undefined');  // Extra warning if folderId is null
-            return;
-        }
-
-        const folderContent = document.getElementById(folderId);
-        const folderHeader = document.querySelector(`[data-folder-id="${folderId}"]`);
-
-        if (folderContent) 
-        {
-            if (folderContent.style.display === "none" || folderContent.style.display === "") 
-            {
-                folderHeader.classList.add('open');  
-                folderContent.style.display = "block";
-            } 
-            else 
-            {
-                folderHeader.classList.remove('open');  
-                folderContent.style.display = "none";
-            }
-            console.log('Toggled folder content:', folderContent);  // Debugging output
-        } 
-        else 
-        {
-            console.warn('No element found with ID:', folderId);  // Warn if no element is found
-        }
     }
 }

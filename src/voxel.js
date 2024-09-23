@@ -73,7 +73,8 @@ async function VoxelizeMesh(paramsInput, mesh)
                             _c: color,
                             _p: roundedPos,
                             _mt: isEmissive ? 'Emissive' : 'BSDF',
-                            _ei: isEmissive ? material.emissiveIntensity : null
+                            _ei: isEmissive ? material.emissiveIntensity : null,
+                            _o: 0
                         });
 
                         if (snappedPos.y < minY) minY = snappedPos.y;
@@ -87,7 +88,7 @@ async function VoxelizeMesh(paramsInput, mesh)
     console.log('Voxels instantiated:', localVoxels.length);
 
     WeightedAmbientOcclusion(localVoxels, paramsInput.gridSize, false); 
-    localVoxels = RemoveFullyOccludedVoxels(localVoxels, 0); 
+    localVoxels = RemoveFullyOccludedVoxels(localVoxels, 0.1); 
 
     let instancedMesh = GetVoxelGeometry(localParams, localVoxels.length);
     CreateInstancedVoxelMesh(instancedMesh, localVoxels);
@@ -236,6 +237,7 @@ function WeightedAmbientOcclusion(localVoxels, gridSize, debug = false) {
 
         // Normalize the occlusion to range 0 to 1 based on total possible weight
         const occlusionFactor = THREE.MathUtils.clamp(1 - (occlusion / totalWeight), 0, 1);
+        voxel._o = occlusionFactor; 
 
         if (debug) 
         {
@@ -265,10 +267,11 @@ function RemoveFullyOccludedVoxels(localVoxels, darknessThreshold = 0.1) {
         const { r, g, b } = voxel._c;
 
         // Check if the voxel color is below the darkness threshold for all RGB channels
-        const isFullyOccluded = r <= darknessThreshold && g <= darknessThreshold && b <= darknessThreshold;
+        //const isFullyOccluded = r <= darknessThreshold && g <= darknessThreshold && b <= darknessThreshold;
+        const occlusionThreshold = voxel._o <= darknessThreshold;  
 
         // If the voxel is not fully occluded, keep it
-        if (!isFullyOccluded) {
+        if (!occlusionThreshold) {
             cleanedVoxels.push(voxel);
         }
     }
