@@ -26,9 +26,11 @@ async function LoadProjectAssets(projectData)
         
         const contentFolder = metadata.contentFolder || 'default-folder'; 
         const mediaBasePath = `../media/projects/${contentFolder}`;
+        const placeholder = await import('../media/placeholder-image.jpg'); 
 
-        const header = await import(`${mediaBasePath}/${content.header}.jpg`); 
-        console.log(`${mediaBasePath}/${content.header}.jpg`); 
+        let header; 
+        try {header = await import(`${mediaBasePath}/${content.header}.jpg`);}
+        catch (error) {header = placeholder;} 
         
         const images = await Promise.all(
             content.sections
@@ -37,7 +39,11 @@ async function LoadProjectAssets(projectData)
                 {
                     const index = section.content.imageIndex; 
                     const src = `${mediaBasePath}/${index}.jpg`;
-                    const image = await import(src); 
+
+                    let image; 
+                    try {image = await import(src);}
+                    catch (error) {image = placeholder;}
+                    
                     return {
                         ...section.content.image, 
                         src: image 
