@@ -8,6 +8,7 @@
     "tasks": "One-man project",
     "description": "A puzzle, one-button game.",
     "isFavorite": false,
+    "contentFolder": "space-architect",
     "voxelPath": "../data/voxels/Space Architect_voxel.json",
     "gradientBackground": [
       "#FFFFFF",
@@ -23,7 +24,7 @@
   "content": {
     "title": "Space Architect",
     "tagline": "A puzzle, one-button game.",
-    "background": "media/placeholder-image.jpg",
+    "header": "header",
     "icons": [
       {
         "name": "Unity",

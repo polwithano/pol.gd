@@ -8,6 +8,7 @@
     "tasks": "Game Design",
     "description": "A short description of the project.",
     "isFavorite": false,
+    "contentFolder": "agent-x",
     "voxelPath": "../data/voxels/Agent X_voxel.json",
     "gradientBackground": [
       "#FFFFFF",
@@ -23,7 +24,7 @@
   "content": {
     "title": "Agent X",
     "tagline": "Project Tagline",
-    "background": "media/placeholder-image.jpg",
+    "header": "header",
     "icons": [
       {
         "name": "Name",

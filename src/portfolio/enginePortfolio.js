@@ -283,7 +283,7 @@ export default class EnginePortfolio extends Engine
             this.SetScene();
             this.InitializeCamera(); 
             this.InitializeHTML(); 
-            this.RenderProjectPage(this.currentPFObject.projectContent); 
+            this.RenderProjectPage(this.currentPFObject.content, this.currentPFObject.assets); 
             Helpers.AnimateVoxels(this.currentPFObject, 20);  
         }
         else 
@@ -343,7 +343,7 @@ export default class EnginePortfolio extends Engine
     {
         if (this.gradientTexture == null) 
         {
-            this.gradientTexture = Backgrounds.CreateMultiGradientTexture(this.currentPFObject.projectMetadata.gradientBackground, this.context, this.canvas);
+            this.gradientTexture = Backgrounds.CreateMultiGradientTexture(this.currentPFObject.metadata.gradientBackground, this.context, this.canvas);
             this.scene.background = this.gradientTexture; 
         }
         if (this.voxelGrid == null) 
@@ -355,7 +355,7 @@ export default class EnginePortfolio extends Engine
 
     InitializeHTML() 
     {
-        const projectMetadata = this.currentPFObject.projectMetadata;
+        const projectMetadata = this.currentPFObject.metadata;
         const voxelMetadata = this.currentPFObject.voxelMetadata; 
 
         document.getElementById('project-name').textContent = projectMetadata.projectName;
@@ -391,7 +391,7 @@ export default class EnginePortfolio extends Engine
         const iconsContainer = document.getElementById('portfolio-icons');
         iconsContainer.innerHTML = '';
     
-        this.currentPFObject.projectContent.icons.forEach(icon => {
+        this.currentPFObject.content.icons.forEach(icon => {
             const iconDiv = document.createElement('div');
             iconDiv.className = 'icon';
     
@@ -417,7 +417,7 @@ export default class EnginePortfolio extends Engine
 
     UpdateHTML() 
     {
-        const projectMetadata = this.currentPFObject.projectMetadata;
+        const projectMetadata = this.currentPFObject.metadata;
         const voxelMetadata = this.currentPFObject.voxelMetadata; 
         this.canOpenPage = false; 
 
@@ -933,7 +933,7 @@ export default class EnginePortfolio extends Engine
         this.nextPFObject.voxelizedMesh.rotation.y = this.nextPFObject.voxelMetadata.startingRotation  * (Math.PI / 180); 
 
         // Update the background
-        this.SmoothGradientTransition(this.currentPFObject.projectMetadata.gradientBackground, this.nextPFObject.projectMetadata.gradientBackground, duration);
+        this.SmoothGradientTransition(this.currentPFObject.metadata.gradientBackground, this.nextPFObject.metadata.gradientBackground, duration);
     
         // Animate the current object out of the scene
         gsap.to(this.currentPFObject.voxelizedMesh.position, {
@@ -954,7 +954,7 @@ export default class EnginePortfolio extends Engine
                 this.currentPFObject = this.nextPFObject;
 
                 this.UpdateHTML(); 
-                this.RenderProjectPage(this.currentPFObject.projectContent);  
+                this.RenderProjectPage(this.currentPFObject.content, this.currentPFObject.assets);  
 
                 //this.animationStartTime = 0; 
                 this.currentPFObject.voxelStartAnimationOver = true; 
@@ -1077,7 +1077,7 @@ export default class EnginePortfolio extends Engine
     AnimateVoxelGrid() 
     {
         if (this.voxelGrid == null) return; 
-        const gradient = this.currentPFObject.projectMetadata.gradientGrid; 
+        const gradient = this.currentPFObject.metadata.gradientGrid; 
         if (gradient == undefined) return; 
         
         const time = Date.now() * paramsGrid.animSpeed;
@@ -1170,11 +1170,10 @@ export default class EnginePortfolio extends Engine
         }
     }
 
-    async RenderProjectPage(projectData) 
-    {
+    async RenderProjectPage(data, assets) {
         const container = document.getElementById('project-container');
-        const placeholder = await ICON.LoadIcon('placeholder'); 
-
+        const placeholder = await ICON.LoadIcon('placeholder');
+    
         // Clear previous content
         container.innerHTML = '';
     
@@ -1182,53 +1181,55 @@ export default class EnginePortfolio extends Engine
         const header = document.createElement('div');
         header.className = 'project-header';
         header.innerHTML = `
-            <h1 class="project-title">${projectData.title}</h1>
-            <p class="project-tagline">${projectData.tagline}</p>
+            <h1 class="project-title">${data.title}</h1>
+            <p class="project-tagline">${data.tagline}</p>
             <p class="content-spacer"></p>
         `;
-        header.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url('${placeholder.default || placeholder}')`;
+    
+        // Ensure assets.header is a string URL (accessing the `default` property if it's an import object)
+        const headerImage = (assets.header && assets.header.default) ? assets.header.default : placeholder.default;
+    
+        header.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url('${headerImage}')`;
         container.appendChild(header);
     
         // Create and add content sections
-        projectData.sections.forEach(section => {
+        data.sections.forEach((section, index) => {
             const sectionDiv = document.createElement('div');
             sectionDiv.className = 'content-section';
-            
+    
             if (section.type === 'text-image') {
+                // Use resolved image from assets or fallback to placeholder
+                const sectionImage = assets.images[index]?.src?.default || placeholder.default;
                 sectionDiv.innerHTML = `
-                    <img src="${placeholder.default || placeholder}" alt="${section.content.image.alt}" class="content-image ${section.content.image.position}">
+                    <img src="${sectionImage}" alt="${section.content.image.alt}" class="content-image ${section.content.image.position}">
                     <p class="content-paragraph">${section.content.paragraph}</p>
                 `;
-            } 
-            else if (section.type === 'video') {
+            } else if (section.type === 'video') {
                 sectionDiv.innerHTML = `
                     <div class="video-section">
                         <iframe width="560" height="315" src="https://www.youtube.com/embed/${section.content.videoId}" frameborder="0" allowfullscreen></iframe>
                         <p class="content-subtitle">${section.content.caption || ''}</p>
                     </div>
                 `;
-            }
-            else if (section.type === 'category') {
+            } else if (section.type === 'category') {
                 sectionDiv.innerHTML = `
                     <div class="category-section">
                         <h2 class="category-title">${section.content.title}</h2>
                     </div>
                 `;
+            } else if (section.type === 'spacer') {
+                sectionDiv.innerHTML = `<p class="content-paragraph"></p>`;
             }
-            else if (section.type === 'spacer') {
-                sectionDiv.innerHTML = `
-                    <p class="content-paragraph"></p>
-                `;
-            }
+    
             container.appendChild(sectionDiv);
         });
     
         // Create and add download section
-        if (projectData.download) {
+        if (data.download) {
             const downloadDiv = document.createElement('div');
             downloadDiv.className = 'download-section';
             downloadDiv.innerHTML = `
-                <a href="${projectData.download.url}" class="download-button">${projectData.download.label}</a>
+                <a href="${data.download.url}" class="download-button">${data.download.label}</a>
             `;
             container.appendChild(downloadDiv);
         }
@@ -1236,4 +1237,4 @@ export default class EnginePortfolio extends Engine
         // Show the container
         container.classList.remove('hidden');
     }
-}
+}    

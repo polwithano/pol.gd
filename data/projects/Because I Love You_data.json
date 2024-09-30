@@ -8,6 +8,7 @@
     "tasks": "tasksList",
     "description": "A short description of the project.",
     "isFavorite": true,
+    "contentFolder": "because-i-love-you",
     "voxelPath": "../data/voxels/Because I Love You_voxel.json",
     "gradientBackground": [
       "#FFFFFF",
@@ -23,7 +24,7 @@
   "content": {
     "title": "Because I Love You",
     "tagline": "Project Tagline",
-    "background": "media/placeholder-image.jpg",
+    "header": "header",
     "icons": [
       {
         "name": "Name",

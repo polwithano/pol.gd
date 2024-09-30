@@ -18,6 +18,43 @@ async function LoadProjectData(key)
     return {project, voxel}; 
 }
 
+async function LoadProjectAssets(projectData) 
+{
+    try 
+    {
+        const {content, metadata} = projectData; 
+        
+        const contentFolder = metadata.contentFolder || 'default-folder'; 
+        const mediaBasePath = `../media/projects/${contentFolder}`;
+
+        const header = await import(`${mediaBasePath}/${content.header}.jpg`); 
+        console.log(`${mediaBasePath}/${content.header}.jpg`); 
+        
+        const images = await Promise.all(
+            content.sections
+                .filter(section => section.type === 'text-image' && section.content.imageIndex)
+                .map(async (section) => 
+                {
+                    const index = section.content.imageIndex; 
+                    const src = `${mediaBasePath}/${index}.jpg`;
+                    const image = await import(src); 
+                    return {
+                        ...section.content.image, 
+                        src: image 
+                    };
+                })
+        );
+        console.log(images);
+
+        return {header: header, images: images}; 
+    }
+    catch (error) 
+    {
+        console.error('Error loading project assets', error); 
+        return null;  
+    }
+}
+
 async function FetchProjectsMetadata() 
 {
     const time = performance.now(); 
@@ -36,4 +73,4 @@ async function FetchProjectsMetadata()
     return metadatas; 
 }
 
-export default {projects, LoadProjectData, FetchProjectsMetadata}
+export default {projects, LoadProjectData, LoadProjectAssets, FetchProjectsMetadata}

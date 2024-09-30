@@ -1,8 +1,9 @@
 import * as THREE from 'three';
-import Helpers from '../helpers';  
-import Loader from '../loader'; 
-import Voxel from '../voxel'; 
-import Master from '../../data/masterJSON'; 
+
+import Helpers from '../helpers';
+import Loader from '../loader';
+import Master from '../../data/masterJSON';
+import Voxel from '../voxel';
 
 export default class ObjectPortfolio 
 {
@@ -11,8 +12,9 @@ export default class ObjectPortfolio
         this.objectMethod = objectMethod;
 
         // Project-Related Data
-        this.projectMetadata = []; 
-        this.projectContent = []; 
+        this.metadata = []; 
+        this.content = []; 
+        this.assets = []; 
 
         // Model-Related Data
         this.originalMesh = null;
@@ -62,8 +64,10 @@ export default class ObjectPortfolio
             const project_data = data.project; 
             const voxel_data = data.voxel; 
     
-            this.projectMetadata = project_data.metadata;
-            this.projectContent = project_data.content;   
+            this.metadata = project_data.metadata;
+            this.content = project_data.content;   
+            this.assets = await Master.LoadProjectAssets(project_data); 
+            console.log(this.assets);
     
             this.voxelMetadata = voxel_data.metadata; 
             this.voxelParams = voxel_data.params;

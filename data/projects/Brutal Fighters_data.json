@@ -8,6 +8,7 @@
     "tasks": "GD • LD",
     "description": "A short description of the project.",
     "isFavorite": true,
+    "contentFolder": "brutal-fighters",
     "voxelPath": "../data/voxels/Brutal Fighters_voxel.json",
     "gradientBackground": [
       "#FFFFFF",
@@ -23,7 +24,7 @@
   "content": {
     "title": "Brutal Fighters",
     "tagline": "Project Tagline",
-    "background": "media/placeholder-image.jpg",
+    "header": "header",
     "icons": [
       {
         "name": "Unity",

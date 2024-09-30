@@ -1,6 +1,6 @@
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 async function LoadFBXMesh(meshPath) 
 {
@@ -102,6 +102,7 @@ function CreateProjectDataFiles(voxelObject, voxelParams, projectName, modelName
         tasks: "tasksList", 
         description: "A short description of the project.",
         isFavorite: false,
+        contentFolder: "content-folder", 
         voxelPath: voxelPath,
         gradientBackground : ["#000000", "#2B2B2B", "#FFFFFF"], 
         gradientGrid : ["#000000", "#2B2B2B", "#FFFFFF"],
@@ -128,19 +129,19 @@ function DefaultProjectContent(projectName)
     {
         title: projectName, 
         tagline: "Project Tagline", 
-        background: "media/placeholder-image.jpg",
+        header: "media/placeholder-image.jpg",
         icons: [
         {
-            name: "Name", 
-            image: "name"
+            name: "icon-label", 
+            image: "icon-name"
         },
         {
-            name: "Name", 
-            image: "name"
+            name: "icon-label", 
+            image: "icon-name"
         },
         {
-            name: "Name", 
-            image: "name"
+            name: "icon-label", 
+            image: "icon-name"
         }],
         sections: [
             {

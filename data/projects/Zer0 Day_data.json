@@ -8,6 +8,7 @@
     "tasks": "GD • LD",
     "description": "A short description of the project.",
     "isFavorite": false,
+    "contentFolder": "zero-day",
     "voxelPath": "../data/voxels/Zer0 Day_voxel.json",
     "gradientBackground": [
       "#FFFFFF",
@@ -23,7 +24,7 @@
   "content": {
     "title": "Zer0 Day",
     "tagline": "Project Tagline",
-    "background": "media/placeholder-image.jpg",
+    "header": "header",
     "icons": [
       {
         "name": "Unity",

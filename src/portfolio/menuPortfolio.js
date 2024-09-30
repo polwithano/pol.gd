@@ -8,6 +8,8 @@ export default class MenuPortfolio
     {
         // 0 = Project Mode, 1 = Blog Mode
         this.menuMode = 0; 
+        // 0 = EN, 1 = FR
+        this.languageMode = 0; 
 
         this.explorer = document.querySelector('.explorer'); 
         this.explorer.innerHTML = '';
@@ -53,7 +55,8 @@ export default class MenuPortfolio
     {
         const projectsButton = document.getElementById('toggle-projects');
         const blogButton = document.getElementById('toggle-blog');
-        const searchBar = document.querySelector('.search-bar input'); // Access the search bar input field
+        const searchBar = document.querySelector('.search-bar input'); 
+        const languageToggle = document.getElementById('language-select'); 
 
         projectsButton.addEventListener('click', () => 
         {
@@ -77,6 +80,13 @@ export default class MenuPortfolio
                 this.FilterProjects(query);  
             }
         });
+
+        languageToggle.addEventListener('change', (event) => 
+        {
+            const selectedLanguage = event.target.value;
+            if (selectedLanguage == 'en') this.languageMode = 0; 
+            if (selectedLanguage == 'fr') this.languageMode = 1; 
+        })
     }
 
     UpdateSelectedProject(index) 
@@ -176,26 +186,28 @@ export default class MenuPortfolio
     {
         const folders = document.querySelectorAll('.folder');
         const projects = document.querySelectorAll('.project');
-    
+
         // Remove "No projects found" message if it exists
         const noProjectsMessage = document.getElementById('no-projects-message');
-        if (noProjectsMessage) {
-            noProjectsMessage.remove();
-        }
-    
+        if (noProjectsMessage) noProjectsMessage.remove();
+
         // Container for displaying matched projects outside the folders
         let projectSearchResults = document.getElementById('search-results-container');
         
         // If container doesn't exist, create it
-        if (!projectSearchResults) {
+        if (!projectSearchResults) 
+        {
             projectSearchResults = document.createElement('div');
             projectSearchResults.id = 'search-results-container';
             this.explorer.appendChild(projectSearchResults);
         }
-    
-        // Clear the search result container for every new search
-        projectSearchResults.innerHTML = '';
-    
+        
+        while (projectSearchResults.firstChild) 
+        { 
+            const child = projectSearchResults.firstChild;
+            projectSearchResults.removeChild(child);
+        }
+
         if (!query) 
         {
             // If the search bar is empty, reset everything:
@@ -204,25 +216,29 @@ export default class MenuPortfolio
             // - Display all folders and projects as usual
             folders.forEach(folder => folder.style.display = 'block');
             projects.forEach(project => project.style.display = 'list-item');
+            
             return;
         }
-    
+
         // If query is present, hide all folders
         folders.forEach(folder => folder.style.display = 'none');
         
         let found = false;
-        projects.forEach(project => {
+        
+        projects.forEach(project => 
+        {
             const projectName = project.getAttribute('data-project-name').toLowerCase();
             
             // If the project matches the query
-            if (projectName.includes(query)) {
+            if (projectName.includes(query)) 
+            {
                 // Clone the project element
                 const projectCopy = project.cloneNode(true);
                 projectSearchResults.appendChild(projectCopy);
                 found = true;
             }
         });
-    
+
         // If no projects were found, show a "No projects found" message
         if (!found) {
             const message = document.createElement('p');
@@ -230,9 +246,8 @@ export default class MenuPortfolio
             message.textContent = 'No projects found';
             projectSearchResults.appendChild(message);
         }
-    
+
         // Ensure the search results container is visible when results are found
         projectSearchResults.style.display = 'block';
     }
-
 }
