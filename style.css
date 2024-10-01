@@ -507,8 +507,12 @@ a:hover
 .content-image {
   max-width: 40%;
   max-width: 250px;
-  border-radius: 8px;
+  height: 200px;
+  border-radius: 16px;
   align-self: center;
+  object-fit: cover; /* Crops the image to fit */
+  object-position: center; /* Centers the cropped image */
+  display: block; /* Ensures it's treated as a block element */
 }
 
 .content-paragraph {

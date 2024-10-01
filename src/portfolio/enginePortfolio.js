@@ -26,6 +26,7 @@ const DEFAULT_RENDER_SCALE = 1;
 const LOFI_RENDER_SCALE = 4; 
 const TIMER_SWITCH = 15.0; 
 const USE_JSON = true; 
+const USE_DEBUG = false; 
 const DEFAULT_GLB_PATH = "../meshes/Biplane.glb"; 
 
 // Define the parameters for the camera's orbit
@@ -128,7 +129,8 @@ export default class EnginePortfolio extends Engine
         this.InitializeGame(); 
         this.SetupEventListeners();
 
-        if (!this.useJsonData) {
+        if (!this.useJsonData) 
+        {
             this.InitializeGUI();
             this.ScrollIntroPanel(); 
         } 
@@ -152,14 +154,17 @@ export default class EnginePortfolio extends Engine
         this.camera = new THREE.PerspectiveCamera(80, 2, 1, 1000);
         this.InitializeRenderTarget(this.useLofi);
         
-        this.stats = new Stats();  
-        document.getElementById('canvas-container').appendChild(this.stats.dom);
-        this.stats.dom.style.position = 'relative'; 
-        this.stats.dom.style.top = null;
-        this.stats.dom.style.right = null; 
-        this.stats.dom.style.bottom = '90%';
-        this.stats.dom.style.left = '0%';       
-        this.stats.dom.style.zIndex = '1'; 
+        if (USE_DEBUG) 
+        {
+            this.stats = new Stats();  
+            document.getElementById('canvas-container').appendChild(this.stats.dom);
+            this.stats.dom.style.position = 'relative'; 
+            this.stats.dom.style.top = null;
+            this.stats.dom.style.right = null; 
+            this.stats.dom.style.bottom = '90%';
+            this.stats.dom.style.left = '0%';       
+            this.stats.dom.style.zIndex = '1';    
+        }
 
         if (!this.useJsonData) 
         {
@@ -1040,7 +1045,8 @@ export default class EnginePortfolio extends Engine
         super.GameLoop();
         const delta = this.clock.getDelta(); 
         this.world.step(WORLD_STEP_VALUE);
-        this.stats.update(); 
+
+        if (this.stats) this.stats.update(); 
 
         //this.AnimatePlane();
         if (this.useJsonData) 
