@@ -1,4 +1,4 @@
-import ICON from '../../media/portfolio-icons/masterICON';
+import ICON from '../../public/media/portfolio-icons/masterICON';
 import JSON from '../../data/masterJSON';
 import TagManager from './tagManager';
 

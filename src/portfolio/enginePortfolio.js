@@ -5,7 +5,7 @@ import Backgrounds from './helpers/backgrounds';
 import Engine from '../engine';
 import { GUI } from 'dat.gui'
 import Helpers from '../helpers';
-import ICON from '../../media/portfolio-icons/masterICON';
+import ICON from '../../public/media/portfolio-icons/masterICON';
 import JSON from '../../data/masterJSON';
 import Loader from '../loader';
 import MenuPortfolio from './menuPortfolio';
