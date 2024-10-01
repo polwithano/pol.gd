@@ -286,7 +286,6 @@ export default class EnginePortfolio extends Engine
             this.SetScene();
             this.InitializeCamera(); 
             this.InitializeHTML(); 
-            //this.RenderProjectPage(this.currentPFObject.content, this.currentPFObject.assets); 
             this.projectPageFactory.CreatePage(this.currentPFObject.content, this.currentPFObject.assets); 
             Helpers.AnimateVoxels(this.currentPFObject, 20);  
         }
@@ -958,7 +957,6 @@ export default class EnginePortfolio extends Engine
                 this.currentPFObject = this.nextPFObject;
 
                 this.UpdateHTML(); 
-                //this.RenderProjectPage(this.currentPFObject.content, this.currentPFObject.assets);  
                 this.projectPageFactory.CreatePage(this.currentPFObject.content, this.currentPFObject.assets); 
 
                 //this.animationStartTime = 0; 
@@ -1173,78 +1171,5 @@ export default class EnginePortfolio extends Engine
             // Set the camera to look at the initial position of the target object
             this.camera.lookAt(this.currentLookAt);
         }
-    }
-
-    async RenderProjectPage(data, assets) {
-        const container = document.getElementById('project-container');
-        const placeholder = await ICON.LoadIcon('placeholder');
-    
-        // Clear previous content
-        container.innerHTML = '';
-    
-        // Create and add project header
-        const header = document.createElement('div');
-        header.className = 'project-header';
-        header.innerHTML = `
-            <h1 class="project-title">${data.title}</h1>
-            <p class="project-tagline">${data.tagline}</p>
-            <p class="content-spacer"></p>
-        `;
-    
-        // Ensure assets.header is a string URL (accessing the `default` property if it's an import object)
-        const headerImage = (assets.header && assets.header.default) ? assets.header.default : placeholder.default;
-    
-        header.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url('${headerImage}')`;
-        container.appendChild(header);
-    
-        // Track correct image index for text-image sections
-        let imageIndex = 0;
-    
-        // Create and add content sections
-        data.sections.forEach((section) => {
-            const sectionDiv = document.createElement('div');
-            sectionDiv.className = 'content-section';
-    
-            if (section.type === 'text-image') {
-                // Use the image corresponding to the current imageIndex, fallback to placeholder if not found
-                const sectionImage = assets.images[imageIndex]?.src?.default || placeholder.default;
-                sectionDiv.innerHTML = `
-                    <img src="${sectionImage}" alt="${section.content.image.alt}" class="content-image ${section.content.image.position}">
-                    <p class="content-paragraph">${section.content.paragraph}</p>
-                `;
-                // Increment imageIndex only for text-image sections
-                imageIndex++;
-            } else if (section.type === 'video') {
-                sectionDiv.innerHTML = `
-                    <div class="video-section">
-                        <iframe width="560" height="315" src="https://www.youtube.com/embed/${section.content.videoId}" frameborder="0" allowfullscreen></iframe>
-                        <p class="content-subtitle">${section.content.caption || ''}</p>
-                    </div>
-                `;
-            } else if (section.type === 'category') {
-                sectionDiv.innerHTML = `
-                    <div class="category-section">
-                        <h2 class="category-title">${section.content.title}</h2>
-                    </div>
-                `;
-            } else if (section.type === 'spacer') {
-                sectionDiv.innerHTML = `<p class="content-paragraph"></p>`;
-            }
-    
-            container.appendChild(sectionDiv);
-        });
-    
-        // Create and add download section
-        if (data.download) {
-            const downloadDiv = document.createElement('div');
-            downloadDiv.className = 'download-section';
-            downloadDiv.innerHTML = `
-                <a href="${data.download.url}" class="download-button">${data.download.label}</a>
-            `;
-            container.appendChild(downloadDiv);
-        }
-    
-        // Show the container
-        container.classList.remove('hidden');
     }
 }    
