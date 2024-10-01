@@ -181,10 +181,16 @@ export default class EnginePortfolio extends Engine
 
         this.renderPlane = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
 
-        this.rtTexture = new THREE.WebGLRenderTarget( 
+        this.rtTexture = new THREE.WebGLRenderTarget
+        ( 
             Math.floor(window.innerWidth / (pixelated ? LOFI_RENDER_SCALE : DEFAULT_RENDER_SCALE)),
             Math.floor(window.innerHeight / (pixelated ? LOFI_RENDER_SCALE : DEFAULT_RENDER_SCALE)),
-            { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat });
+            { 
+                minFilter: THREE.NearestFilter, 
+                magFilter: THREE.NearestFilter, 
+                format: THREE.RGBAFormat 
+            }
+        );
         
         // Add a depth texture
         this.rtTexture.depthTexture = new THREE.DepthTexture();

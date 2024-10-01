@@ -1,7 +1,9 @@
-import * as THREE from 'three'; 
-import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast, MeshBVH } from 'three-mesh-bvh';
+import * as THREE from 'three';
+
+import { MeshBVH, acceleratedRaycast, computeBoundsTree, disposeBoundsTree } from 'three-mesh-bvh';
+
+import Loader from './loader';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import Loader from './loader'; 
 
 const raycaster = new THREE.Raycaster();
 THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;

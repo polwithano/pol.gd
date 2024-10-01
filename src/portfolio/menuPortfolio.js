@@ -170,7 +170,6 @@ export default class MenuPortfolio
             folders.forEach(folder => {
                 folder.style.display = 'block';
             });
-            console.log("Switched to Projects Mode");
         }
         if (menuMode == 1) // Blog Mode
         {
@@ -178,7 +177,6 @@ export default class MenuPortfolio
             folders.forEach(folder => {
                 folder.style.display = 'none';
             });
-            console.log("Switched to Blog Mode");
         }
     }
 
@@ -232,10 +230,16 @@ export default class MenuPortfolio
             // If the project matches the query
             if (projectName.includes(query)) 
             {
-                // Clone the project element
-                const projectCopy = project.cloneNode(true);
-                projectSearchResults.appendChild(projectCopy);
-                found = true;
+                const alreadyExists = Array.from(projectSearchResults.children).some(child => 
+                {
+                    return child.getAttribute('data-project-name').toLowerCase() === projectName;        
+                }); 
+                if (!alreadyExists) 
+                {
+                    const projectCopy = project.cloneNode(true);
+                    projectSearchResults.appendChild(projectCopy);
+                    found = true;
+                }
             }
         });
 
