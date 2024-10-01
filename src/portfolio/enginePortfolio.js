@@ -654,12 +654,12 @@ export default class EnginePortfolio extends Engine
 
         expandTimeline.to(darkOverlay, {
             duration: 0.1,
-            opacity: '0.8'
+            opacity: '0.67'
         }).to(projectDescription, {
             duration: 0.20,
             opacity: 0.95,
             color: 'rgb(0, 0, 0, 0)', 
-            backgroundColor: 'rgb(0, 0, 0, 0.9)',
+            backgroundColor: 'rgb(0, 0, 0, 0.96)',
             width: projectDescription.parentElement.offsetWidth + 'px',
             bottom: '-18px',
             padding: '4px 8px',

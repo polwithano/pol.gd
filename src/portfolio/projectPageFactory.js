@@ -72,10 +72,10 @@ export default class ProjectPageFactory
     RenderHeader(data, assets) 
     {
         const div = document.createElement('div'); 
-        const background = assets.header || this.placeholderImage.default;
+        const background = assets?.header || this.placeholderImage.default;
 
         div.className = 'project-header';
-        div.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url('${background}')`; 
+        div.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.99), rgba(0, 0, 0, 0)), url('${background}')`; 
         div.innerHTML = `
             <h1 class="project-title">${data.title}</h1>
             <p class="project-tagline">${data.tagline}</p>
