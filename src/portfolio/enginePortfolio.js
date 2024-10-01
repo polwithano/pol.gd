@@ -685,6 +685,7 @@ export default class EnginePortfolio extends Engine
 
         projectContainer.addEventListener('mouseleave', () => {
             expandTimeline.timeScale(1.7).reverse(); // Faster reverse speed
+            this.projectPageFactory.PauseVideos(); 
         });
     }    
 

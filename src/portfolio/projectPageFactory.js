@@ -11,6 +11,7 @@ export default class ProjectPageFactory
     async Initialize() 
     {
         this.placeholderImage = await ICON.LoadIcon('placeholder'); 
+        this.videoElements = [];
         this.container.innerHTML = ''; 
     }
 
@@ -23,6 +24,7 @@ export default class ProjectPageFactory
         }
 
         this.container.innerHTML = ''; 
+        this.videoElements = []; 
         
         const header = this.RenderHeader(data, assets); 
         this.container.appendChild(header); 
@@ -41,6 +43,8 @@ export default class ProjectPageFactory
                     break; 
                 case 'video': 
                     div = this.RenderVideoSection(section, 560, 320); 
+                    const iframe = div.querySelector('iframe'); 
+                    this.videoElements.push(iframe); 
                     break; 
                 case 'category':
                     div = this.RenderCategorySection(section); 
@@ -103,10 +107,10 @@ export default class ProjectPageFactory
         const div = document.createElement('div'); 
 
         div.innerHTML = `
-            <div class="video-section">
-                <iframe width="${width}" height="${height}" src="https://www.youtube.com/embed/${section.content.videoId}" frameborder="0" allowfullscreen></iframe>
-                <p class="content-subtitle">${section.content.caption || ''}</p>
-            </div>
+        <div class="video-section">
+            <iframe width="${width}" height="${height}" src="https://www.youtube.com/embed/${section.content.videoId}?enablejsapi=1" frameborder="0" allowfullscreen></iframe>
+            <p class="content-subtitle">${section.content.caption || ''}</p>
+        </div>
         `;
         return div; 
     }
@@ -141,4 +145,23 @@ export default class ProjectPageFactory
 
         return div; 
     }
+
+    PauseVideos() 
+    {
+        this.videoElements.forEach(video => 
+        {
+            // Log the current video and its source
+            const src = video.src || video.getAttribute('src');
+            console.log('Pausing video with source:', src);
+            
+            if (video.contentWindow) 
+            {
+                // Send the pause command to the video
+                video.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');        
+                console.log('Pause command sent to video.');
+            } 
+            else console.error('No contentWindow available for video:', video);
+        });
+    }
+    
 }
