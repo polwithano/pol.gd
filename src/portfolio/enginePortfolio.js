@@ -1242,5 +1242,4 @@ export default class EnginePortfolio extends Engine
         // Show the container
         container.classList.remove('hidden');
     }
-    
 }    

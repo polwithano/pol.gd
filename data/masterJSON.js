@@ -25,8 +25,8 @@ async function LoadProjectAssets(projectData)
         const { content, metadata } = projectData;
         
         const contentFolder = metadata.contentFolder || 'default-folder'; 
-        const mediaBasePath = `../media/projects/${contentFolder}`;
-        const placeholder = await import('../media/placeholder-image.jpg');
+        const mediaBasePath = `./media/projects/${contentFolder}`;
+        const placeholder = await import('./media/placeholder-image.jpg');
 
         let header; 
         try {
