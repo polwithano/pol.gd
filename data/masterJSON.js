@@ -22,41 +22,47 @@ async function LoadProjectAssets(projectData)
 {
     try 
     {
-        const {content, metadata} = projectData; 
+        const { content, metadata } = projectData;
         
         const contentFolder = metadata.contentFolder || 'default-folder'; 
         const mediaBasePath = `../media/projects/${contentFolder}`;
-        const placeholder = await import('../media/placeholder-image.jpg'); 
+        const placeholder = await import('../media/placeholder-image.jpg');
 
         let header; 
-        try {header = await import(`${mediaBasePath}/${content.header}.jpg`);}
-        catch (error) {header = placeholder;} 
-        
+        try {
+            header = await import(`${mediaBasePath}/${content.header}.jpg`);
+        } catch (error) {
+            header = placeholder;
+        }
+
+        // Filter for sections that have an image and check for imageIndex in section.content.image
         const images = await Promise.all(
             content.sections
-                .filter(section => section.type === 'text-image' && section.content.imageIndex)
-                .map(async (section) => 
-                {
-                    const index = section.content.imageIndex; 
+                .filter(section => section.type === 'text-image' && section.content.image && section.content.image.imageIndex)
+                .map(async (section) => {
+                    const index = section.content.image.imageIndex; 
                     const src = `${mediaBasePath}/${index}.jpg`;
+                    console.log('Loading image:', src); 
 
                     let image; 
-                    try {image = await import(src);}
-                    catch (error) {image = placeholder;}
+                    try {
+                        image = await import(src);
+                    } catch (error) {
+                        image = placeholder;
+                    }
                     
                     return {
                         ...section.content.image, 
-                        src: image 
+                        src: image
                     };
                 })
         );
-        console.log(images);
 
-        return {header: header, images: images}; 
-    }
+        return { header, images };
+    } 
     catch (error) 
     {
-        console.error('Error loading project assets', error); 
+        console.error('Error loading project assets:', error);
         return null;  
     }
 }

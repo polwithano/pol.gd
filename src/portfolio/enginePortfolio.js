@@ -1192,18 +1192,23 @@ export default class EnginePortfolio extends Engine
         header.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url('${headerImage}')`;
         container.appendChild(header);
     
+        // Track correct image index for text-image sections
+        let imageIndex = 0;
+    
         // Create and add content sections
-        data.sections.forEach((section, index) => {
+        data.sections.forEach((section) => {
             const sectionDiv = document.createElement('div');
             sectionDiv.className = 'content-section';
     
             if (section.type === 'text-image') {
-                // Use resolved image from assets or fallback to placeholder
-                const sectionImage = assets.images[index]?.src?.default || placeholder.default;
+                // Use the image corresponding to the current imageIndex, fallback to placeholder if not found
+                const sectionImage = assets.images[imageIndex]?.src?.default || placeholder.default;
                 sectionDiv.innerHTML = `
                     <img src="${sectionImage}" alt="${section.content.image.alt}" class="content-image ${section.content.image.position}">
                     <p class="content-paragraph">${section.content.paragraph}</p>
                 `;
+                // Increment imageIndex only for text-image sections
+                imageIndex++;
             } else if (section.type === 'video') {
                 sectionDiv.innerHTML = `
                     <div class="video-section">
@@ -1237,4 +1242,5 @@ export default class EnginePortfolio extends Engine
         // Show the container
         container.classList.remove('hidden');
     }
+    
 }    

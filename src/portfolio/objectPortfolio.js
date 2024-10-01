@@ -67,7 +67,6 @@ export default class ObjectPortfolio
             this.metadata = project_data.metadata;
             this.content = project_data.content;   
             this.assets = await Master.LoadProjectAssets(project_data); 
-            console.log(this.assets);
     
             this.voxelMetadata = voxel_data.metadata; 
             this.voxelParams = voxel_data.params;
