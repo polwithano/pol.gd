@@ -29,11 +29,13 @@ async function LoadProjectAssets(projectData)
         const placeholder = await import('../public/media/placeholder-image.jpg');
 
         let header; 
-        try {
+        try 
+        {
             let src = `${mediaBasePath}/${content.header}.jpg`; 
             header = await import(src);
             console.log('Loading image:', src); 
-        } catch (error) {
+        } 
+        catch (error) {
             header = placeholder;
         }
 

@@ -11,6 +11,7 @@ import Loader from '../loader';
 import MenuPortfolio from './menuPortfolio';
 import ObjectPortfolio from './objectPortfolio';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import ProjectPageFactory from './projectPageFactory';
 import Shaders from './shadersPortfolio';
 import { SimplexNoise } from 'three/examples/jsm/Addons.js'
 import SplitType from 'split-type';
@@ -89,6 +90,8 @@ export default class EnginePortfolio extends Engine
         this.useGrid = true; 
         
         // Portfolio States
+        this.projectPageFactory = new ProjectPageFactory(document.getElementById('project-container')); 
+        this.projectPageFactory.Initialize(); 
         this.currentPFObject = null; 
         this.nextPFObject = null; 
         this.currentProjectIndex = 0; 
@@ -283,7 +286,8 @@ export default class EnginePortfolio extends Engine
             this.SetScene();
             this.InitializeCamera(); 
             this.InitializeHTML(); 
-            this.RenderProjectPage(this.currentPFObject.content, this.currentPFObject.assets); 
+            //this.RenderProjectPage(this.currentPFObject.content, this.currentPFObject.assets); 
+            this.projectPageFactory.CreatePage(this.currentPFObject.content, this.currentPFObject.assets); 
             Helpers.AnimateVoxels(this.currentPFObject, 20);  
         }
         else 
@@ -954,7 +958,8 @@ export default class EnginePortfolio extends Engine
                 this.currentPFObject = this.nextPFObject;
 
                 this.UpdateHTML(); 
-                this.RenderProjectPage(this.currentPFObject.content, this.currentPFObject.assets);  
+                //this.RenderProjectPage(this.currentPFObject.content, this.currentPFObject.assets);  
+                this.projectPageFactory.CreatePage(this.currentPFObject.content, this.currentPFObject.assets); 
 
                 //this.animationStartTime = 0; 
                 this.currentPFObject.voxelStartAnimationOver = true; 
