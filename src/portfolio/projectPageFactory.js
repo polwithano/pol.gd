@@ -72,7 +72,7 @@ export default class ProjectPageFactory
     RenderHeader(data, assets) 
     {
         const div = document.createElement('div'); 
-        const background = (assets.header && assets.header.default) ? assets.header.default : this.placeholderImage.default;
+        const background = assets.header || this.placeholderImage.default;
 
         div.className = 'project-header';
         div.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)), url('${background}')`; 
@@ -88,7 +88,7 @@ export default class ProjectPageFactory
     RenderTextImageSection(section, image) 
     {
         const div = document.createElement('div');
-        const asset = image?.src?.default || this.placeholderImage.default; 
+        const asset = image?.src || this.placeholderImage.default; 
 
         div.innerHTML = `
             <img src="${asset}" alt="${section.content.image.alt}" class="content-image ${section.content.image.position}">

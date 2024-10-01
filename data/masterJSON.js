@@ -26,13 +26,13 @@ async function LoadProjectAssets(projectData)
         
         const contentFolder = metadata.contentFolder || 'default-folder'; 
         const mediaBasePath = `../media/projects/${contentFolder}`;
-        const placeholder = await import('../public/media/placeholder-image.jpg');
+        const placeholder = '../public/media/placeholder-image.jpg';
 
         let header; 
         try 
         {
             let src = `${mediaBasePath}/${content.header}.jpg`; 
-            header = await import(src);
+            header = src;
             console.log('Loading image:', src); 
         } 
         catch (error) {
@@ -50,7 +50,7 @@ async function LoadProjectAssets(projectData)
 
                     let image; 
                     try {
-                        image = await import(src);
+                        image = src;
                     } catch (error) {
                         image = placeholder;
                     }
