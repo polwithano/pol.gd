@@ -204,7 +204,7 @@ export default class MenuPortfolio
         {
             projectSearchResults = document.createElement('div');
             projectSearchResults.id = 'search-results-container';
-            this.explorer.appendChild(projectSearchResults);
+            this.projectContainer.appendChild(projectSearchResults);
         }
         
         while (projectSearchResults.firstChild) 
