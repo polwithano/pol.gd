@@ -532,6 +532,9 @@ export default class EnginePortfolio extends Engine
             '../meshes/Earth.glb',
             '../meshes/Probe.glb',
             '../meshes/Dish.glb',
+            '../meshes/Tile.glb',
+            '../meshes/Doom.glb',
+            '../meshes/Camera.glb',
         ];
         const modelOptions = {selectedModel: models[0]}; 
 

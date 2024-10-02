@@ -9,6 +9,8 @@ const projects =
     "Moonshine Inc.",
     "Lambda FPS",
     "pol.gd",
+    "Tile Editor",
+    "Raycaster"
 ]
 
 async function LoadProjectData(key) 
