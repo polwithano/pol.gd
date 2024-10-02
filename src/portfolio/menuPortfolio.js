@@ -1,6 +1,6 @@
 import ICON from '../../public/media/portfolio-icons/masterICON';
 import JSON from '../../data/masterJSON';
-import TagManager from './tagManager';
+import TagManager from './tagManager'
 
 export default class MenuPortfolio 
 {
@@ -14,6 +14,10 @@ export default class MenuPortfolio
         this.explorer = document.querySelector('.explorer'); 
         this.explorer.innerHTML = '';
 
+        this.projectContainer = document.createElement('div'); 
+        this.articleContainer = document.createElement('div'); 
+        this.explorer.append(this.projectContainer, this.articleContainer); 
+
         this.InitializeListeners();
     }
 
@@ -22,11 +26,17 @@ export default class MenuPortfolio
         const folders = {}; 
         const metadatas = await JSON.FetchProjectsMetadata();
     
-        const title = document.createElement('h1');
-        title.classList.add('explorer-header');
-        title.textContent = 'explorer';
+        const projectTitle = document.createElement('h1');
+        projectTitle.classList.add('explorer-header');
+        projectTitle.textContent = 'projects';
+
+        const articleTitle = document.createElement('h1');
+        articleTitle.classList.add('explorer-header');
+        articleTitle.textContent = 'articles';
     
-        this.explorer.appendChild(title); 
+        this.projectContainer.appendChild(projectTitle); 
+        this.articleContainer.appendChild(articleTitle); 
+        this.articleContainer.appendChild(this.NoMatchMessage('article')); 
     
         // Sort metadatas by yearID in descending order (newest first)
         metadatas.sort((a, b) => parseInt(b.yearID) - parseInt(a.yearID));
@@ -38,7 +48,7 @@ export default class MenuPortfolio
             // Create a folder if there's none with the yearID of the project. 
             if (!folders[yearID]) {
                 folders[yearID] = await this.CreateFolder(yearID); 
-                this.explorer.appendChild(folders[yearID]); 
+                this.projectContainer.appendChild(folders[yearID]); 
             }
     
             // Create a project item
@@ -49,6 +59,7 @@ export default class MenuPortfolio
         }
     
         this.UpdateSelectedProject(0); 
+        this.SwitchMode(0); 
     }
     
     InitializeListeners() 
@@ -166,17 +177,13 @@ export default class MenuPortfolio
     
         if (menuMode == 0) // Project Mode
         {
-            // Show all folders when in project mode
-            folders.forEach(folder => {
-                folder.style.display = 'block';
-            });
+            this.projectContainer.style.display = 'block'; 
+            this.articleContainer.style.display = 'none'; 
         }
         if (menuMode == 1) // Blog Mode
         {
-            // Hide all folders when in blog mode
-            folders.forEach(folder => {
-                folder.style.display = 'none';
-            });
+            this.projectContainer.style.display = 'none'; 
+            this.articleContainer.style.display = 'block'; 
         }
     }
 
@@ -186,7 +193,7 @@ export default class MenuPortfolio
         const projects = document.querySelectorAll('.project');
 
         // Remove "No projects found" message if it exists
-        const noProjectsMessage = document.getElementById('no-projects-message');
+        const noProjectsMessage = document.getElementById('no-project-message');
         if (noProjectsMessage) noProjectsMessage.remove();
 
         // Container for displaying matched projects outside the folders
@@ -245,13 +252,17 @@ export default class MenuPortfolio
 
         // If no projects were found, show a "No projects found" message
         if (!found) {
-            const message = document.createElement('p');
-            message.id = 'no-projects-message';  // Assign an ID to easily remove later
-            message.textContent = 'No projects found';
-            projectSearchResults.appendChild(message);
+            projectSearchResults.appendChild(this.NoMatchMessage('project'));
         }
 
         // Ensure the search results container is visible when results are found
         projectSearchResults.style.display = 'block';
+    }
+
+    NoMatchMessage(type) {
+        const p = document.createElement('p');
+        p.id = `no-${type}-message`;
+        p.textContent = `No ${type}s found`;
+        return p;
     }
 }

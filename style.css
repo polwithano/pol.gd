@@ -506,9 +506,9 @@ a:hover
 
 .content-image {
   max-width: 40%;
-  max-width: 250px;
+  max-width: 300px;
   height: 200px;
-  border-radius: 16px;
+  border-radius: 8px;
   align-self: center;
   object-fit: cover; /* Crops the image to fit */
   object-position: center; /* Centers the cropped image */
