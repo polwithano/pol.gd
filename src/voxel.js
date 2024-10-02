@@ -154,7 +154,7 @@ function getUVAtVoxelPosition(voxelPosition, mesh, raycaster) {
     raycaster.firstHitOnly = true; 
     const intersects = raycaster.intersectObject(mesh);
 
-    if (intersects) {
+    if (intersects.length > 0) {
         const uv = new THREE.Vector2();
         uv.copy(intersects[0].uv); // Use the precomputed UV from the intersection
 
