@@ -1,15 +1,15 @@
 {
   "metadata": {
     "tag": "video_game",
-    "projectName": "Space Architect",
-    "companyName": "Isart Digital",
-    "yearString": "2016",
-    "yearID": "2016",
+    "projectName": "Lambda FPS",
+    "companyName": "",
+    "yearString": "2024",
+    "yearID": "2024",
     "tasks": "Solo Dev",
-    "description": "A puzzle, one-button game.",
+    "description": "A short description of the project.",
     "isFavorite": false,
-    "contentFolder": "space-architect",
-    "voxelPath": "../data/voxels/Space Architect_voxel.json",
+    "contentFolder": "lambda-fps",
+    "voxelPath": "../data/voxels/Lambda FPS_voxel.json",
     "gradientBackground": [
       "#FFFFFF",
       "#FFFFFF",
@@ -22,17 +22,21 @@
     ]
   },
   "content": {
-    "title": "Space Architect",
-    "tagline": "A puzzle, one-button game.",
+    "title": "Lambda FPS",
+    "tagline": "Project Tagline",
     "header": "header",
     "icons": [
       {
-        "name": "Unity",
-        "image": "unity"
+        "name": "icon-label",
+        "image": "icon-name"
       },
       {
-        "name": "Windows",
-        "image": "windows"
+        "name": "icon-label",
+        "image": "icon-name"
+      },
+      {
+        "name": "icon-label",
+        "image": "icon-name"
       }
     ],
     "sections": [
@@ -77,7 +81,7 @@
         "type": "video",
         "content": {
           "videoId": "dQw4w9WgXcQ",
-          "caption": "This is a caption for the video."
+          "caption": "This is a caption illustrating the content shown in the video."
         }
       },
       {

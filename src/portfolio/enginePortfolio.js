@@ -50,7 +50,7 @@ let initialMouseY = 0;
 let initialRotationX = 0;
 let initialRotationY = 0;
 const rotationLimit = Math.PI / 1.33; // Limit rotation to 45 degrees
-const rotationSpeed = 0.0025; // Speed of rotation
+const rotationSpeed = 0.0055; // Speed of rotation
 
 const paramsGrid = {
     coefXY:          20,
@@ -526,8 +526,12 @@ export default class EnginePortfolio extends Engine
             '../meshes/Keg.glb',
             '../meshes/UFO.glb',
             '../meshes/Knight.glb',
+            '../meshes/Rifle.glb',
             '../meshes/Airplane.glb',
             '../meshes/Bear.glb',
+            '../meshes/Earth.glb',
+            '../meshes/Probe.glb',
+            '../meshes/Dish.glb',
         ];
         const modelOptions = {selectedModel: models[0]}; 
 
@@ -789,7 +793,7 @@ export default class EnginePortfolio extends Engine
                 x: 0,
                 y: this.currentPFObject.voxelMetadata.startingRotation * (Math.PI / 180),
                 duration: 1,
-                ease: "elastic.out(1, 0.5)" // "Rubber band" effect
+                ease: "elastic.out(3, 10)" // "Rubber band" effect
             });
         }
     }

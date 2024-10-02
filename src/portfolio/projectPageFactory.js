@@ -42,7 +42,7 @@ export default class ProjectPageFactory
                     imageIndex++; 
                     break; 
                 case 'video': 
-                    div = this.RenderVideoSection(section, 560, 320); 
+                    div = this.RenderVideoSection(section, 640, 360); 
                     const iframe = div.querySelector('iframe'); 
                     this.videoElements.push(iframe); 
                     break; 
