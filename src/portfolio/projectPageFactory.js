@@ -1,4 +1,5 @@
 import ICON from '../../public/media/portfolio-icons/masterICON';
+import JSON from '../../data/masterJSON'
 
 export default class ProjectPageFactory 
 {
@@ -15,13 +16,16 @@ export default class ProjectPageFactory
         this.container.innerHTML = ''; 
     }
 
-    CreatePage(data, assets) 
+    async CreatePage(object) 
     {
         if (this.container === undefined) 
         {
             console.error('ProjectPageFactory: project page container is undefined');
             return;  
         }
+
+        const data = object.content; 
+        const assets = await JSON.LoadProjectAssets(object.data.project)
 
         this.container.innerHTML = ''; 
         this.videoElements = []; 

@@ -12,6 +12,7 @@ export default class ObjectPortfolio
         this.objectMethod = objectMethod;
 
         // Project-Related Data
+        this.data = []; 
         this.metadata = []; 
         this.content = []; 
         this.assets = []; 
@@ -60,13 +61,13 @@ export default class ObjectPortfolio
     {
         try 
         {
-            const data = await Master.LoadProjectData(projectName);
-            const project_data = data.project; 
-            const voxel_data = data.voxel; 
+            this.data = await Master.LoadProjectData(projectName);
+            
+            const project_data = this.data.project; 
+            const voxel_data = this.data.voxel; 
     
             this.metadata = project_data.metadata;
             this.content = project_data.content;   
-            this.assets = await Master.LoadProjectAssets(project_data); 
     
             this.voxelMetadata = voxel_data.metadata; 
             this.voxelParams = voxel_data.params;
