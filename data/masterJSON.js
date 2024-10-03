@@ -7,7 +7,6 @@ const projects =
     "Stellar Pulse",
     "Because I Love You",
     "Moonshine Inc.",
-    "Lambda FPS",
     "pol.gd",
     "Tile Editor",
     "Raycaster"
