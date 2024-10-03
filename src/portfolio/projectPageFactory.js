@@ -40,6 +40,10 @@ export default class ProjectPageFactory
                 case 'text-image':
                     div = this.RenderTextImageSection(section, assets.images[imageIndex]);
                     imageIndex++; 
+                    break;
+                case 'gif':
+                    div = this.RenderGifSection(section, assets.images[imageIndex]); 
+                    imageIndex++; 
                     break; 
                 case 'video': 
                     div = this.RenderVideoSection(section, 640, 360); 
@@ -50,7 +54,7 @@ export default class ProjectPageFactory
                     div = this.RenderCategorySection(section); 
                     break; 
                 case 'spacer':
-                    div = this.RenderSpacerSection(); 
+                    div = this.RenderSpacerSection(section); 
                     break; 
                 default: 
                     console.error(`Unknown section type: ${section.type}`); 
@@ -59,7 +63,7 @@ export default class ProjectPageFactory
 
             if (div != null) 
             {
-                div.className = 'content-section'; 
+                div.className += 'content-section'; 
                 this.container.appendChild(div);
             } 
         })
@@ -102,6 +106,23 @@ export default class ProjectPageFactory
         return div; 
     }
 
+    RenderGifSection(section, image) 
+    {
+        const div = document.createElement('div');
+        const asset = image?.src || this.placeholderImage.default; 
+        const legend = section.content.legend || ''; 
+        const width = section.content.image.width || 'auto'; // Default to 'auto' if not provided
+        const height = section.content.image.height || 'auto'; // Default to 'auto' if not provided    
+
+        div.className = 'gif-section'; 
+        div.innerHTML = `
+            <img src="${asset}" alt="GIF" class="content-gif" style="width: ${width}px; height: ${height}px;">
+            ${legend ? `<p class="gif-legend">${legend}</p>` : ''}
+        `;
+
+        return div; 
+    }
+
     RenderVideoSection(section, width, height) 
     {
         const div = document.createElement('div'); 
@@ -127,11 +148,12 @@ export default class ProjectPageFactory
         return div; 
     }
 
-    RenderSpacerSection() 
+    RenderSpacerSection(section) 
     {
         const div = document.createElement('div'); 
+        const spacerHeight = section?.content?.height || 20; 
         
-        div.innerHTML = `<p class="content-paragraph"></p>`;
+        div.innerHTML = `<p class="content-paragraph content-spacer" style="height: ${spacerHeight}px;"></p>`;
         
         return div; 
     }

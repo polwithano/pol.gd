@@ -27,38 +27,54 @@ async function LoadProjectAssets(projectData)
     try 
     {
         const { content, metadata } = projectData;
-        
         const contentFolder = metadata.contentFolder || 'default-folder'; 
         const mediaBasePath = `../media/projects/${contentFolder}`;
-        const placeholder = '../public/media/placeholder-image.jpg';
 
-        let header; 
-        try 
-        {
-            let src = `${mediaBasePath}/${content.header}.jpg`; 
-            header = src;
-            console.log('Loading image:', src); 
-        } 
-        catch (error) {
-            header = placeholder;
+        async function loadImageWithFallback(basePath, imageName) {
+            const possibleExtensions = ['.jpg', '.gif', '.png', '.webp'];
+            
+            return new Promise((resolve, reject) => {
+                let imageLoaded = false;
+        
+                for (const ext of possibleExtensions) {
+                    const src = `${basePath}/${imageName}${ext}`;
+                    
+                    // Create an image element and check for load/error events
+                    const img = new Image();
+                    img.src = src;
+        
+                    img.onload = () => {
+                        if (!imageLoaded) {
+                            console.log(`${ext} file loaded sucessfully: ${src}`);
+                            imageLoaded = true;
+                            resolve(src); // Resolve with the correct image path
+                        }
+                    };
+        
+                    img.onerror = () => {
+                        //console.warn('Failed to load image:', src);
+                        // If it's the last extension and none worked, reject
+                        if (ext === possibleExtensions[possibleExtensions.length - 1] && !imageLoaded) {
+                            resolve('../public/media/placeholder-image.jpg'); // Resolve with placeholder as fallback
+                        }
+                    };
+                }
+            });
         }
+        
+        // Load header image with fallback for various extensions
+        const header = await loadImageWithFallback(mediaBasePath, content.header || 'header-image');
 
-        // Filter for sections that have an image and check for imageIndex in section.content.image
+        // Filter and load images for each section
         const images = await Promise.all(
             content.sections
-                .filter(section => section.type === 'text-image' && section.content.image && section.content.image.imageIndex)
+                .filter(section => 
+                    (section.type === 'text-image' || section.type === 'gif') 
+                    && section.content.image && section.content.image.imageIndex)
                 .map(async (section) => {
                     const index = section.content.image.imageIndex; 
-                    const src = `${mediaBasePath}/${index}.jpg`;
-                    console.log('Loading image:', src); 
+                    const image = await loadImageWithFallback(mediaBasePath, index);
 
-                    let image; 
-                    try {
-                        image = src;
-                    } catch (error) {
-                        image = placeholder;
-                    }
-                    
                     return {
                         ...section.content.image, 
                         src: image

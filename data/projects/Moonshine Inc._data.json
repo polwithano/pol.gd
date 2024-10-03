@@ -23,7 +23,7 @@
   },
   "content": {
     "title": "Moonshine Inc.",
-    "tagline": "Project Tagline",
+    "tagline": "A unique simulation-management game about alcohol creation.",
     "header": "header",
     "icons": [
       {
@@ -43,16 +43,19 @@
       {
         "type": "category",
         "content": {
-          "title": "Description"
+          "title": "Core concept"
         }
       },
       {
-        "type": "spacer"
+        "type": "spacer",
+        "content": {
+          "height": 10
+        }
       },
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "Moonshine Inc. is a tycoon-simulator aiming to highlight the joy of brewing alcohol in the woods while avoiding police at all cost!<br>Dozens of apparatuses, recipes and ingredients are available to experiment and create various liquors.<br> The whole recipe system is dynamic and flexible, allowing players to mix different kind of ingredients to achieve unique blend of flavors and sugar concentration.",
           "image": {
             "imageIndex": 1,
             "alt": "project image",
@@ -61,19 +64,22 @@
         }
       },
       {
-        "type": "spacer"
+        "type": "spacer",
+        "content": {
+          "height": 30
+        }
       },
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "Moonshine Inc. was an interesting project to work on to say the least. I had to work on various tasks, from core design to content design, balancing, documentation, and so on.",
           "image": {
             "imageIndex": 2,
             "alt": "project image",
             "position": "right"
           }
         }
-      },
+      }, 
       {
         "type": "spacer"
       },
@@ -90,7 +96,7 @@
     ],
     "download": {
       "url": "https://store.steampowered.com/app/1066760/Moonshine_Inc/",
-      "label": "Steam Page"
+      "label": "Get the game on Steam"
     }
   }
 }

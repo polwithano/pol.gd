@@ -508,7 +508,7 @@ a:hover
   max-width: 40%;
   max-width: 300px;
   height: 200px;
-  border-radius: 8px;
+  border-radius: 4px;
   align-self: center;
   object-fit: cover; /* Crops the image to fit */
   object-position: center; /* Centers the cropped image */
@@ -529,6 +529,27 @@ a:hover
 
 .content-section .right {
   order: 1; /* Image appears last */
+}
+
+/* GIF Section */
+.gif-section {
+  display: block; /* Override flexbox behavior */
+  text-align: center;
+  width: 100%; /* Make the GIF section take full width */
+  margin: 20px 0;
+}
+
+.content-gif {
+  max-width: 100%;
+  height: auto;
+}
+
+.gif-legend {
+  font-family: 'DIN';
+  font-size: 14px;
+  color: #ececec;
+  margin-top: 10px;
+  text-align: center;
 }
 
 /* Video Section */

@@ -54,7 +54,7 @@
         "content": {
           "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
           "image": {
-            "src": "media/placeholder-image.jpg",
+            "imageIndex": 1,
             "alt": "project image",
             "position": "left"
           }
@@ -68,7 +68,7 @@
         "content": {
           "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
           "image": {
-            "src": "media/placeholder-image.jpg",
+            "imageIndex": 2,
             "alt": "project image",
             "position": "right"
           }
@@ -80,8 +80,8 @@
       {
         "type": "video",
         "content": {
-          "videoId": "dQw4w9WgXcQ",
-          "caption": "This is a caption for the video."
+          "videoId": "z9tn12-JzFI",
+          "caption": "A complete walkthrough of the project."
         }
       },
       {
@@ -89,8 +89,8 @@
       }
     ],
     "download": {
-      "url": "https://github.com/polwithano",
-      "label": "Git Repository"
+      "url": "https://gamejolt.com/games/ZeroDay/267987",
+      "label": "Get the game on gamejolt"
     }
   }
 }
