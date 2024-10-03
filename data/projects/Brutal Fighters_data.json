@@ -23,7 +23,7 @@
   },
   "content": {
     "title": "Brutal Fighters",
-    "tagline": "Project Tagline",
+    "tagline": "The downfall of a dystopian tv show",
     "header": "header",
     "icons": [
       {
@@ -52,7 +52,7 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Brutal Fighters is a 2D Beat 'em Up developed using Unity by a multidisciplinary team of nine people, including Game Designers, Gameplay Programmers, Game Artists, and a Sound Designer. It was created as the final project of our second year in the Bachelor of Game Design program at ISART Digital.<br>This game was developed over a period of two and a half months, with four weeks dedicated to full production. Despite the tight schedule, we successfully crafted a unique experience that stood out for its technical achievements and creativity.",
+          "paragraph": "Brutal Fighters is a 2D Beat 'em Up developed using Unity by a team of nine people, including Game Designers, Gameplay Programmers, Game Artists, and a Sound Designer. It was created as the final project of our second year in the Bachelor of Game Design program at ISART Digital.<br>This game was developed over a period of two and a half months, with four weeks dedicated to full production. Despite the tight schedule, we successfully crafted a unique experience that stood out for its technical achievements and creativity.",
           "image": {
             "imageIndex": 1,
             "alt": "project image",
@@ -79,6 +79,16 @@
         "content": {
           "height": 60
         }
+      },
+      {
+        "type": "video",
+        "content": {
+          "videoId": "zyfCmeyB_l0",
+          "caption": ""
+        }
+      },
+      {
+        "type": "spacer"
       }
     ],
     "download": {
