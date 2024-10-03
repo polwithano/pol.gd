@@ -6,7 +6,7 @@
     "yearString": "2022",
     "yearID": "2022",
     "tasks": "Game Design",
-    "description": "A short description of the project.",
+    "description": "A tycoon about alcohol brewing.",
     "isFavorite": true,
     "contentFolder": "moonshine-inc",
     "voxelPath": "../data/voxels/Moonshine Inc._voxel.json",

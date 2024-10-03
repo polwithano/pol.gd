@@ -6,7 +6,7 @@
     "yearString": "2024",
     "yearID": "2024",
     "tasks": "Solo project",
-    "description": "A short description of the project.",
+    "description": "A Three.js portfolio.",
     "isFavorite": false,
     "contentFolder": "pol-gd",
     "voxelPath": "../data/voxels/pol.gd_voxel.json",
