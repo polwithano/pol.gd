@@ -23,7 +23,7 @@
   },
   "content": {
     "title": "pol.gd",
-    "tagline": "Project Tagline",
+    "tagline": "A portfolio website made with Three.js",
     "header": "header",
     "icons": [
       {
@@ -52,10 +52,10 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "",
           "image": {
-            "src": "media/placeholder-image.jpg",
-            "alt": "project image",
+            "imageIndex": 1,
+            "alt": "project-screenshot",
             "position": "left"
           }
         }
@@ -66,10 +66,10 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "",
           "image": {
-            "src": "media/placeholder-image.jpg",
-            "alt": "project image",
+            "imageIndex": 2,
+            "alt": "project-screenshot",
             "position": "right"
           }
         }
@@ -79,7 +79,7 @@
       }
     ],
     "download": {
-      "url": "https://github.com/polwithano",
+      "url": "https://github.com/polwithano/pol.gd",
       "label": "Git repository"
     }
   }

@@ -2,11 +2,11 @@
   "metadata": {
     "tag": "board_game",
     "projectName": "Agent X",
-    "companyName": "companyName",
+    "companyName": "Isart Digital",
     "yearString": "2018",
     "yearID": "2018",
     "tasks": "Game Design",
-    "description": "A short description of the project.",
+    "description": "An asymetric, role-based board game.",
     "isFavorite": false,
     "contentFolder": "agent-x",
     "voxelPath": "../data/voxels/Agent X_voxel.json",
@@ -23,7 +23,7 @@
   },
   "content": {
     "title": "Agent X",
-    "tagline": "Project Tagline",
+    "tagline": "Cold war: the board game",
     "header": "header",
     "icons": [
       {
@@ -52,7 +52,7 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "Agent X is an intense and immersive board game set during the height of the Cold War, where four players vie for dominance in a world of espionage, strategy, and shifting alliances. The primary objective is to align with the faction that secures the most points, whether it’s the USSR or USA, while also ensuring you emerge as the top agent within that faction by having the highest individual score. The game thrives on deception, where bluffing, betrayal, and manipulation are essential tools. Players must navigate a landscape of ever-changing loyalties and hidden motives, making every decision a gamble as they attempt to outwit their opponents.",
           "image": {
             "imageIndex": 1,
             "alt": "project image",
@@ -66,7 +66,7 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "Each player is tasked with carrying out secret missions for either superpower, carefully tipping the balance of global influence in favor of their chosen faction. Along the way, players have access to a variety of Cold War-themed gadgets and equipment, enabling them to sabotage opponents, mislead their rivals, or boost their own team’s efforts. Trust is fleeting, and today's ally may become tomorrow's enemy as players juggle short-term alliances with long-term ambitions.<br>Success in Agent X demands not only strategic thinking and cunning but also a mastery of psychological warfare, where every move could change the course of the game.",
           "image": {
             "imageIndex": 2,
             "alt": "project image",
@@ -75,22 +75,15 @@
         }
       },
       {
-        "type": "spacer"
-      },
-      {
-        "type": "video",
+        "type": "spacer",
         "content": {
-          "videoId": "dQw4w9WgXcQ",
-          "caption": "This is a caption illustrating the content shown in the video."
+          "height": 60
         }
-      },
-      {
-        "type": "spacer"
       }
     ],
     "download": {
-      "url": "https://github.com/polwithano",
-      "label": "Git Repository"
+      "url": "https://ba129206-cc2f-494e-a575-9c7c8d173c94.filesusr.com/ugd/183e61_6250f1ddcd3645af860fdb25aa7c556b.pdf",
+      "label": "Get the rulebook (French only)"
     }
   }
 }

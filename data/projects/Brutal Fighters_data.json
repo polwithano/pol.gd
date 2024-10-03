@@ -6,7 +6,7 @@
     "yearString": "2018",
     "yearID": "2018",
     "tasks": "GD • LD",
-    "description": "A short description of the project.",
+    "description": "A colorful beat'em all.",
     "isFavorite": true,
     "contentFolder": "brutal-fighters",
     "voxelPath": "../data/voxels/Brutal Fighters_voxel.json",
@@ -52,23 +52,9 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "Brutal Fighters is a 2D Beat 'em Up developed using Unity by a multidisciplinary team of nine people, including Game Designers, Gameplay Programmers, Game Artists, and a Sound Designer. It was created as the final project of our second year in the Bachelor of Game Design program at ISART Digital.<br>This game was developed over a period of two and a half months, with four weeks dedicated to full production. Despite the tight schedule, we successfully crafted a unique experience that stood out for its technical achievements and creativity.",
           "image": {
-            "src": "media/placeholder-image.jpg",
-            "alt": "project image",
-            "position": "left"
-          }
-        }
-      },
-      {
-        "type": "spacer"
-      },
-      {
-        "type": "text-image",
-        "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
-          "image": {
-            "src": "media/placeholder-image.jpg",
+            "imageIndex": 1,
             "alt": "project image",
             "position": "right"
           }
@@ -78,19 +64,26 @@
         "type": "spacer"
       },
       {
-        "type": "video",
+        "type": "text-image",
         "content": {
-          "videoId": "dQw4w9WgXcQ",
-          "caption": "This is a caption for the video."
+          "paragraph": "The game earned us both the Technical Direction Award and the Grand Jury Prize, a testament to the hard work and collaboration of our team. We take great pride in Brutal Fighters, a game that blends reality TV themes, unexpected surprises, and a juicy gameplay experience within a vibrant, offbeat Mexican-inspired world.",
+          "image": {
+            "imageIndex": 2,
+            "alt": "project image",
+            "position": "left"
+          }
         }
       },
       {
-        "type": "spacer"
+        "type": "spacer",
+        "content": {
+          "height": 60
+        }
       }
     ],
     "download": {
-      "url": "https://github.com/polwithano",
-      "label": "Git Repository"
+      "url": "https://drive.google.com/file/d/17qMmtxwr0zuvsDJRrBNsN-kTH4lUIluo/view",
+      "label": "Get the build here"
     }
   }
 }

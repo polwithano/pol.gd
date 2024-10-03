@@ -62,6 +62,23 @@
       {
         "type": "spacer",
         "content": {
+          "height": 30
+        }
+      },
+      {
+        "type": "gif",
+        "content": {
+          "legend": "The key is balance.",
+          "image": {
+            "imageIndex": 2,
+            "width": 400,
+            "height": 250
+          }
+        }
+      },
+      {
+        "type": "spacer",
+        "content": {
           "height": 60
         }
       }

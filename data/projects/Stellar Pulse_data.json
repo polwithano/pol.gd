@@ -6,7 +6,7 @@
     "yearString": "2019",
     "yearID": "2019",
     "tasks": "GD • LD • 3D",
-    "description": "A short description of the project.",
+    "description": "A VR rhythm game set in space.",
     "isFavorite": false,
     "contentFolder": "stellar-pulse",
     "voxelPath": "../data/voxels/Stellar Pulse_voxel.json",
@@ -23,7 +23,7 @@
   },
   "content": {
     "title": "Stellar Pulse",
-    "tagline": "Project Tagline",
+    "tagline": "A blend of Just Dance and a Shoot'em Up",
     "header": "header",
     "icons": [
       {
@@ -52,9 +52,9 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "Stellar Pulse is an immersive VR rhythm game set in a dynamic space environment, where you must navigate through rings and defeat enemies.<br>Armed with a ship in each hand, each representing a different color, your mission is to fly through the matching colored rings while simultaneously fending off enemies that attack or evade you",
           "image": {
-            "src": "media/placeholder-image.jpg",
+            "imageIndex": 1,
             "alt": "project image",
             "position": "left"
           }
@@ -66,9 +66,9 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "Set to the beat of vibrant music, the gameplay challenges you to move with precision and rhythm. With each song, you'll need to perform fluid, dance-like movements to dodge attacks and hit targets, all while striving to surpass your high score and master the choreography of the universe.",
           "image": {
-            "src": "media/placeholder-image.jpg",
+            "imageIndex": 2,
             "alt": "project image",
             "position": "right"
           }
@@ -80,17 +80,13 @@
       {
         "type": "video",
         "content": {
-          "videoId": "dQw4w9WgXcQ",
-          "caption": "This is a caption for the video."
+          "videoId": "Kn0CMk3IwdQ",
+          "caption": "A complete walkthrough of the project, including all the levels."
         }
       },
       {
         "type": "spacer"
       }
-    ],
-    "download": {
-      "url": "https://github.com/polwithano",
-      "label": "Git Repository"
-    }
+    ]
   }
 }
