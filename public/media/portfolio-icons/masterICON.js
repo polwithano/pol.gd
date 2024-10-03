@@ -1,10 +1,14 @@
 async function LoadIcon(key) 
 {
+    if (key == "adobe") return import('./adobe.png')
     if (key == "blender") return import('./blender.png'); 
+    if (key == "boardgame") return import('./boardgame.png');
     if (key == "controller") return import('./controller.png');
+    if (key == "cplus") return import('./cplus.png');
     if (key == "folder") return import('./folder.png'); 
     if (key == "keyboard") return import('./keyboard.png')
     if (key == "oculus") return import('./oculus.png');
+    if (key == "tool") return import('./tool.png');
     if (key == "unity") return import('./unity.png');
     if (key == "unreal") return import('./unreal.png');
     if (key == "vr") return import('./vr.png');

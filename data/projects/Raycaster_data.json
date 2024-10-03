@@ -24,19 +24,11 @@
   "content": {
     "title": "Raycaster",
     "tagline": "Project Tagline",
-    "header": "media/placeholder-image.jpg",
+    "header": "header",
     "icons": [
       {
-        "name": "icon-label",
-        "image": "icon-name"
-      },
-      {
-        "name": "icon-label",
-        "image": "icon-name"
-      },
-      {
-        "name": "icon-label",
-        "image": "icon-name"
+        "name": "C++",
+        "image": "cplus"
       }
     ],
     "sections": [

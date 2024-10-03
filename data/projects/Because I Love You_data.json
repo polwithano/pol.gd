@@ -27,16 +27,16 @@
     "header": "header",
     "icons": [
       {
-        "name": "Name",
-        "image": "name"
+        "name": "Unreal",
+        "image": "unreal"
       },
       {
-        "name": "Name",
-        "image": "name"
+        "name": "VR",
+        "image": "vr"
       },
       {
-        "name": "Name",
-        "image": "name"
+        "name": "Oculus",
+        "image": "oculus"
       }
     ],
     "sections": [

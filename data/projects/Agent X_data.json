@@ -27,16 +27,12 @@
     "header": "header",
     "icons": [
       {
-        "name": "Name",
-        "image": "name"
+        "name": "Board",
+        "image": "boardgame"
       },
       {
-        "name": "Name",
-        "image": "name"
-      },
-      {
-        "name": "Name",
-        "image": "name"
+        "name": "Adobe",
+        "image": "adobe"
       }
     ],
     "sections": [

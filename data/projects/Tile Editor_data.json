@@ -6,7 +6,7 @@
     "yearString": "2021",
     "yearID": "2021",
     "tasks": "tasksList",
-    "description": "A short description of the project.",
+    "description": "A terrain, tile-based editor.",
     "isFavorite": false,
     "contentFolder": "tile-editor",
     "voxelPath": "../data/voxels/Tile Editor_voxel.json",
@@ -24,19 +24,15 @@
   "content": {
     "title": "Tile Editor",
     "tagline": "Project Tagline",
-    "header": "media/placeholder-image.jpg",
+    "header": "header",
     "icons": [
       {
-        "name": "icon-label",
-        "image": "icon-name"
+        "name": "Unity",
+        "image": "unity"
       },
       {
-        "name": "icon-label",
-        "image": "icon-name"
-      },
-      {
-        "name": "icon-label",
-        "image": "icon-name"
+        "name": "Tool",
+        "image": "tool"
       }
     ],
     "sections": [
