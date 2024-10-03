@@ -27,16 +27,12 @@
     "header": "header",
     "icons": [
       {
-        "name": "icon-label",
-        "image": "icon-name"
+        "name": "Unity",
+        "image": "unity"
       },
       {
-        "name": "icon-label",
-        "image": "icon-name"
-      },
-      {
-        "name": "icon-label",
-        "image": "icon-name"
+        "name": "Multiplayer",
+        "image": "network"
       }
     ],
     "sections": [

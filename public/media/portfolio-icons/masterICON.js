@@ -7,6 +7,7 @@ async function LoadIcon(key)
     if (key == "cplus") return import('./cplus.png');
     if (key == "folder") return import('./folder.png'); 
     if (key == "keyboard") return import('./keyboard.png')
+    if (key == "network") return import('./network.png')
     if (key == "oculus") return import('./oculus.png');
     if (key == "tool") return import('./tool.png');
     if (key == "unity") return import('./unity.png');
