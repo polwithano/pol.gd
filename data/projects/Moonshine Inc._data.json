@@ -72,7 +72,7 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Moonshine Inc. was an interesting project to work on to say the least. I had to work on various tasks, from core design to content design, balancing, documentation, and so on.",
+          "paragraph": "Moonshine Inc. was an interesting project to work on to say the least. I had to work on various tasks, from core design to content design, balancing, documentation, and so on.<br>Moonshine Inc. was desgined and created during the course of 20 months with a team of a dozen, including artists, programmers and designers.<br>Moonshine Inc. is a unique take on the sim-tycoon genre and was a great challenge from start to finish.",
           "image": {
             "imageIndex": 2,
             "alt": "project image",

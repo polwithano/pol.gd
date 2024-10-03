@@ -2,10 +2,10 @@
   "metadata": {
     "tag": "programming",
     "projectName": "Tile Editor",
-    "companyName": "companyName",
+    "companyName": "",
     "yearString": "2021",
     "yearID": "2021",
-    "tasks": "tasksList",
+    "tasks": "Solo project",
     "description": "A terrain, tile-based editor.",
     "isFavorite": false,
     "contentFolder": "tile-editor",
@@ -23,7 +23,7 @@
   },
   "content": {
     "title": "Tile Editor",
-    "tagline": "Project Tagline",
+    "tagline": "A tile-based editor for old-school, psx tacticals.",
     "header": "header",
     "icons": [
       {
@@ -39,18 +39,21 @@
       {
         "type": "category",
         "content": {
-          "title": "Description"
+          "title": "Concept"
         }
       },
       {
-        "type": "spacer"
+        "type": "spacer",
+        "content": {
+          "height": 2
+        }
       },
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "I created a tile-based level editor for 3D tactical games in Unity. This tool allows users to place tiles, or voxels, in different shapes, including flat and sloped options, and at various elevations. Users can also add obstacles and enemies to the environment, enabling the creation of functional and strategic game levels. The editor streamlines the level design process, making it easier for developers to build engaging gameplay experiences.",
           "image": {
-            "src": "media/placeholder-image.jpg",
+            "imageIndex": 1,
             "alt": "project image",
             "position": "left"
           }
@@ -60,33 +63,19 @@
         "type": "spacer"
       },
       {
-        "type": "text-image",
+        "type": "gif",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "legend": "The preview shows the level while a 2D grid allow to precisely place the elements on the map.",
           "image": {
-            "src": "media/placeholder-image.jpg",
-            "alt": "project image",
-            "position": "right"
+            "imageIndex": 2,
+            "width": 600,
+            "height": 337.5
           }
         }
       },
       {
         "type": "spacer"
-      },
-      {
-        "type": "video",
-        "content": {
-          "videoId": "dQw4w9WgXcQ",
-          "caption": "This is a caption illustrating the content shown in the video."
-        }
-      },
-      {
-        "type": "spacer"
       }
-    ],
-    "download": {
-      "url": "https://github.com/polwithano",
-      "label": "Git Repository"
-    }
+    ]
   }
 }

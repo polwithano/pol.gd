@@ -43,7 +43,7 @@
       {
         "type": "category",
         "content": {
-          "title": "Description"
+          "title": "Core concept"
         }
       },
       {
@@ -52,9 +52,9 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "Because I Love You is a gripping VR narrative game that immerses players in the unsettling experience of domestic abuse.<br>Set entirely within a claustrophobic apartment, the player finds themselves trapped, unable to leave, and tasked with performing mundane household activities. However, as time progresses, the apartment begins to change, becoming increasingly distorted and chaotic, reflecting the emotional and psychological turmoil of an abusive relationship.<br>The mundane tasks, once ordinary, take on a darker, oppressive tone as the environment subtly shifts, building an overwhelming sense of tension and entrapment.",
           "image": {
-            "src": "media/placeholder-image.jpg",
+            "imageIndex": 1,
             "alt": "project image",
             "position": "left"
           }
@@ -66,9 +66,9 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "One of the most striking mechanics in the game is its use of teleportation to emphasize the disorienting and surreal nature of the experience. Whenever the player turns to look behind them, they are unexpectedly teleported into another room within the apartment, creating a sense of instability and confusion.<br>This unpredictable shift, paired with the growing visual decay of the space, mirrors the emotional instability the player is meant to feel. Through its narrative-driven gameplay and haunting use of space, Because I Love You delivers a powerful and thought-provoking exploration of the complexities of abuse, emphasizing the feelings of isolation, fear, and disorientation that come with it.",
           "image": {
-            "src": "media/placeholder-image.jpg",
+            "imageIndex": 2,
             "alt": "project image",
             "position": "right"
           }
@@ -76,21 +76,7 @@
       },
       {
         "type": "spacer"
-      },
-      {
-        "type": "video",
-        "content": {
-          "videoId": "dQw4w9WgXcQ",
-          "caption": "This is a caption illustrating the content shown in the video."
-        }
-      },
-      {
-        "type": "spacer"
       }
-    ],
-    "download": {
-      "url": "https://github.com/polwithano",
-      "label": "Git Repository"
-    }
+    ]
   }
 }
