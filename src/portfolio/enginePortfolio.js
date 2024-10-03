@@ -535,6 +535,7 @@ export default class EnginePortfolio extends Engine
             '../meshes/Tile.glb',
             '../meshes/Doom.glb',
             '../meshes/Camera.glb',
+            '../meshes/Mountain.glb',
         ];
         const modelOptions = {selectedModel: models[0]}; 
 

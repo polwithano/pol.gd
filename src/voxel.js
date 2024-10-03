@@ -111,7 +111,7 @@ async function VoxelizeMesh(paramsInput, mesh)
     console.log('Voxels instantiated:', localVoxels.length);
 
     WeightedAmbientOcclusion(localVoxels, paramsInput.gridSize, false); 
-    localVoxels = RemoveFullyOccludedVoxels(localVoxels, 0.1); 
+    localVoxels = RemoveFullyOccludedVoxels(localVoxels, 0.01); 
 
     let instancedMesh = GetVoxelGeometry(localParams, localVoxels.length);
     CreateInstancedVoxelMesh(instancedMesh, localVoxels);
