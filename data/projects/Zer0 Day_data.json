@@ -6,7 +6,7 @@
     "yearString": "2017",
     "yearID": "2017",
     "tasks": "GD • LD",
-    "description": "A short description of the project.",
+    "description": "An infiltration game made with Unity.",
     "isFavorite": false,
     "contentFolder": "zero-day",
     "voxelPath": "../data/voxels/Zer0 Day_voxel.json",
@@ -23,7 +23,7 @@
   },
   "content": {
     "title": "Zer0 Day",
-    "tagline": "Project Tagline",
+    "tagline": "An infiltration game about revealing your environment.",
     "header": "header",
     "icons": [
       {
@@ -52,7 +52,7 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "Zer0 Day is an infiltration game set in a computer. As a virus, your task is identify and destroy nodes to infiltrate networks.<br>The core concept revolve around the player-character' ability to map the environment using a sonar.<br>By holding and releasing a trigger, the player radiates beads that, upon colliding with the environment, reveal the the obstacles and limits of the terrain.",
           "image": {
             "imageIndex": 1,
             "alt": "project image",
@@ -66,7 +66,7 @@
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "The project was made over the course of one trimester with a small team of students (game design and programming courses).<br>The assignement was to create an infiltration game with an unique core-mechanic and ten minutes of gameplay including obstacles and enemies.<br>Aside from Unity, we used a couple of tools to design the levels and the inteface, namely the Adobe suite.<br>This project was the end of year project of our preparatory class.",
           "image": {
             "imageIndex": 2,
             "alt": "project image",

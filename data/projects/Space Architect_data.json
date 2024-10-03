@@ -3,8 +3,8 @@
     "tag": "video_game",
     "projectName": "Space Architect",
     "companyName": "Isart Digital",
-    "yearString": "2016",
-    "yearID": "2016",
+    "yearString": "2017",
+    "yearID": "2017",
     "tasks": "Solo Dev",
     "description": "A puzzle, one-button game.",
     "isFavorite": false,
@@ -43,50 +43,32 @@
         }
       },
       {
-        "type": "spacer"
+        "type": "spacer",
+        "content": {
+          "height": 2
+        }
       },
       {
         "type": "text-image",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
+          "paragraph": "Space Architect is a game made in one month using Unity. The core concept was centered around the limitation of having only one input for the gameplay.<br>Space Architect plays a lot like a carnival game.<br>With a button dedicated to the beam activation of the space ship, the goal is to attract and store buildings to pile them on a plateform, like a Jenga.<br>Space Architect was the first game I've developped from start to finish and it was an incredible experience.",
           "image": {
-            "src": "media/placeholder-image.jpg",
+            "imageIndex": 1,
             "alt": "project image",
             "position": "left"
           }
         }
       },
       {
-        "type": "spacer"
-      },
-      {
-        "type": "text-image",
+        "type": "spacer",
         "content": {
-          "paragraph": "Sed mattis, erat sit amet gravida malesuada, elit augue egestas diam, tempus scelerisque nunc nisl vitae libero. Sed consequat feugiat massa. Nunc porta, eros in eleifend varius, erat leo rutrum dui, non convallis lectus orci ut nibh. Sed lorem massa, nonummy quis, egestas id, condimentum at, nisl. Maecenas at nibh. Aliquam et augue at nunc pellentesque ullamcorper. Duis nisl nibh, laoreet suscipit, convallis ut, rutrum id, enim. Phasellus odio. Nulla nulla elit, molestie non, scelerisque at, vestibulum eu, nulla.",
-          "image": {
-            "src": "media/placeholder-image.jpg",
-            "alt": "project image",
-            "position": "right"
-          }
+          "height": 60
         }
-      },
-      {
-        "type": "spacer"
-      },
-      {
-        "type": "video",
-        "content": {
-          "videoId": "dQw4w9WgXcQ",
-          "caption": "This is a caption for the video."
-        }
-      },
-      {
-        "type": "spacer"
       }
     ],
     "download": {
-      "url": "https://github.com/polwithano",
-      "label": "Git Repository"
+      "url": "https://gamejolt.com/games/space-architect/235241",
+      "label": "Get the game on gamejolt"
     }
   }
 }

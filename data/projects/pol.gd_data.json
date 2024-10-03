@@ -76,21 +76,11 @@
       },
       {
         "type": "spacer"
-      },
-      {
-        "type": "video",
-        "content": {
-          "videoId": "dQw4w9WgXcQ",
-          "caption": "This is a caption illustrating the content shown in the video."
-        }
-      },
-      {
-        "type": "spacer"
       }
     ],
     "download": {
       "url": "https://github.com/polwithano",
-      "label": "Git Repository"
+      "label": "Git repository"
     }
   }
 }
