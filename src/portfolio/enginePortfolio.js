@@ -297,7 +297,7 @@ export default class EnginePortfolio extends Engine
             this.SetScene();
             this.InitializeCamera(); 
             this.InitializeHTML(); 
-            this.projectPageFactory.CreatePage(this.currentPFObject.content, this.currentPFObject.assets); 
+            await this.projectPageFactory.CreatePage(this.currentPFObject.content, this.currentPFObject.assets); 
             Helpers.AnimateVoxels(this.currentPFObject, 20);  
         }
         else 
@@ -956,6 +956,8 @@ export default class EnginePortfolio extends Engine
 
         // Update the background
         this.SmoothGradientTransition(this.currentPFObject.metadata.gradientBackground, this.nextPFObject.metadata.gradientBackground, duration);
+
+        await this.projectPageFactory.CreatePage(this.nextPFObject.content, this.nextPFObject.assets); 
     
         // Animate the current object out of the scene
         gsap.to(this.currentPFObject.voxelizedMesh.position, {
@@ -976,7 +978,6 @@ export default class EnginePortfolio extends Engine
                 this.currentPFObject = this.nextPFObject;
 
                 this.UpdateHTML(); 
-                this.projectPageFactory.CreatePage(this.currentPFObject.content, this.currentPFObject.assets); 
 
                 //this.animationStartTime = 0; 
                 this.currentPFObject.voxelStartAnimationOver = true; 

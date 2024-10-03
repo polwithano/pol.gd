@@ -99,7 +99,7 @@ export default class ProjectPageFactory
         const asset = image?.src || this.placeholderImage.default; 
 
         div.innerHTML = `
-            <img src="${asset}" alt="${section.content.image.alt}" class="content-image ${section.content.image.position}">
+            <img src="${asset}" alt="${section.content.image.alt}" class="content-image ${section.content.image.position}" loading="lazy">
             <p class="content-paragraph">${section.content.paragraph}</p>
         `;
 
@@ -116,7 +116,7 @@ export default class ProjectPageFactory
 
         div.className = 'gif-section'; 
         div.innerHTML = `
-            <img src="${asset}" alt="GIF" class="content-gif" style="width: ${width}px; height: ${height}px;">
+            <img src="${asset}" alt="GIF" class="content-gif" loading="lazy" style="width: ${width}px; height: ${height}px;">
             ${legend ? `<p class="gif-legend">${legend}</p>` : ''}
         `;
 
