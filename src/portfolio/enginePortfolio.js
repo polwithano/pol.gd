@@ -434,7 +434,7 @@ export default class EnginePortfolio extends Engine
         const projectMetadata = this.currentPFObject.metadata;
         const voxelMetadata = this.currentPFObject.voxelMetadata; 
         this.canOpenPage = false; 
-
+    
         const vsOpts = {
             duration: 0.20,
             lineHeight: 100
@@ -449,64 +449,68 @@ export default class EnginePortfolio extends Engine
             copyrightModel: document.getElementById('copyright-model')
         };
     
-        // Function to update text with animations
-        const updateTextWithAnimation = (element, newText) => 
-        {
-            const splitInstance = new SplitType(element, { types: 'chars' });
-            const oldChars = splitInstance.chars;
-            
-            // Animate out the old text (slide up and fade out)
-            gsap.to(oldChars, 
-            {
-                duration: vsOpts.duration,
-                y: -vsOpts.lineHeight,
-                opacity: 0,
-                stagger: vsOpts.duration / 10,
-                ease: "steps(2)",
-
-                onComplete: () => 
-                {
-                    splitInstance.revert(); 
-                    // Update text content once old text is gone
-                    element.textContent = newText;
-                    
-                    // Re-split new text into characters
-                    const newSplitInstance = new SplitType(element, { types: 'chars' });
-                    const newChars = newSplitInstance.chars;
-    
-                    // Animate in the new text (slide down and fade in)
-                    gsap.from(newChars, 
-                    {
-                        duration: vsOpts.duration,
-                        y: vsOpts.lineHeight,
-                        opacity: 0,
-                        stagger: vsOpts.duration / 10,
-                        ease: "steps(2)",
-
-                        onComplete: () => 
-                        {
-                            splitInstance.revert();  
-                            element.innerHTML = ''; 
-                            element.textContent = newText;
-                            this.canOpenPage = true; 
-                        }
-                    });
-                }
+        // Function to update text with animations using Promises
+        const updateTextWithAnimation = (element, newText) => {
+            return new Promise((resolve) => {
+                const splitInstance = new SplitType(element, { types: 'chars' });
+                const oldChars = splitInstance.chars;
+                
+                // Animate out the old text (slide up and fade out)
+                gsap.to(oldChars, {
+                    duration: vsOpts.duration,
+                    y: -vsOpts.lineHeight,
+                    opacity: 0,
+                    stagger: vsOpts.duration / 10,
+                    ease: "steps(2)",
+                    onComplete: () => {
+                        splitInstance.revert(); 
+                        // Update text content once old text is gone
+                        element.textContent = newText;
+                        
+                        // Re-split new text into characters
+                        const newSplitInstance = new SplitType(element, { types: 'chars' });
+                        const newChars = newSplitInstance.chars;
+        
+                        // Animate in the new text (slide down and fade in)
+                        gsap.from(newChars, {
+                            duration: vsOpts.duration,
+                            y: vsOpts.lineHeight,
+                            opacity: 0,
+                            stagger: vsOpts.duration / 10,
+                            ease: "steps(2)",
+                            onComplete: () => {
+                                splitInstance.revert();  
+                                element.innerHTML = ''; 
+                                element.textContent = newText;
+                                resolve();  // Resolve when the animation completes
+                            }
+                        });
+                    }
+                });
             });
         };
-
-        updateTextWithAnimation(elements.projectName, projectMetadata.projectName);
-        updateTextWithAnimation(elements.projectYear, projectMetadata.tasks);
-        updateTextWithAnimation(elements.projectDescription, projectMetadata.description);
-
-        document.getElementById('company-name').textContent = projectMetadata.companyName;
-        document.getElementById('author-name').textContent = projectMetadata.yearString;
-        document.getElementById('project-tag').innerHTML = '';  
-        document.getElementById('project-tag').appendChild(TagManager.TagElement(projectMetadata.tag, "tag")); 
-        document.getElementById('copyright-model').innerHTML = `© Original Model • <a href="${voxelMetadata.modelLink}" target="_blank">${voxelMetadata.author}</a>`;
-
-        this.UpdateIcons();
-    }    
+    
+        // Create an array of promises for all text animations
+        const promises = [
+            updateTextWithAnimation(elements.projectName, projectMetadata.projectName),
+            updateTextWithAnimation(elements.projectYear, projectMetadata.tasks),
+            updateTextWithAnimation(elements.projectDescription, projectMetadata.description)
+        ];
+    
+        // When all animations are done, set canOpenPage to true
+        Promise.all(promises).then(() => {
+            document.getElementById('company-name').textContent = projectMetadata.companyName;
+            document.getElementById('author-name').textContent = projectMetadata.yearString;
+            document.getElementById('project-tag').innerHTML = '';  
+            document.getElementById('project-tag').appendChild(TagManager.TagElement(projectMetadata.tag, "tag")); 
+            document.getElementById('copyright-model').innerHTML = `© Original Model • <a href="${voxelMetadata.modelLink}" target="_blank">${voxelMetadata.author}</a>`;
+    
+            this.UpdateIcons();
+    
+            // Set canOpenPage to true after all operations are complete
+            this.canOpenPage = true;
+        });
+    }         
 
     InitializeGUI() 
     {
