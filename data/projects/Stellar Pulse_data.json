@@ -24,7 +24,7 @@
   "content": {
     "title": "Stellar Pulse",
     "tagline": "A blend of Just Dance and a Shoot'em Up",
-    "header": "header",
+    "header": "header.jpg",
     "icons": [
       {
         "name": "Unreal",
@@ -54,7 +54,7 @@
         "content": {
           "paragraph": "Stellar Pulse is an immersive VR rhythm game set in a dynamic space environment, where you must navigate through rings and defeat enemies.<br>Armed with a ship in each hand, each representing a different color, your mission is to fly through the matching colored rings while simultaneously fending off enemies that attack or evade you",
           "image": {
-            "imageIndex": 1,
+            "imageURL": "1.png",
             "alt": "project image",
             "position": "left"
           }
@@ -68,7 +68,7 @@
         "content": {
           "paragraph": "Set to the beat of vibrant music, the gameplay challenges you to move with precision and rhythm. With each song, you'll need to perform fluid, dance-like movements to dodge attacks and hit targets, all while striving to surpass your high score and master the choreography of the universe.",
           "image": {
-            "imageIndex": 2,
+            "imageURL": "2.png",
             "alt": "project image",
             "position": "right"
           }

@@ -90,6 +90,32 @@ async function LoadProjectAssets(projectData)
     }
 }
 
+function FetchAssetURL(projectData) 
+{
+    let urls = [];
+
+    const { content, metadata } = projectData;
+    const contentFolder = metadata.contentFolder || 'default-folder'; 
+    const mediaBasePath = `../media/projects/${contentFolder}/`;
+
+    // Add the header image URL
+    if (content.header) {
+        urls.push(mediaBasePath + content.header);
+    }
+
+    // Collect image URLs from sections synchronously
+    content.sections
+        .filter(section => 
+            (section.type === 'text-image' || section.type === 'gif') 
+            && section.content.image && section.content.image.imageURL)
+        .forEach(section => {
+            const imageUrl = mediaBasePath + section.content.image.imageURL;
+            urls.push(imageUrl); // Add each imageURL to the urls array
+        });
+
+    return urls;
+}
+
 async function FetchProjectsMetadata() 
 {
     const time = performance.now(); 
@@ -108,4 +134,4 @@ async function FetchProjectsMetadata()
     return metadatas; 
 }
 
-export default {projects, LoadProjectData, LoadProjectAssets, FetchProjectsMetadata}
+export default {projects, LoadProjectData, LoadProjectAssets, FetchAssetURL, FetchProjectsMetadata}

@@ -24,7 +24,7 @@
   "content": {
     "title": "Zer0 Day",
     "tagline": "An infiltration game about revealing your environment.",
-    "header": "header",
+    "header": "header.png",
     "icons": [
       {
         "name": "Unity",
@@ -54,7 +54,7 @@
         "content": {
           "paragraph": "Zer0 Day is an infiltration game set in a computer. As a virus, your task is identify and destroy nodes to infiltrate networks.<br>The core concept revolve around the player-character' ability to map the environment using a sonar.<br>By holding and releasing a trigger, the player radiates beads that, upon colliding with the environment, reveal the the obstacles and limits of the terrain.",
           "image": {
-            "imageIndex": 1,
+            "imageURL": "1.png",
             "alt": "project image",
             "position": "left"
           }
@@ -68,7 +68,7 @@
         "content": {
           "paragraph": "The project was made over the course of one trimester with a small team of students (game design and programming courses).<br>The assignement was to create an infiltration game with an unique core-mechanic and ten minutes of gameplay including obstacles and enemies.<br>Aside from Unity, we used a couple of tools to design the levels and the inteface, namely the Adobe suite.<br>This project was the end of year project of our preparatory class.",
           "image": {
-            "imageIndex": 2,
+            "imageURL": "2.png",
             "alt": "project image",
             "position": "right"
           }

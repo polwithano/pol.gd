@@ -24,7 +24,7 @@
   "content": {
     "title": "Because I Love You",
     "tagline": "A thrilling VR experience",
-    "header": "header",
+    "header": "header.jpg",
     "icons": [
       {
         "name": "Unreal",
@@ -54,7 +54,7 @@
         "content": {
           "paragraph": "Because I Love You is a gripping VR narrative game that immerses players in the unsettling experience of domestic abuse.<br>Set entirely within a claustrophobic apartment, the player finds themselves trapped, unable to leave, and tasked with performing mundane household activities. However, as time progresses, the apartment begins to change, becoming increasingly distorted and chaotic, reflecting the emotional and psychological turmoil of an abusive relationship.<br>The mundane tasks, once ordinary, take on a darker, oppressive tone as the environment subtly shifts, building an overwhelming sense of tension and entrapment.",
           "image": {
-            "imageIndex": 1,
+            "imageURL": "1.jpg",
             "alt": "project image",
             "position": "left"
           }
@@ -68,7 +68,7 @@
         "content": {
           "paragraph": "One of the most striking mechanics in the game is its use of teleportation to emphasize the disorienting and surreal nature of the experience. Whenever the player turns to look behind them, they are unexpectedly teleported into another room within the apartment, creating a sense of instability and confusion.<br>This unpredictable shift, paired with the growing visual decay of the space, mirrors the emotional instability the player is meant to feel. Through its narrative-driven gameplay and haunting use of space, Because I Love You delivers a powerful and thought-provoking exploration of the complexities of abuse, emphasizing the feelings of isolation, fear, and disorientation that come with it.",
           "image": {
-            "imageIndex": 2,
+            "imageURL": "2.jpg",
             "alt": "project image",
             "position": "right"
           }

@@ -24,7 +24,7 @@
   "content": {
     "title": "Agent X",
     "tagline": "Cold war: the board game",
-    "header": "header",
+    "header": "header.webp",
     "icons": [
       {
         "name": "Board",
@@ -50,7 +50,7 @@
         "content": {
           "paragraph": "Agent X is an intense and immersive board game set during the height of the Cold War, where four players vie for dominance in a world of espionage, strategy, and shifting alliances. The primary objective is to align with the faction that secures the most points, whether it’s the USSR or USA, while also ensuring you emerge as the top agent within that faction by having the highest individual score. The game thrives on deception, where bluffing, betrayal, and manipulation are essential tools. Players must navigate a landscape of ever-changing loyalties and hidden motives, making every decision a gamble as they attempt to outwit their opponents.",
           "image": {
-            "imageIndex": 1,
+            "imageURL": "1.webp",
             "alt": "project image",
             "position": "left"
           }
@@ -64,7 +64,7 @@
         "content": {
           "paragraph": "Each player is tasked with carrying out secret missions for either superpower, carefully tipping the balance of global influence in favor of their chosen faction. Along the way, players have access to a variety of Cold War-themed gadgets and equipment, enabling them to sabotage opponents, mislead their rivals, or boost their own team’s efforts. Trust is fleeting, and today's ally may become tomorrow's enemy as players juggle short-term alliances with long-term ambitions.<br>Success in Agent X demands not only strategic thinking and cunning but also a mastery of psychological warfare, where every move could change the course of the game.",
           "image": {
-            "imageIndex": 2,
+            "imageURL": "2.webp",
             "alt": "project image",
             "position": "right"
           }

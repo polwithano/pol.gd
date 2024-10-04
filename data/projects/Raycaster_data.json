@@ -24,7 +24,7 @@
   "content": {
     "title": "Raycaster",
     "tagline": "Crude experimentations in c & c++",
-    "header": "header",
+    "header": "header.gif",
     "icons": [
       {
         "name": "C++",
@@ -49,7 +49,7 @@
         "content": {
           "paragraph": "I developed a raycaster engine that began as a project in C and later transitioned to C++. The engine supports OpenGL for rendering and includes features like multiple Z heights, which adds verticality to the 2D raycasting technique. It also integrates with Tiled, allowing for easier level design and editing. This project was my first time working with C and C++, making it a valuable learning experience, especially in understanding lower-level programming concepts and graphics rendering.",
           "image": {
-            "imageIndex": 1,
+            "imageURL": "1.gif",
             "alt": "project image",
             "position": "left"
           }
@@ -63,7 +63,7 @@
         "content": {
           "legend": "The engine allow for multiple z-height",
           "image": {
-            "imageIndex": 2,
+            "imageURL": "2.gif",
             "width": 500,
             "height": 484
           }

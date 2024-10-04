@@ -24,7 +24,7 @@
   "content": {
     "title": "Space Architect",
     "tagline": "A puzzle, one-button game.",
-    "header": "header",
+    "header": "header.webp",
     "icons": [
       {
         "name": "Unity",
@@ -53,7 +53,7 @@
         "content": {
           "paragraph": "Space Architect is a game made in one month using Unity. The core concept was centered around the limitation of having only one input for the gameplay.<br>Space Architect plays a lot like a carnival game.<br>With a button dedicated to the beam activation of the space ship, the goal is to attract and store buildings to pile them on a plateform, like a Jenga.<br>Space Architect was the first game I've developped from start to finish and it was an incredible experience.",
           "image": {
-            "imageIndex": 1,
+            "imageURL": "1.png",
             "alt": "project image",
             "position": "left"
           }
@@ -70,7 +70,7 @@
         "content": {
           "legend": "The key is balance.",
           "image": {
-            "imageIndex": 2,
+            "imageURL": "2.gif",
             "width": 600,
             "height": 337.5
           }

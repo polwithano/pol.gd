@@ -25,15 +25,17 @@ export default class ProjectPageFactory
         }
 
         const data = object.content; 
-        const assets = await JSON.LoadProjectAssets(object.data.project)
+
+        const urls = JSON.FetchAssetURL(object.data.project); 
+        console.log(urls); 
 
         this.container.innerHTML = ''; 
         this.videoElements = []; 
         
-        const header = this.RenderHeader(data, assets); 
+        const header = this.RenderHeader(data, urls[0]); 
         this.container.appendChild(header); 
 
-        let imageIndex = 0; 
+        let imageIndex = 1; 
 
         data.sections.forEach((section) => 
         {
@@ -42,11 +44,11 @@ export default class ProjectPageFactory
             switch (section.type) 
             {
                 case 'text-image':
-                    div = this.RenderTextImageSection(section, assets.images[imageIndex]);
+                    div = this.RenderTextImageSection(section, urls[imageIndex]);
                     imageIndex++; 
                     break;
                 case 'gif':
-                    div = this.RenderGifSection(section, assets.images[imageIndex]); 
+                    div = this.RenderGifSection(section, urls[imageIndex]); 
                     imageIndex++; 
                     break; 
                 case 'video': 
@@ -81,10 +83,10 @@ export default class ProjectPageFactory
         this.container.classList.remove('hidden');
     }
 
-    RenderHeader(data, assets) 
+    RenderHeader(data, image) 
     {
         const div = document.createElement('div'); 
-        const background = assets?.header || this.placeholderImage.default;
+        const background = image || this.placeholderImage.default;
 
         div.className = 'project-header';
         div.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.99), rgba(0, 0, 0, 0)), url('${background}')`; 
@@ -100,10 +102,10 @@ export default class ProjectPageFactory
     RenderTextImageSection(section, image) 
     {
         const div = document.createElement('div');
-        const asset = image?.src || this.placeholderImage.default; 
+        const asset = image || this.placeholderImage.default; 
 
         div.innerHTML = `
-            <img src="${asset}" alt="${section.content.image.alt}" class="content-image ${section.content.image.position}" loading="lazy">
+            <img loading="lazy" src="${asset}" alt="${section.content.image.alt}" class="content-image ${section.content.image.position}">
             <p class="content-paragraph">${section.content.paragraph}</p>
         `;
 
@@ -113,14 +115,14 @@ export default class ProjectPageFactory
     RenderGifSection(section, image) 
     {
         const div = document.createElement('div');
-        const asset = image?.src || this.placeholderImage.default; 
+        const asset = image || this.placeholderImage.default; 
         const legend = section.content.legend || ''; 
         const width = section.content.image.width || 'auto'; // Default to 'auto' if not provided
         const height = section.content.image.height || 'auto'; // Default to 'auto' if not provided    
 
         div.className = 'gif-section'; 
         div.innerHTML = `
-            <img src="${asset}" alt="GIF" class="content-gif" loading="lazy" style="width: ${width}px; height: ${height}px;">
+            <img loading="lazy" src="${asset}" alt="GIF" class="content-gif" style="width: ${width}px; height: ${height}px;">
             ${legend ? `<p class="gif-legend">${legend}</p>` : ''}
         `;
 

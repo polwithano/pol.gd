@@ -24,7 +24,7 @@
   "content": {
     "title": "pol.gd",
     "tagline": "A portfolio website made with Three.js",
-    "header": "header",
+    "header": "header.png",
     "icons": [
       {
         "name": "JS",
@@ -50,7 +50,7 @@
         "content": {
           "paragraph": "Inspired by <a href='https://tympanus.net/codrops/2023/03/28/turning-3d-models-to-voxel-art-with-three-js/'>this article</a>, I created a portfolio engine that began as a voxel engine designed to convert 3D models into voxel representations. Over time, I expanded its capabilities by implementing ambient occlusion and optimization techniques, such as BVH raycasting and instanced meshes, to improve rendering efficiency. Each project is saved as a JSON file containing both project metadata and voxel data. The portfolio system reads and sorts this data, dynamically generating a carousel of projects and loading voxel models on the fly from the JSON files for efficient display.",
           "image": {
-            "imageIndex": 1,
+            "imageURL": "1.png",
             "alt": "project-screenshot",
             "position": "left"
           }
@@ -64,7 +64,7 @@
         "content": {
           "paragraph": "This project marks my first significant experience in web development, where I've been actively learning and exploring JavaScript and website creation. The entire portfolio was built using Three.js for 3D rendering, alongside JavaScript, HTML, and CSS for the website structure and design. It's been a rewarding challenge, allowing me to combine voxel-based graphics with web technologies while honing my development skills in both 3D and web environments.",
           "image": {
-            "imageIndex": 2,
+            "imageIndex": "2.jpg",
             "alt": "project-screenshot",
             "position": "right"
           }
