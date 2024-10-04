@@ -4,6 +4,7 @@ import Helpers from '../helpers';
 import Loader from '../loader';
 import Master from '../../data/masterJSON';
 import Voxel from '../voxel';
+import gsap from 'gsap';
 
 export default class ObjectPortfolio 
 {
@@ -31,6 +32,22 @@ export default class ObjectPortfolio
         this.jsonPath = jsonPath;
         this.glbPath = glbPath;
         this.defaultParams = defaultParams; 
+
+        // Rotation tracking variables
+        this.isDragging = false;
+        this.initialMouseX = 0;
+        this.initialMouseY = 0;
+        this.rotationSpeed = 0.01;  // Control how sensitive the rotation is to mouse movement
+        this.rotationLimit = Math.PI / 1;  // Rotation limits
+
+        // Inertia-related variables
+        this.currentRotationX = 0; // Actual current rotation X
+        this.currentRotationY = 0; // Actual current rotation Y
+        this.targetRotationX = 0;  // Target rotation X
+        this.targetRotationY = 0;  // Target rotation Y
+        this.velocityX = 0;        // Velocity for X rotation
+        this.velocityY = 0;        // Velocity for Y rotation
+        this.dampingFactor = 0.01;  // Damping factor to smooth the movement
     }
 
     async Load() 
@@ -55,6 +72,8 @@ export default class ObjectPortfolio
         this.voxelizedMesh.castShadow = true;
         this.voxelizedMesh.receiveShadow = true;
         this.voxelizedMesh.frustumCulled = false; 
+
+        this.UpdateInertia(); 
     }
 
     async LoadJsonData(projectName) 
@@ -118,6 +137,60 @@ export default class ObjectPortfolio
         }
     }
 
+    OnDragStart(clientX, clientY) {
+        this.isDragging = true;
+        this.initialMouseX = clientX;
+        this.initialMouseY = clientY;
+    }
+
+    OnDrag(clientX, clientY) {
+        if (this.isDragging) {
+            // Calculate the target rotation based on mouse movement
+            const deltaX = (clientX - this.initialMouseX) * this.rotationSpeed;
+            const deltaY = (clientY - this.initialMouseY) * this.rotationSpeed;
+
+            // Set the target rotations
+            this.targetRotationX += deltaY;
+            this.targetRotationY += deltaX;
+
+            // Limit the rotations
+            this.targetRotationX = Math.max(-this.rotationLimit, Math.min(this.rotationLimit, this.targetRotationX));
+            this.targetRotationY = Math.max(-this.rotationLimit, Math.min(this.rotationLimit, this.targetRotationY));
+
+            // Reset mouse positions for the next frame
+            this.initialMouseX = clientX;
+            this.initialMouseY = clientY;
+        }
+    }
+
+    OnDragEnd() {
+        this.isDragging = false;
+    }
+
+    UpdateInertia() {
+        // Apply damping to smooth the rotation
+        this.velocityX += (this.targetRotationX - this.currentRotationX) * this.dampingFactor;
+        this.velocityY += (this.targetRotationY - this.currentRotationY) * this.dampingFactor;
+
+        // Update the current rotation by applying velocity
+        this.currentRotationX += this.velocityX;
+        this.currentRotationY += this.velocityY;
+
+        // Slowly reduce the velocity over time (damping effect)
+        this.velocityX *= 0.9;  // You can tweak the value to make it feel more responsive or sluggish
+        this.velocityY *= 0.9;
+
+        // Apply the actual rotation to the mesh
+        if (this.voxelizedMesh) {
+            this.voxelizedMesh.rotation.x = this.currentRotationX;
+            this.voxelizedMesh.rotation.y = this.currentRotationY;
+        }
+
+        // Request the next animation frame to keep updating
+        requestAnimationFrame(() => this.UpdateInertia());
+    }
+
+    
     // Voxel Methods
     MinY() {
         if (!this.voxels || !this.voxelParams) return 0;

@@ -774,48 +774,17 @@ export default class EnginePortfolio extends Engine
     OnRightMouseDown(event) 
     {
         if (this.canPinch == false) return; 
-        if (this.currentPFObject && this.currentPFObject.voxelizedMesh) 
-        {
-            isDragging = true;
-            this.switchTimer = TIMER_SWITCH; 
-            this.canUpdateTimer = false; 
-            initialMouseX = event.clientX;
-            initialMouseY = event.clientY;
-            // Store the current rotation of the object when the drag starts, including the startingRotation
-            initialRotationX = this.currentPFObject.voxelizedMesh.rotation.x;
-            initialRotationY = this.currentPFObject.voxelizedMesh.rotation.y;
-        }
+        if (this.currentPFObject) this.currentPFObject.OnDragStart(event.clientX, event.clientY); 
     }
 
     OnRightMouseUp(event) 
     {
-        if (isDragging) {
-            isDragging = false;
-            this.canUpdateTimer = true; 
-            // Animate the return to the default position when the mouse is released
-            gsap.to(this.currentPFObject.voxelizedMesh.rotation, {
-                x: 0,
-                y: this.currentPFObject.voxelMetadata.startingRotation * (Math.PI / 180),
-                duration: 1,
-                ease: "elastic.out(3, 10)" // "Rubber band" effect
-            });
-        }
+        if (this.currentPFObject) this.currentPFObject.OnDragEnd(); 
     }
 
     OnMouseMove(event) 
     {
-        if (isDragging) {
-            const deltaX = (event.clientX - initialMouseX) * rotationSpeed;
-            const deltaY = (event.clientY - initialMouseY) * rotationSpeed;
-    
-            // Apply rotation based on the initial rotation values saved on drag start
-            this.currentPFObject.voxelizedMesh.rotation.x = initialRotationX + deltaY;
-            this.currentPFObject.voxelizedMesh.rotation.y = initialRotationY + deltaX;
-    
-            // Ensure the new rotation stays within the defined limits (optional)
-            this.currentPFObject.voxelizedMesh.rotation.x = Math.max(-rotationLimit, Math.min(rotationLimit, this.currentPFObject.voxelizedMesh.rotation.x));
-            this.currentPFObject.voxelizedMesh.rotation.y = Math.max(-rotationLimit, Math.min(rotationLimit, this.currentPFObject.voxelizedMesh.rotation.y));
-        }
+        if (this.currentPFObject) this.currentPFObject.OnDrag(event.clientX, event.clientY); 
     }
 
     OnKeyDown(event) 
