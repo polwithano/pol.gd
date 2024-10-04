@@ -64,7 +64,7 @@
         "content": {
           "paragraph": "This project marks my first significant experience in web development, where I've been actively learning and exploring JavaScript and website creation. The entire portfolio was built using Three.js for 3D rendering, alongside JavaScript, HTML, and CSS for the website structure and design. It's been a rewarding challenge, allowing me to combine voxel-based graphics with web technologies while honing my development skills in both 3D and web environments.",
           "image": {
-            "imageIndex": "2.jpg",
+            "imageURL": "2.jpg",
             "alt": "project-screenshot",
             "position": "right"
           }
