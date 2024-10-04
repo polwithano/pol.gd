@@ -167,7 +167,7 @@ export default class ProjectPageFactory
         const div =  document.createElement('div'); 
 
         div.className = 'download-section'; 
-        div.innerHTML = `<a href="${download.url}" class="download-button">${download.label}</a>`;
+        div.innerHTML = `<a href="${download.url}" target="_blank" class="download-button">${download.label}</a>`;
 
         return div; 
     }
