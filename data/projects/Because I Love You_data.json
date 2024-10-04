@@ -6,7 +6,7 @@
     "yearString": "2020",
     "yearID": "2020",
     "tasks": "GD • ND",
-    "description": "A short description of the project.",
+    "description": "A VR narrative game about domestic abuse.",
     "isFavorite": true,
     "contentFolder": "because-i-love-you",
     "voxelPath": "../data/voxels/Because I Love You_voxel.json",
@@ -23,7 +23,7 @@
   },
   "content": {
     "title": "Because I Love You",
-    "tagline": "Project Tagline",
+    "tagline": "A thrilling VR experience",
     "header": "header",
     "icons": [
       {
