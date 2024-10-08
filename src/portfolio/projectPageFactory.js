@@ -27,7 +27,6 @@ export default class ProjectPageFactory
         const data = object.content; 
 
         const urls = JSON.FetchAssetURL(object.data.project); 
-        console.log(urls); 
 
         this.container.innerHTML = ''; 
         this.videoElements = []; 

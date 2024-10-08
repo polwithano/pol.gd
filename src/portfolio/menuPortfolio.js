@@ -1,6 +1,8 @@
+import FolderEntry from '../blog/folderEntry';
 import ICON from '../../public/media/portfolio-icons/masterICON';
 import JSON from '../../data/masterJSON';
-import TagManager from './tagManager'
+import PostEntry from '../blog/postEntry';
+import ProjectEntry from '../blog/projectEntry';
 
 export default class MenuPortfolio 
 {
@@ -15,51 +17,91 @@ export default class MenuPortfolio
         this.explorer.innerHTML = '';
 
         this.projectContainer = document.createElement('div'); 
-        this.articleContainer = document.createElement('div'); 
-        this.explorer.append(this.projectContainer, this.articleContainer); 
+        this.postContainer = document.createElement('div'); 
+        this.explorer.append(this.projectContainer, this.postContainer); 
 
         this.InitializeListeners();
     }
 
     async Initialize() 
     {
-        const folders = {}; 
-        const metadatas = await JSON.FetchProjectsMetadata();
-    
-        const projectTitle = document.createElement('h1');
-        projectTitle.classList.add('explorer-header');
-        projectTitle.textContent = 'projects';
+        await this.InitializePortfolioProjects();
+        await this.InitializeBlogPosts();  
 
-        const articleTitle = document.createElement('h1');
-        articleTitle.classList.add('explorer-header');
-        articleTitle.textContent = 'articles';
-    
-        this.projectContainer.appendChild(projectTitle); 
-        this.articleContainer.appendChild(articleTitle); 
-        this.articleContainer.appendChild(this.NoMatchMessage('article')); 
-    
+        this.UpdateSelectedProject(0); 
+        this.SwitchMode(0); 
+    }
+
+    async InitializePortfolioProjects() 
+    {
+        const metadatas = await JSON.FetchProjectsMetadata();
+        const icon = await ICON.LoadIcon('folder');
+        const title = document.createElement('h1');
+        
+        this.projectEntries = []; 
+        this.projectFolderEntries = {}; 
+        
+        title.classList.add('explorer-header'); 
+        title.textContent = 'projects'; 
+        this.projectContainer.appendChild(title);
+
         // Sort metadatas by yearID in descending order (newest first)
         metadatas.sort((a, b) => parseInt(b.yearID) - parseInt(a.yearID));
     
         // Use a for...of loop to handle asynchronous operations correctly
-        for (const metadata of metadatas) {
-            const { yearID, projectName, isFavorite, tag } = metadata; 
-    
+        for (const metadata of metadatas) 
+        {    
             // Create a folder if there's none with the yearID of the project. 
-            if (!folders[yearID]) {
-                folders[yearID] = await this.CreateFolder(yearID); 
-                this.projectContainer.appendChild(folders[yearID]); 
+            if (!this.projectFolderEntries[metadata.yearID]) 
+            {
+                const folder = new FolderEntry(icon, metadata.yearID); 
+                this.projectFolderEntries[metadata.yearID] = folder;  
+                this.projectContainer.appendChild(this.projectFolderEntries[metadata.yearID].element); 
             }
     
             // Create a project item
-            const project = await this.CreateProject(projectName, isFavorite, tag); 
+            const entry = new ProjectEntry(metadata); 
+            this.projectEntries.push(entry); 
     
             // Append project item to the corresponding folder
-            folders[yearID].querySelector('.folder-content').appendChild(project);
+            this.projectFolderEntries[metadata.yearID].element.querySelector('.folder-content').appendChild(entry.element);
         }
-    
-        this.UpdateSelectedProject(0); 
-        this.SwitchMode(0); 
+      
+    }
+
+    async InitializeBlogPosts() 
+    {
+        this.postEntries = []; 
+        
+        const title = document.createElement('h1'); 
+        title.classList.add('explorer-header'); 
+        title.textContent = 'posts'; 
+        this.postContainer.appendChild(title);
+        
+        const currentDay = new Date(); 
+        const metadatas = await JSON.FetchPostsMetadata(); 
+        const tagSet = new Set();   
+
+        for (const metadata of metadatas) 
+        {
+            const entry = new PostEntry(metadata, currentDay); 
+            this.postEntries.push(entry);  
+        }
+
+        if (this.postEntries.length != 0) 
+        {
+            this.postEntries.sort((a, b) => a.daysDelta - b.daysDelta);
+
+            for (const entry of this.postEntries)
+            {
+                this.postContainer.appendChild(entry.element);            
+                for (const tag of entry.tags) tagSet.add(tag); 
+            }   
+        }
+        else 
+        {
+            this.postContainer.append(this.NoMatchMessage('post')); 
+        }
     }
     
     InitializeListeners() 
@@ -141,49 +183,19 @@ export default class MenuPortfolio
         else console.warn('No element found with ID:', folderID);  // Warn if no element is found
     }
 
-    async CreateFolder(yearID) 
-    {
-        const icon = await ICON.LoadIcon('folder');  
-        const folder = document.createElement('div'); 
-        folder.classList.add('folder');
-        folder.innerHTML = `
-        <div class="folder-header" data-folder-id="folder-${yearID}">
-            <span class="arrow">&#9654;</span>
-            <img src="${icon.default || icon}" alt="Folder Icon" class="folder-icon"> ${yearID}/
-        </div>
-        <ul class="folder-content" id="folder-${yearID}"></ul>`;
-
-        return folder; 
-    }
-
-    async CreateProject(name, favorite, tag) 
-    {
-        const project = document.createElement('li'); 
-        project.classList.add('project'); 
-        project.setAttribute('data-project-name', name);
-
-        if (favorite) project.classList.add('favorite'); 
-
-        project.textContent = name; 
-        project.appendChild(TagManager.TagElement(tag, "small-tag"));         
-
-        return project; 
-    }
-
     SwitchMode(menuMode) 
     {
         this.menuMode = menuMode; 
-        const folders = document.querySelectorAll('.folder'); // Select all folder elements
     
         if (menuMode == 0) // Project Mode
         {
             this.projectContainer.style.display = 'block'; 
-            this.articleContainer.style.display = 'none'; 
+            this.postContainer.style.display = 'none'; 
         }
         if (menuMode == 1) // Blog Mode
         {
             this.projectContainer.style.display = 'none'; 
-            this.articleContainer.style.display = 'block'; 
+            this.postContainer.style.display = 'block'; 
         }
     }
 

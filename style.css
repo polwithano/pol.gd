@@ -1138,3 +1138,28 @@ input:checked + .slider:before {
     transform: translateX(-50%) translateY(-8px); /* Move up */
   }
 }
+
+.post {
+  margin-left: 0.5em;
+  margin-bottom: 0.35em;
+}
+
+.post-name {
+  color: whitesmoke; 
+  font-size: 0.85em;  /* Adjust as needed */
+  font-weight: bold;
+  margin-bottom: 0.2em;  /* Add a little space between title and date */
+}
+
+.post-name:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.post-datation {
+  font-size: 0.7em;  /* Make it smaller */
+  color: #969696;  /* Darker color for the date */
+  display: block;  /* Ensure the date appears below the title */
+  margin-top: 0.15em;
+  margin-left: 2em; 
+}

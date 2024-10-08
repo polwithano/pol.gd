@@ -30,7 +30,7 @@ const USE_DEBUG = false;
 const DEFAULT_GLB_PATH = "../meshes/Biplane.glb"; 
 
 // Define the parameters for the camera's orbit
-const orbitRadius = 8;  // Distance from the object
+const orbitRadius = 7;  // Distance from the object
 const orbitSpeed = .25; // Speed of the rotation
 const orbitMinheight = 0; 
 const orbitMaxHeight = 3;
@@ -43,14 +43,6 @@ let touchStartY = 0;
 let touchEndY = 0; 
 let deltaTouchX = 0; 
 let deltaTouchY = 0; 
-let lastScrollTop = 0; 
-let isDragging = false;
-let initialMouseX = 0;
-let initialMouseY = 0;
-let initialRotationX = 0;
-let initialRotationY = 0;
-const rotationLimit = Math.PI / 1.33; // Limit rotation to 45 degrees
-const rotationSpeed = 0.0055; // Speed of rotation
 
 const paramsGrid = {
     coefXY:          20,
@@ -88,7 +80,10 @@ export default class EnginePortfolio extends Engine
         // Rendering 
         this.composer = null; 
         this.useLofi = false; 
-        this.useGrid = true; 
+        this.useGrid = true;
+        
+        // States
+        this.fileType = "project"; 
         
         // Portfolio States
         this.projectPageFactory = new ProjectPageFactory(document.getElementById('project-container')); 
