@@ -1,0 +1,49 @@
+.link {
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Center items vertically */
+    justify-content: space-between; /* Space items between left and right */
+    padding: 10px;
+    text-decoration: none;
+    color: whitesmoke;
+}
+
+.link-content {
+    display: flex; /* Keep items inside the link horizontally aligned */
+    align-items: center; /* Center items vertically */
+    text-decoration: none;
+    color: whitesmoke;
+}
+
+.content-wrapper {
+    display: flex; /* Align logo and label horizontally */
+    align-items: center; /* Center them vertically */
+}
+
+.link-logo {
+    width: 24px; /* Set logo size */
+    height: 24px;
+    margin-right: 10px; /* Add some space between logo and label */
+}
+
+.website-name {
+    font-size: 14px;
+    font-weight: light;
+}
+
+/* This will target the external icon specifically */
+.external-icon {
+    width: 24px; /* Set external icon size */
+    height: 24px;
+    margin-right: 10px; /* Push the external icon to the right */
+}
+
+/* Link styling */
+.link-content:link,
+.link-content:visited {
+    color: whitesmoke;; /* Ensure links are not purple */
+    text-decoration: none;
+}
+.link-content:hover,
+.link-content:focus {
+    color: #FFA500; /* Change color on hover/focus */
+}

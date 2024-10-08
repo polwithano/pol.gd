@@ -8,7 +8,7 @@ export default class ProjectEntry extends MenuEntry
         super(metadata); 
         
         this.name = this.metadata.projectName; 
-        this.favorite = this.metadata.favorite; 
+        this.favorite = this.metadata.isFavorite; 
         this.tag = this.metadata.tag; 
 
         this.element = this.CreateMenuEntry(); 

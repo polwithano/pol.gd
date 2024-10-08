@@ -5,11 +5,17 @@ async function LoadIcon(key)
     if (key == "boardgame") return import('./boardgame.png');
     if (key == "controller") return import('./controller.png');
     if (key == "cplus") return import('./cplus.png');
+    if (key == "external") return import('./external.png'); 
     if (key == "folder") return import('./folder.png');
-    if (key == "js") return import('./js.png') 
-    if (key == "keyboard") return import('./keyboard.png')
+    if (key == "github") return import('./github.png'); 
+    if (key == "itchio") return import ('./itchio.png'); 
+    if (key == "js") return import('./js.png'); 
+    if (key == "keyboard") return import('./keyboard.png'); 
+    if (key == "linkedin") return import('./linkedin.png'); 
     if (key == "network") return import('./network.png')
     if (key == "oculus") return import('./oculus.png');
+    if (key == "reddit") return import('./reddit.png'); 
+    if (key == "resume") return import('./resume.png'); 
     if (key == "tool") return import('./tool.png');
     if (key == "unity") return import('./unity.png');
     if (key == "unreal") return import('./unreal.png');

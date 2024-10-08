@@ -1,6 +1,7 @@
 import FolderEntry from '../blog/folderEntry';
 import ICON from '../../public/media/portfolio-icons/masterICON';
 import JSON from '../../data/masterJSON';
+import LinkEntry from '../blog/linkEntry';
 import PostEntry from '../blog/postEntry';
 import ProjectEntry from '../blog/projectEntry';
 
@@ -8,17 +9,17 @@ export default class MenuPortfolio
 {
     constructor() 
     {
-        // 0 = Project Mode, 1 = Blog Mode
-        this.menuMode = 0; 
+        this.menuMode = "Portfolio"; 
         // 0 = EN, 1 = FR
         this.languageMode = 0; 
 
         this.explorer = document.querySelector('.explorer'); 
-        this.explorer.innerHTML = '';
-
         this.projectContainer = document.createElement('div'); 
         this.postContainer = document.createElement('div'); 
-        this.explorer.append(this.projectContainer, this.postContainer); 
+        this.linkContainer = document.createElement('div'); 
+        
+        this.explorer.innerHTML = '';
+        this.explorer.append(this.projectContainer, this.postContainer, this.linkContainer); 
 
         this.InitializeListeners();
     }
@@ -27,9 +28,10 @@ export default class MenuPortfolio
     {
         await this.InitializePortfolioProjects();
         await this.InitializeBlogPosts();  
+        await this.InitializeLinks(); 
 
         this.UpdateSelectedProject(0); 
-        this.SwitchMode(0); 
+        this.SwitchMode(this.menuMode); 
     }
 
     async InitializePortfolioProjects() 
@@ -103,11 +105,37 @@ export default class MenuPortfolio
             this.postContainer.append(this.NoMatchMessage('post')); 
         }
     }
+
+    async InitializeLinks() 
+    {
+        this.linkEntries = []; 
+
+        const datas = await JSON.FetchLinks(); 
+
+        for (const data of datas) 
+        {
+            const entry = new LinkEntry(data); 
+            this.linkEntries.push(entry); 
+        }
+
+        if (this.linkEntries.length != 0) 
+        {
+            for (const entry of this.linkEntries) 
+            {
+                this.linkContainer.appendChild(entry.element); 
+            }
+        }
+        else 
+        {
+            this.postContainer.append(this.NoMatchMessage('link')); 
+        }
+    }
     
     InitializeListeners() 
     {
         const projectsButton = document.getElementById('toggle-projects');
         const blogButton = document.getElementById('toggle-blog');
+        const linksButton = document.getElementById('toggle-links'); 
         const searchBar = document.querySelector('.search-bar input'); 
         const languageToggle = document.getElementById('language-select'); 
 
@@ -115,15 +143,25 @@ export default class MenuPortfolio
         {
             projectsButton.classList.add('active');
             blogButton.classList.remove('active');
-            this.SwitchMode(0);
+            linksButton.classList.remove('active'); 
+            this.SwitchMode("Portfolio");
         });
 
         blogButton.addEventListener('click', () => 
         {
-            blogButton.classList.add('active');
             projectsButton.classList.remove('active');
-            this.SwitchMode(1);
+            blogButton.classList.add('active');
+            linksButton.classList.remove('active'); 
+            this.SwitchMode("Blog");
         });
+
+        linksButton.addEventListener('click', () => 
+        {
+            projectsButton.classList.remove('active');
+            blogButton.classList.remove('active');
+            linksButton.classList.add('active'); 
+            this.SwitchMode("Links"); 
+        })
 
         searchBar.addEventListener('input', (event) =>
         {
@@ -186,17 +224,14 @@ export default class MenuPortfolio
     SwitchMode(menuMode) 
     {
         this.menuMode = menuMode; 
-    
-        if (menuMode == 0) // Project Mode
-        {
-            this.projectContainer.style.display = 'block'; 
-            this.postContainer.style.display = 'none'; 
-        }
-        if (menuMode == 1) // Blog Mode
-        {
-            this.projectContainer.style.display = 'none'; 
-            this.postContainer.style.display = 'block'; 
-        }
+        
+        this.projectContainer.style.display = 'none'; 
+        this.postContainer.style.display = 'none'; 
+        this.linkContainer.style.display = 'none'; 
+
+        if (menuMode == "Portfolio") this.projectContainer.style.display = 'block'; 
+        if (menuMode == "Blog") this.postContainer.style.display = 'block'; 
+        if (menuMode == "Links") this.linkContainer.style.display = 'block'; 
     }
 
     FilterProjects(query) 

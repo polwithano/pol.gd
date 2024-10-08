@@ -19,6 +19,14 @@ const posts =
     
 ]
 
+const links = 
+[
+    "github-link",
+    "linkedin-link",
+    "reddit-link",
+    "resume-link"
+]
+
 async function LoadProjectData(key) 
 {
     const [project, voxel] = await Promise.all([
@@ -141,6 +149,20 @@ async function FetchProjectsMetadata()
     return metadatas; 
 }
 
+async function FetchLinks() 
+{
+    let data = [];
+
+    for (let i = 0; i < links.length; i++) 
+    {
+        const link = await import(`./links/${links[i]}.json`);
+        data.push(link);  
+    }
+    
+    console.log(data); 
+    return data; 
+}
+
 async function LoadPost(name)
 { 
     const response = await fetch(`./data/posts/${name}.md`);
@@ -199,4 +221,4 @@ function ParseYAML(yamlString)
     }, {});
 }
 
-export default {projects, LoadProjectData, LoadProjectAssets, FetchAssetURL, FetchProjectsMetadata, FetchPostsMetadata, LoadPost}
+export default {projects, LoadProjectData, LoadProjectAssets, FetchAssetURL, FetchProjectsMetadata, FetchPostsMetadata, LoadPost, FetchLinks}

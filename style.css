@@ -1,3 +1,5 @@
+@import './src/blog/entry.css'; 
+
 @font-face {
   font-family: '0xProto Nerd Font Mono';
   src: url('fonts/0xProtoNFM-Regular.eot');
@@ -21,7 +23,7 @@
 }
 
 :root {
-  --menu-container-width: 300px; /* Set this to the width of your menu container */
+  --menu-container-width: 380px; /* Set this to the width of your menu container */
   --desktop-header-height: 100px;
 }
 
@@ -251,13 +253,6 @@ a
 {
   text-decoration: none;
   text-decoration-color: black;
-}
-
-a:hover 
-{
-  color: rgb(255, 255, 255);
-  text-decoration: underline;
-  text-decoration-color: white; 
 }
 
 .logo 
