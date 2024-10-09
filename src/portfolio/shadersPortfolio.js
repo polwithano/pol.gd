@@ -1,4 +1,6 @@
-const fragment_pixelized = `
+import * as THREE from 'three';
+
+const pixelationFragment = `
     uniform sampler2D tDiffuse;
     uniform vec3 iResolution;
     
@@ -11,7 +13,7 @@ const fragment_pixelized = `
         gl_FragColor = vec4(pow(color.rgb, vec3(1.0 / 2.2)), color.a);
     }`
 
-const vertex_pixelized =`        
+const pixelationVertex =`        
     varying vec2 vUv;
 
     void main() 
@@ -21,7 +23,7 @@ const vertex_pixelized =`
 
     }`
 
-const fragment_outline = `
+const outlineFragment = `
     uniform sampler2D tDiffuse;   // Original pixelated scene texture
     uniform sampler2D tDepth;     // Depth texture
     uniform float pixelationScale; // Controls pixelation/texel size scale
@@ -128,7 +130,7 @@ const fragment_outline = `
         gl_FragColor = mix(originalColor, edgeColor, smoothedEdge);
     }`
 
-const vertex_outline = `
+const outlineVertex = `
     varying vec2 vUv;
     varying vec3 vWorldPosition;  // Pass world position to the fragment shader
     varying vec3 vNormal;         // Pass normal to the fragment shader
@@ -146,4 +148,36 @@ const vertex_outline = `
         gl_Position = projectionMatrix * worldPosition;  // Standard position transformation
     }`
 
-    export default {vertex_pixelized, vertex_outline, fragment_pixelized, fragment_outline}
+function PixelationMaterial(renderTarget) 
+{
+    const material = new THREE.ShaderMaterial({
+        uniforms: {
+            tDiffuse: {value: renderTarget.texture}, 
+            iResolution: {value: new THREE.Vector3()}
+        }, 
+        vertexShader: pixelationVertex,
+        fragmentShader: pixelationFragment,
+        depthWrite: false
+    });
+
+    return material; 
+}
+
+function EdgeDetectionMaterial(renderTarget, cameraPosition, pixelationScale) 
+{
+    const material = new THREE.ShaderMaterial({
+        uniforms: {
+            tDiffuse: {value: renderTarget.texture},
+            tDepth: {value: renderTarget.depthTexture},
+            pixelationScale: {value: pixelationScale }, 
+            cameraPosition: {value: cameraPosition},
+        },
+        vertexShader: outlineVertex,
+        fragmentShader: outlineFragment,
+        depthWrite: false,
+    }); 
+
+    return material; 
+}
+
+export default {PixelationMaterial, EdgeDetectionMaterial}

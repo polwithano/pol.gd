@@ -121,7 +121,7 @@ export default class EnginePortfolio extends Engine
 
         this.InitializeCannon();
         this.InitializeMenu();    
-        this.InitializeGame(); 
+        this.InitializeLogic(); 
         this.SetupEventListeners();
 
         if (!this.useJsonData) 
@@ -168,18 +168,20 @@ export default class EnginePortfolio extends Engine
         }
     }
 
-    InitializeRenderTarget(pixelated) 
+    InitializeRenderTarget(defaultRenderMode) 
     {
-        this.dummyCamera = new THREE.OrthographicCamera(window.innerWidth  / -2, window.innerWidth   / 2, window.innerHeight  / 2, window.innerHeight / -2, -10000, 10000);
-        this.dummyCamera.position.z = 1; 
-        this.dummyScene = new THREE.Scene(); 
+        const renderScale = defaultRenderMode ? LOFI_RENDER_SCALE : 1; 
+        const pixelationScale = defaultRenderMode ? 0 : 1;
+        const renderPlane = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
 
-        this.renderPlane = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
+        this.cameraDummy = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -10000, 10000);
+        this.cameraDummy.position.z = 1; 
+        this.sceneDummy = new THREE.Scene(); 
 
-        this.rtTexture = new THREE.WebGLRenderTarget
+        this.renderTarget = new THREE.WebGLRenderTarget
         ( 
-            Math.floor(window.innerWidth / (pixelated ? LOFI_RENDER_SCALE : DEFAULT_RENDER_SCALE)),
-            Math.floor(window.innerHeight / (pixelated ? LOFI_RENDER_SCALE : DEFAULT_RENDER_SCALE)),
+            Math.floor(window.innerWidth / renderScale),
+            Math.floor(window.innerHeight / renderScale),
             { 
                 minFilter: THREE.NearestFilter, 
                 magFilter: THREE.NearestFilter, 
@@ -188,42 +190,23 @@ export default class EnginePortfolio extends Engine
         );
         
         // Add a depth texture
-        this.rtTexture.depthTexture = new THREE.DepthTexture();
-        this.rtTexture.depthTexture.type = THREE.UnsignedShortType;
+        this.renderTarget.depthTexture = new THREE.DepthTexture();
+        this.renderTarget.depthTexture.type = THREE.UnsignedShortType; 
 
-        this.uniforms = { tDiffuse: { value: this.rtTexture.texture }, iResolution: { value: new THREE.Vector3() }};
-        this.materialScreen = new THREE.ShaderMaterial({
-            uniforms: this.uniforms, // rtTexture = material from perspective camera
-            vertexShader: Shaders.vertex_pixelized,
-            fragmentShader: Shaders.fragment_pixelized,
-            depthWrite: false
-        });
+        const pixelationMaterial = Shaders.PixelationMaterial(this.renderTarget)
+        const edgeDetectionMaterial = Shaders.EdgeDetectionMaterial(this.renderTarget, this.camera.position, pixelationScale);       
 
-        const pixelationScale = this.useLofi ? 0 : 1;
+        if (this.quad != null) this.sceneDummy.remove(this.quad);
+        if (this.outlineQuad != null) this.sceneDummy.remove(this.outlineQuad); 
+         
+        this.quad = new THREE.Mesh(renderPlane, pixelationMaterial);
+        this.outlineQuad = new THREE.Mesh(renderPlane, edgeDetectionMaterial);
 
-        const edgeDetectionMaterial = new THREE.ShaderMaterial({
-            uniforms: {
-                tDiffuse: { value: this.rtTexture.texture },
-                tDepth: { value: this.rtTexture.depthTexture },  // Depth texture
-                pixelationScale: { value: pixelationScale },  // Pixelation or screen resolution scale
-                cameraPosition: { value: this.camera.position },  // Camera's world position
-            },
-            vertexShader: Shaders.vertex_outline,
-            fragmentShader: Shaders.fragment_outline,
-            depthWrite: false,
-        });        
-
-        if (this.quad != null) this.dummyScene.remove(this.quad); 
-        this.quad = new THREE.Mesh(this.renderPlane, this.materialScreen);
         this.quad.position.z = -1000;
-
-        // Create a quad for the final pass
-        if (this.outlineQuad != null) this.dummyScene.remove(this.outlineQuad); 
-        this.outlineQuad = new THREE.Mesh(this.renderPlane, edgeDetectionMaterial);
         this.outlineQuad.position.z = -1000; 
 
-        this.dummyScene.add(this.quad);
-        this.dummyScene.add(this.outlineQuad); 
+        this.sceneDummy.add(this.quad);
+        this.sceneDummy.add(this.outlineQuad); 
     }
 
     InitializeCannon() 
@@ -265,9 +248,9 @@ export default class EnginePortfolio extends Engine
         });
     }
 
-    async InitializeGame() 
+    async InitializeLogic() 
     {
-        super.InitializeGame(); 
+        super.InitializeLogic(); 
 
         this.camera.position.set(0, 1, 0); // Adjust the position as needed
         this.camera.lookAt(0, 0, 0);
@@ -706,7 +689,7 @@ export default class EnginePortfolio extends Engine
     UpdateVoxelization() 
     {
         this.scene.clear();  // Clear existing scene objects
-        this.InitializeGame();  // Reinitialize the scene with updated parameters
+        this.InitializeLogic();  // Reinitialize the scene with updated parameters
     }
     // #endregion
 
@@ -1042,14 +1025,14 @@ export default class EnginePortfolio extends Engine
         }
 
         // 2. Render the voxelized objects at lower resolution
-        this.renderer.setRenderTarget(this.rtTexture);  
+        this.renderer.setRenderTarget(this.renderTarget);  
         this.renderer.clear();  
         this.renderer.render(this.scene, this.camera);
 
         // 3. Composite the low-res voxelized render on top of the high-res background
         this.renderer.setRenderTarget(null); // render to the screen
         this.renderer.clearDepth(); // clear depth buffer so voxel render is not occluded by background
-        this.renderer.render(this.dummyScene, this.dummyCamera); 
+        this.renderer.render(this.sceneDummy, this.cameraDummy); 
     }
 
     UpdateSwitchTimer(delta) 

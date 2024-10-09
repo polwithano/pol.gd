@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import CannonDebugger from 'cannon-es-debugger'; 
+
+import CannonDebugger from 'cannon-es-debugger';
 
 export default class Engine 
 {
@@ -51,7 +52,7 @@ export default class Engine
         }
     }
 
-    InitializeGame() 
+    InitializeLogic() 
     {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setClearColor(0x000000); 

@@ -108,6 +108,11 @@ export default class MenuPortfolio
 
     async InitializeLinks() 
     {
+        const title = document.createElement('h1'); 
+        title.classList.add('explorer-header'); 
+        title.textContent = 'contact & stuff'; 
+        this.linkContainer.appendChild(title); 
+        
         this.linkEntries = []; 
 
         const datas = await JSON.FetchLinks(); 

@@ -20,8 +20,10 @@ export default class LinkEntry extends MenuEntry
         this.LoadIcons(); 
     }
 
-    async LoadIcons() {
-        try {
+    async LoadIcons() 
+    {
+        try 
+        {
             // Load both the link icon and external icon asynchronously
             const linkIconModule = await ICON.LoadIcon(this.iconName);
             const externalIconModule = await ICON.LoadIcon('external');
@@ -30,7 +32,9 @@ export default class LinkEntry extends MenuEntry
             this.element.querySelector('.link-logo').src = linkIconModule.default;
             this.element.querySelector('.external-icon').src = externalIconModule.default;
 
-        } catch (error) {
+        } 
+        catch (error) 
+        {
             console.error('Failed to load icon:', error);
         }
     }
