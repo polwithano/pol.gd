@@ -83,28 +83,18 @@ export default class EngineProject extends Engine
         );
         this.cameraDummy.position.z = 1; 
 
-        this.renderTarget = new THREE.WebGLRenderTarget( 
-            Math.floor(window.innerWidth / renderScale),
-            Math.floor(window.innerHeight / renderScale),
-            { 
-                minFilter: THREE.NearestFilter, 
-                magFilter: THREE.NearestFilter, 
-                format: THREE.RGBAFormat 
-            }
-        );
-
-        this.renderTarget.depthTexture = new THREE.DepthTexture();
-        this.renderTarget.depthTexture.type = THREE.UnsignedShortType;
+        this.renderTarget = Shaders.RenderTarget(window, renderScale); 
         
         const pixelationMaterial = Shaders.PixelationMaterial(this.renderTarget)
         const edgeDetectionMaterial = Shaders.EdgeDetectionMaterial(this.renderTarget, this.camera.position, pixelationScale); 
 
-        if (this.quad != null) this.sceneDummy.remove(this.quad); 
-        this.quad = new THREE.Mesh(renderPlane, pixelationMaterial);
-        this.quad.position.z = -1000;
-
+        if (this.quad != null) this.sceneDummy.remove(this.quad);
         if (this.outlineQuad != null) this.sceneDummy.remove(this.outlineQuad); 
+
+        this.quad = new THREE.Mesh(renderPlane, pixelationMaterial);
         this.outlineQuad = new THREE.Mesh(renderPlane, edgeDetectionMaterial);
+        
+        this.quad.position.z = -1000;
         this.outlineQuad.position.z = -1000; 
 
         this.sceneDummy.add(this.quad);

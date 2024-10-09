@@ -1,4 +1,3 @@
-import * as CANNON from 'cannon';
 import * as THREE from 'three';
 
 import Backgrounds from './helpers/backgrounds';
@@ -21,8 +20,6 @@ import Voxel from '../voxel';
 import gsap from 'gsap';
 
 /* ENGINE STATES CONST */
-const WORLD_STEP_VALUE = 1/60;
-const DEFAULT_RENDER_SCALE = 1; 
 const LOFI_RENDER_SCALE = 4; 
 const TIMER_SWITCH = 15.0; 
 const USE_JSON = true; 
@@ -119,7 +116,6 @@ export default class EnginePortfolio extends Engine
     {
         super.Initialize();
 
-        this.InitializeCannon();
         this.InitializeMenu();    
         this.InitializeLogic(); 
         this.SetupEventListeners();
@@ -178,20 +174,7 @@ export default class EnginePortfolio extends Engine
         this.cameraDummy.position.z = 1; 
         this.sceneDummy = new THREE.Scene(); 
 
-        this.renderTarget = new THREE.WebGLRenderTarget
-        ( 
-            Math.floor(window.innerWidth / renderScale),
-            Math.floor(window.innerHeight / renderScale),
-            { 
-                minFilter: THREE.NearestFilter, 
-                magFilter: THREE.NearestFilter, 
-                format: THREE.RGBAFormat 
-            }
-        );
-        
-        // Add a depth texture
-        this.renderTarget.depthTexture = new THREE.DepthTexture();
-        this.renderTarget.depthTexture.type = THREE.UnsignedShortType; 
+        this.renderTarget = Shaders.RenderTarget(window, renderScale); 
 
         const pixelationMaterial = Shaders.PixelationMaterial(this.renderTarget)
         const edgeDetectionMaterial = Shaders.EdgeDetectionMaterial(this.renderTarget, this.camera.position, pixelationScale);       
@@ -207,12 +190,6 @@ export default class EnginePortfolio extends Engine
 
         this.sceneDummy.add(this.quad);
         this.sceneDummy.add(this.outlineQuad); 
-    }
-
-    InitializeCannon() 
-    {
-        this.world = new CANNON.World();
-        this.world.gravity.set(0, -9.81, 0); // Set gravity to zero initially
     }
 
     async InitializeMenu() 
@@ -1011,7 +988,6 @@ export default class EnginePortfolio extends Engine
     {
         super.GameLoop();
         const delta = this.clock.getDelta(); 
-        this.world.step(WORLD_STEP_VALUE);
 
         if (this.stats) this.stats.update(); 
 

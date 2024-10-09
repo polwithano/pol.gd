@@ -148,6 +148,24 @@ const outlineVertex = `
         gl_Position = projectionMatrix * worldPosition;  // Standard position transformation
     }`
 
+function RenderTarget(window, renderScale) 
+{
+    const renderTarget = new THREE.WebGLRenderTarget( 
+        Math.floor(window.innerWidth / renderScale),
+        Math.floor(window.innerHeight / renderScale),
+        { 
+            minFilter: THREE.NearestFilter, 
+            magFilter: THREE.NearestFilter, 
+            format: THREE.RGBAFormat 
+        }
+    );
+
+    renderTarget.depthTexture = new THREE.DepthTexture();
+    renderTarget.depthTexture.type = THREE.UnsignedShortType;
+
+    return renderTarget; 
+}
+
 function PixelationMaterial(renderTarget) 
 {
     const material = new THREE.ShaderMaterial({
@@ -180,4 +198,4 @@ function EdgeDetectionMaterial(renderTarget, cameraPosition, pixelationScale)
     return material; 
 }
 
-export default {PixelationMaterial, EdgeDetectionMaterial}
+export default {RenderTarget, PixelationMaterial, EdgeDetectionMaterial}
