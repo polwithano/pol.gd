@@ -13,7 +13,8 @@ export default class ProjectPageFactory
     async Initialize() 
     {
         this.placeholderImage = await ICON.LoadIcon('placeholder'); 
-        this.headerArrow = await ICON.LoadIcon('back-arrow'); 
+        this.arrowHeader = await ICON.LoadIcon('return'); 
+ 
         this.videoElements = [];
         this.container.innerHTML = ''; 
 
@@ -113,8 +114,6 @@ export default class ProjectPageFactory
                 container.classList.remove('hidden'); 
                 container.style.pointerEvents = 'auto';  
                 description.style.pointerEvents = 'none'; 
-
-                this.isOpen = true; 
             },
             onReverseComplete: () => 
             {
@@ -122,8 +121,6 @@ export default class ProjectPageFactory
                 container.classList.add('hidden'); 
                 container.style.pointerEvents = 'none';
                 description.style.pointerEvents = 'auto'; 
-                
-                this.isOpen = false; 
             }
         })
 
@@ -148,26 +145,27 @@ export default class ProjectPageFactory
 
     OpenPage() 
     {
-        console.log('opening page'); 
         this.animation.timeScale(1).play(); 
+        this.isOpen = true; 
     }
 
     ClosePage() 
     {
-        console.log('closing page'); 
         this.animation.timeScale(1.33).reverse(); 
+        this.isOpen = false; 
     }
 
     RenderHeader(data, image) 
     {
         const div = document.createElement('div'); 
         const background = image || this.placeholderImage.default;
+        const arrow = this.arrowHeader.default || this.placeholderImage.default; 
 
         div.className = 'project-header';
         div.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.99), rgba(0, 0, 0, 0)), url('${background}')`; 
         div.innerHTML = `
             <button class="back-button">
-                <img src=${this.headerArrow.default} alt="Back" class="back-icon">
+                <img src=${arrow} alt="Back" class="back-icon">
             </button>
             <h1 class="project-title">${data.title}</h1>
             <p class="project-tagline">${data.tagline}</p>

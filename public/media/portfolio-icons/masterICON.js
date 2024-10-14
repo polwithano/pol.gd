@@ -1,7 +1,8 @@
+import { retargetClip } from 'three/examples/jsm/utils/SkeletonUtils.js';
+
 async function LoadIcon(key) 
 {
-    if (key == "adobe") return import('./adobe.png')
-    if (key == "back-arrow") return import('./back-arrow.png')
+    if (key == "adobe") return import('./adobe.png');
     if (key == "blender") return import('./blender.png'); 
     if (key == "boardgame") return import('./boardgame.png');
     if (key == "controller") return import('./controller.png');
@@ -18,6 +19,7 @@ async function LoadIcon(key)
     if (key == "oculus") return import('./oculus.png');
     if (key == "reddit") return import('./reddit.png'); 
     if (key == "resume") return import('./resume.png'); 
+    if (key == "return") return import('./return.png')
     if (key == "tool") return import('./tool.png');
     if (key == "unity") return import('./unity.png');
     if (key == "unreal") return import('./unreal.png');
