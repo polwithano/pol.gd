@@ -1,8 +1,7 @@
-import { retargetClip } from 'three/examples/jsm/utils/SkeletonUtils.js';
-
 async function LoadIcon(key) 
 {
     if (key == "adobe") return import('./adobe.png');
+    if (key == "back") return import('./back.png'); 
     if (key == "blender") return import('./blender.png'); 
     if (key == "boardgame") return import('./boardgame.png');
     if (key == "controller") return import('./controller.png');
