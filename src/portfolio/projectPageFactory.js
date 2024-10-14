@@ -13,7 +13,7 @@ export default class ProjectPageFactory
     async Initialize() 
     {
         this.placeholderImage = await ICON.LoadIcon('placeholder'); 
-        this.arrowHeader = await ICON.LoadIcon('back'); 
+        this.arrowHeader = await ICON.LoadIcon('return'); 
  
         this.videoElements = [];
         this.container.innerHTML = ''; 
