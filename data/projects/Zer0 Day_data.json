@@ -6,7 +6,7 @@
     "yearString": "2017",
     "yearID": "2017",
     "tasks": "GD • LD",
-    "description": "An infiltration game made with Unity.",
+    "description": "An infiltration game about viruses.",
     "isFavorite": false,
     "contentFolder": "zero-day",
     "voxelPath": "../data/voxels/Zer0 Day_voxel.json",
@@ -23,7 +23,7 @@
   },
   "content": {
     "title": "Zer0 Day",
-    "tagline": "An infiltration game about revealing your environment.",
+    "tagline": "Blast particules to reveal the level design.",
     "header": "header.png",
     "icons": [
       {

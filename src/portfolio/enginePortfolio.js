@@ -7,7 +7,7 @@ import Helpers from '../helpers';
 import ICON from '../../public/media/portfolio-icons/masterICON';
 import JSON from '../../data/masterJSON';
 import Loader from '../loader';
-import MenuPortfolio from './menuPortfolio';
+import MenuController from '../menuController';
 import ObjectPortfolio from './objectPortfolio';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import ProjectPageFactory from './projectPageFactory';
@@ -84,7 +84,6 @@ export default class EnginePortfolio extends Engine
         
         // Portfolio States
         this.projectPageFactory = new ProjectPageFactory(document.getElementById('project-container')); 
-        this.projectPageFactory.Initialize(); 
         this.currentPFObject = null; 
         this.nextPFObject = null; 
         this.currentProjectIndex = 0; 
@@ -194,7 +193,7 @@ export default class EnginePortfolio extends Engine
 
     async InitializeMenu() 
     {
-        this.menu = new MenuPortfolio(); 
+        this.menu = new MenuController(); 
         await this.menu.Initialize(); 
 
         // Use event delegation for the explorer

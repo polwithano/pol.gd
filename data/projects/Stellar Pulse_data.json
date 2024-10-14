@@ -6,7 +6,7 @@
     "yearString": "2019",
     "yearID": "2019",
     "tasks": "GD • LD • 3D",
-    "description": "A VR rhythm game set in space.",
+    "description": "A V.R. rhythm game set in space.",
     "isFavorite": false,
     "contentFolder": "stellar-pulse",
     "voxelPath": "../data/voxels/Stellar Pulse_voxel.json",
@@ -23,7 +23,7 @@
   },
   "content": {
     "title": "Stellar Pulse",
-    "tagline": "A blend of Just Dance and a Shoot'em Up",
+    "tagline": "When Just Dance meet Galaga",
     "header": "header.jpg",
     "icons": [
       {

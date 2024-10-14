@@ -24,7 +24,8 @@ const links =
     "github-link",
     "linkedin-link",
     "reddit-link",
-    "resume-link"
+    "resume-link",
+    "mail-link"
 ]
 
 async function LoadProjectData(key) 
@@ -158,8 +159,7 @@ async function FetchLinks()
         const link = await import(`./links/${links[i]}.json`);
         data.push(link);  
     }
-    
-    console.log(data); 
+
     return data; 
 }
 

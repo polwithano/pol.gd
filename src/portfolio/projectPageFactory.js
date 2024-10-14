@@ -1,5 +1,6 @@
 import ICON from '../../public/media/portfolio-icons/masterICON';
 import JSON from '../../data/masterJSON'
+import gsap from 'gsap';
 
 export default class ProjectPageFactory 
 {
@@ -12,8 +13,12 @@ export default class ProjectPageFactory
     async Initialize() 
     {
         this.placeholderImage = await ICON.LoadIcon('placeholder'); 
+        this.headerArrow = await ICON.LoadIcon('back-arrow'); 
         this.videoElements = [];
         this.container.innerHTML = ''; 
+
+        this.isOpen = false; 
+        this.animation = this.SetupPageAnimation(); 
     }
 
     async CreatePage(object) 
@@ -33,6 +38,14 @@ export default class ProjectPageFactory
         
         const header = this.RenderHeader(data, urls[0]); 
         this.container.appendChild(header); 
+
+        const backButton = header.querySelector('.back-button');
+        if (backButton) 
+        {
+            backButton.addEventListener('click', () => {
+                this.ClosePage(); // Replace with the actual method or logic for going back
+            });
+        }
 
         let imageIndex = 1; 
 
@@ -82,6 +95,69 @@ export default class ProjectPageFactory
         this.container.classList.remove('hidden');
     }
 
+    SetupPageAnimation() 
+    {
+        const duration = 0.05; 
+        
+        const overlay = document.getElementById('darkOverlay'); 
+        const container = document.getElementById('project-container'); 
+        const description = document.getElementById('project-description')
+
+        const animation = gsap.timeline
+        ({
+            paused: true, 
+            ease: "expo.inOut", 
+            onComplete: () => 
+            {
+                container.classList.add('visible');
+                container.classList.remove('hidden'); 
+                container.style.pointerEvents = 'auto';  
+                description.style.pointerEvents = 'none'; 
+
+                this.isOpen = true; 
+            },
+            onReverseComplete: () => 
+            {
+                container.classList.remove('visible');
+                container.classList.add('hidden'); 
+                container.style.pointerEvents = 'none';
+                description.style.pointerEvents = 'auto'; 
+                
+                this.isOpen = false; 
+            }
+        })
+
+        animation.to(overlay, 
+        {
+            duration: duration,
+            opacity: '.95', 
+        })
+        .to(description, 
+        {
+            duration: duration,
+            opacity: '0'
+        })
+        .to(container, 
+        {
+            duration: duration, 
+            opacity: '1'
+        }); 
+
+        return animation; 
+    }
+
+    OpenPage() 
+    {
+        console.log('opening page'); 
+        this.animation.timeScale(1).play(); 
+    }
+
+    ClosePage() 
+    {
+        console.log('closing page'); 
+        this.animation.timeScale(1.33).reverse(); 
+    }
+
     RenderHeader(data, image) 
     {
         const div = document.createElement('div'); 
@@ -90,6 +166,9 @@ export default class ProjectPageFactory
         div.className = 'project-header';
         div.style.backgroundImage = `linear-gradient(to top, rgba(0, 0, 0, 0.99), rgba(0, 0, 0, 0)), url('${background}')`; 
         div.innerHTML = `
+            <button class="back-button">
+                <img src=${this.headerArrow.default} alt="Back" class="back-icon">
+            </button>
             <h1 class="project-title">${data.title}</h1>
             <p class="project-tagline">${data.tagline}</p>
             <p class="content-spacer"></p>

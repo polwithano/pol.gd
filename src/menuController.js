@@ -1,11 +1,11 @@
-import FolderEntry from '../blog/folderEntry';
-import ICON from '../../public/media/portfolio-icons/masterICON';
-import JSON from '../../data/masterJSON';
-import LinkEntry from '../blog/linkEntry';
-import PostEntry from '../blog/postEntry';
-import ProjectEntry from '../blog/projectEntry';
+import FolderEntry from './blog/folderEntry';
+import ICON from '../public/media/portfolio-icons/masterICON';
+import JSON from '../data/masterJSON';
+import LinkEntry from './blog/linkEntry';
+import PostEntry from './blog/postEntry';
+import ProjectEntry from './blog/projectEntry';
 
-export default class MenuPortfolio 
+export default class MenuController 
 {
     constructor() 
     {
@@ -221,7 +221,7 @@ export default class MenuPortfolio
                 folderHeader.classList.remove('open');  
                 folderContent.style.display = "none";
             }
-            console.log('Toggled folder content:', folderContent);  // Debugging output
+            //console.log('Toggled folder content:', folderContent);
         } 
         else console.warn('No element found with ID:', folderID);  // Warn if no element is found
     }

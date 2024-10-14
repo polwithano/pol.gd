@@ -1,4 +1,6 @@
-import * as THREE from 'three'; 
+import * as THREE from 'three';
+
+import { ceilPowerOfTwo } from 'three/src/math/MathUtils.js';
 import gsap from 'gsap';
 
 function CloneMeshMaterials(mesh) 
@@ -247,4 +249,37 @@ function AnimateVoxels(objectPortfolio, offset)
     }
 }
 
-export default {AnimateVoxels, CloneMeshMaterials, AddClippingPlaneToMaterials, CreateGradientTexture, FetchCurrentGradientColors, CreateShadowPlane, CreateReflectorPlane, CreatePlaneBufferGeometry, CreateCarouselDots, UpdateCarouselDots, GenericProjectData}; 
+function ElementScreenShake(initialDuration, decayRate, cycles, element, method) 
+{
+    const timeline = gsap.timeline
+    ({
+        paused: true, 
+        ease: "elastic.inOut",
+        onComplete: () => 
+        {
+            if (method) method();
+        }
+    })
+    
+    for (let i = 0; i < cycles; i++) 
+    {
+        const factor = i == 0 ? 0.5 : 1; 
+        const direction = i % 2 == 0 ? - 1 : 1; 
+        const rotation = (5 * factor) * direction;
+        const randomX = Math.ceil(Math.random() * 6);   
+
+        const duration = Math.max(initialDuration * Math.pow(decayRate, i), 0.025); 
+         
+        timeline.to(element, 
+        {
+            duration: duration,
+            rotation: `+=${rotation}`,
+            x: `+=${direction * randomX}`, 
+            yoyo: false
+        });
+    }
+
+    return timeline; 
+}
+
+export default {AnimateVoxels, CloneMeshMaterials, AddClippingPlaneToMaterials, CreateGradientTexture, FetchCurrentGradientColors, CreateShadowPlane, CreateReflectorPlane, CreatePlaneBufferGeometry, CreateCarouselDots, UpdateCarouselDots, GenericProjectData, ElementScreenShake}; 

@@ -66,7 +66,7 @@ body {
 
 #info-scroll {
   position: fixed; 
-  bottom: 4%;
+  bottom: 6%;
   left: 50%;
   transform: translateX(-50%);
   color: rgb(200, 200, 200);
@@ -271,7 +271,7 @@ a
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(200, 200, 200, 0.175); /* Slightly more transparent */
+  background-color: rgba(0, 0, 0, 1); /* Slightly more transparent */
   pointer-events: none; /* Allows interaction with underlying elements */
   opacity: 0; /* Start with it hidden */
   z-index: 999; /* Ensure it covers everything */
@@ -466,6 +466,22 @@ a
   margin-bottom: 30px;
 }
 
+.back-button {
+  position: absolute;
+  top: 10px;
+  left: 2%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.back-icon {
+  width: 64px; /* Adjust size as needed */
+  height: 64px;
+  filter: drop-shadow(2px 3px 5px rgba(0, 0, 0, 0.8));
+}
+
 /* Title style */
 .project-title {
   position: absolute;
@@ -474,6 +490,7 @@ a
   font-size: 3rem; /* Adjust size as needed */
   margin: 0;
   z-index: 1; /* Ensure it's on top of the gradient */
+  filter: drop-shadow(2px 3px 5px rgba(0, 0, 0, 0.8));
 }
 
 /* Tagline below the header */
@@ -482,9 +499,11 @@ a
   bottom: 10px; /* Adjust to control distance from the bottom */
   left: 3.5%; /* Adjust to control distance from the left */
   font-size: 1.5em; /* Adjust size as needed */
+  font-style: italic;
   margin: 0;
   z-index: 1; /* Ensure it's on top of the gradient */
   color: #FFA500;
+  filter: drop-shadow(2px 3px 5px #694500);
 }
 
 /* Content Sections */

@@ -1,6 +1,7 @@
 async function LoadIcon(key) 
 {
     if (key == "adobe") return import('./adobe.png')
+    if (key == "back-arrow") return import('./back-arrow.png')
     if (key == "blender") return import('./blender.png'); 
     if (key == "boardgame") return import('./boardgame.png');
     if (key == "controller") return import('./controller.png');
@@ -12,6 +13,7 @@ async function LoadIcon(key)
     if (key == "js") return import('./js.png'); 
     if (key == "keyboard") return import('./keyboard.png'); 
     if (key == "linkedin") return import('./linkedin.png'); 
+    if (key == "mail") return import('./mail.png'); 
     if (key == "network") return import('./network.png')
     if (key == "oculus") return import('./oculus.png');
     if (key == "reddit") return import('./reddit.png'); 
