@@ -477,8 +477,8 @@ a
 }
 
 .back-icon {
-  width: 64px; /* Adjust size as needed */
-  height: 64px;
+  width: 80px; /* Adjust size as needed */
+  height: 80px;
   filter: drop-shadow(2px 3px 5px rgba(0, 0, 0, 0.8));
 }
 
