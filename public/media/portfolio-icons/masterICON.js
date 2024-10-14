@@ -19,7 +19,7 @@ async function LoadIcon(key)
     if (key == "oculus") return import('./oculus.png');
     if (key == "reddit") return import('./reddit.png'); 
     if (key == "resume") return import('./resume.png'); 
-    if (key == "return") return import('./return.png')
+    if (key == "return") return import('./return.png');
     if (key == "tool") return import('./tool.png');
     if (key == "unity") return import('./unity.png');
     if (key == "unreal") return import('./unreal.png');
