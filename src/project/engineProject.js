@@ -125,6 +125,7 @@ export default class EngineProject extends Engine
         super.InitializeLogic();
 
         this.pageFactory = new ProjectPageFactory(document.getElementById('project-container'));
+        await this.pageFactory.Initialize(); 
         this.currentProject = await this.LoadProject(JSON.projects[this.indexProject]);
         
         this.cameraController = new CameraProject(this.camera);
