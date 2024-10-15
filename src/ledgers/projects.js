@@ -95,7 +95,7 @@ function FetchAssetURL(projectData)
 
     const { content, metadata } = projectData;
     const contentFolder = metadata.contentFolder || 'default-folder'; 
-    const mediaBasePath = `../../public/media/projects/${contentFolder}/`;
+    const mediaBasePath = `./public/media/projects/${contentFolder}/`;
 
     // Add the header image URL
     if (content.header) {
