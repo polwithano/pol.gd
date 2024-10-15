@@ -35,6 +35,7 @@ async function FetchPostsMetadata()
         const url = `../../data/posts/${posts[i]}.md`;
         const response = await fetch(url); 
         const content = await response.text();
+        console.log(content);
         
         // Split the YAML metadata from the markdown content
         const parts = content.split('---');
