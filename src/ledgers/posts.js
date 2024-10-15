@@ -1,7 +1,6 @@
 import jsyaml from 'js-yaml';
 
 const posts = [
-    'hello-world',
 ]
 
 async function LoadPost(name)
@@ -25,20 +24,31 @@ async function LoadPost(name)
     return {metadata, markdown}
 }
 
-// Assuming you're including js-yaml via script tag or npm import
-async function FetchPostsMetadata() 
-{
+async function FetchPostsMetadata() {
     const time = performance.now(); 
     let metadatas = [];
 
     for (let i = 0; i < posts.length; i++) {
         const url = `../../public/data/posts/${posts[i]}.md`;
-        const response = await fetch(url); 
+        const response = await fetch(url);
+        
+        // Check for a successful response
+        if (!response.ok) {
+            console.error(`Failed to fetch post: ${url}, status: ${response.status}`);
+            continue; // Skip this iteration if the fetch fails
+        }
+
         const content = await response.text();
         
         // Split the YAML metadata from the markdown content
         const parts = content.split('---');
-        
+
+        // Check if the split was successful
+        if (parts.length < 3) { // We expect at least three parts: start, metadata, and content
+            console.error(`Invalid post format in ${posts[i]}.md. Content:`, content);
+            continue; // Skip this iteration if the format is invalid
+        }
+
         // Use js-yaml to parse the metadata correctly
         const metadata = jsyaml.load(parts[1].trim()); // Trim to remove unnecessary whitespace
         
