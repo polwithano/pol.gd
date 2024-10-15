@@ -6,7 +6,7 @@ const posts = [
 
 async function LoadPost(name)
 { 
-    const response = await fetch(`./data/posts/${name}.md`);
+    const response = await fetch(`../../public/data/posts/${name}.md`);
     
     console.log(`Fetched URL: ${response.url}`);
     
@@ -32,10 +32,9 @@ async function FetchPostsMetadata()
     let metadatas = [];
 
     for (let i = 0; i < posts.length; i++) {
-        const url = `../../data/posts/${posts[i]}.md`;
+        const url = `../../public/data/posts/${posts[i]}.md`;
         const response = await fetch(url); 
         const content = await response.text();
-        console.log(content);
         
         // Split the YAML metadata from the markdown content
         const parts = content.split('---');

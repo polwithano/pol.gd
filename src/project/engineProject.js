@@ -126,7 +126,6 @@ export default class EngineProject extends Engine
             const projectID = parseInt(this.urlParams.get('project-id'), 10);
             const projects = await PROJECTS.FetchProjectsMetadata(); 
             const project = projects.find(p => p.ID === projectID); 
-            console.log(project); 
 
             if (project) 
             {

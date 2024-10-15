@@ -13,7 +13,7 @@ async function FetchLinks()
 
     for (let i = 0; i < links.length; i++) 
     {
-        const link = await import(`../../data/links/${links[i]}.json`);
+        const link = await import(`../../public/data/links/${links[i]}.json`);
         data.push(link);  
     }
 

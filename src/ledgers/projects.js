@@ -14,8 +14,8 @@ const projects = [
 async function LoadProjectData(key) 
 {
     const [project, voxel] = await Promise.all([
-        import(`../../data/projects/${key}_data.json`),
-        import(`../../data/voxels/${key}_voxel.json`),
+        import(`../../public/data/projects/${key}_data.json`),
+        import(`../../public/data/voxels/${key}_voxel.json`),
     ]);
     return {project, voxel}; 
 }
@@ -95,7 +95,7 @@ function FetchAssetURL(projectData)
 
     const { content, metadata } = projectData;
     const contentFolder = metadata.contentFolder || 'default-folder'; 
-    const mediaBasePath = `../media/projects/${contentFolder}/`;
+    const mediaBasePath = `../public/media/projects/${contentFolder}/`;
 
     // Add the header image URL
     if (content.header) {
@@ -122,7 +122,7 @@ async function FetchProjectsMetadata()
     
     for (let i = 0; i < projects.length; i++) 
     {
-        const projectData = await import(`../../data/projects/${projects[i]}_data.json`); 
+        const projectData = await import(`../../public/data/projects/${projects[i]}_data.json`); 
         metadatas.push(projectData.metadata); 
     }
 
