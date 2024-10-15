@@ -5,8 +5,8 @@ import CameraProject from './cameraProject';
 import Engine from '../engine';
 import Helpers from '../helpers';
 import ICON from '../ledgers/icons'
-import JSON from '../../data/masterJSON';
 import ObjectPortfolio from '../portfolio/objectPortfolio';
+import PROJECTS from '../ledgers/projects';
 import ProjectPageFactory from '../portfolio/projectPageFactory';
 import Shaders from '../portfolio/shadersPortfolio';
 import { SimplexNoise } from 'three/examples/jsm/Addons.js';
@@ -124,7 +124,7 @@ export default class EngineProject extends Engine
         if (this.urlParams != null && this.urlParams != undefined) 
         {
             const projectID = parseInt(this.urlParams.get('project-id'), 10);
-            const projects = await JSON.FetchProjectsMetadata(); 
+            const projects = await PROJECTS.FetchProjectsMetadata(); 
             const project = projects.find(p => p.ID === projectID); 
             console.log(project); 
 
@@ -139,12 +139,12 @@ export default class EngineProject extends Engine
                 {
                     // Handle error (e.g., loading the project failed)
                     console.error("Failed to load specified project, loading default project instead.", error);
-                    this.currentProject = await this.LoadProjectUsingName(JSON.projects[this.indexProject]); 
+                    this.currentProject = await this.LoadProjectUsingName(PROJECTS.projects[this.indexProject]); 
                 }
             }
-            else this.currentProject = await this.LoadProjectUsingName(JSON.projects[this.indexProject]);
+            else this.currentProject = await this.LoadProjectUsingName(PROJECTS.projects[this.indexProject]);
         }
-        else this.currentProject = await this.LoadProjectUsingName(JSON.projects[this.indexProject]);
+        else this.currentProject = await this.LoadProjectUsingName(PROJECTS.projects[this.indexProject]);
 
         this.menuController.UpdateSelectedProject(this.indexProject); 
         
@@ -258,7 +258,7 @@ export default class EngineProject extends Engine
         if (!this.allowProjectLoading) return; 
 
         let index = this.indexProject + 1; 
-        if (index >= JSON.projects.length) index = 0; 
+        if (index >= PROJECTS.projects.length) index = 0; 
 
         this.TransitionProject(index); 
     }
@@ -268,7 +268,7 @@ export default class EngineProject extends Engine
         if (!this.allowProjectLoading) return;
 
         let index = this.indexProject - 1;
-        if (index < 0) index = JSON.projects.length - 1;  
+        if (index < 0) index = PROJECTS.projects.length - 1;  
         
         this.TransitionProject(index)
     }
@@ -282,7 +282,7 @@ export default class EngineProject extends Engine
         const perpendicular = this.camera.position.clone().applyAxisAngle(this.camera.up, direction * Math.PI / 2);
         const distance = window.innerWidth * 0.005;
         const position = perpendicular.multiplyScalar(distance);
-        const project = await this.LoadProjectUsingName(JSON.projects[index]); 
+        const project = await this.LoadProjectUsingName(PROJECTS.projects[index]); 
         const lookAt = (project.MinY() + project.MaxY()) / 2;   
 
         this.allowProjectLoading = false; 
@@ -443,7 +443,7 @@ export default class EngineProject extends Engine
         elements.projectTag.appendChild(TagManager.TagElement(projectMetadata.tag, "tag"));
         elements.copyrightModel.innerHTML = `© Original Model • <a href="${voxelMetadata.modelLink}" target="_blank">${voxelMetadata.author}</a>`;
 
-        Helpers.CreateCarouselDots(JSON.projects.length, this.indexProject);  
+        Helpers.CreateCarouselDots(PROJECTS.projects.length, this.indexProject);  
 
         this.allowPageLoading = true; 
     }

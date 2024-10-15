@@ -2,8 +2,8 @@ import * as THREE from 'three';
 
 import EngineBlog from './blog/engineBlog';
 import EngineProject from './project/engineProject';
-import JSON from '../data/masterJSON';
 import MenuController from './menuController';
+import PROJECTS from './ledgers/projects';
 import gsap from 'gsap';
 
 export default class Manager 
@@ -40,19 +40,13 @@ export default class Manager
         // Menu Listeners
         document.querySelector('.explorer').addEventListener('click', (event) => 
         {
-            console.log('click'); 
-            console.log('engine: ' + this.currentEngine); 
             if (this.IsCurrentEngine('EngineProject')) 
             {
                 const folderHeader = event.target.closest('.folder-header');
                 const project = event.target.closest('.project');
-                
-                console.log('click EngineProject'); 
-    
+
                 if (folderHeader) 
                 {
-                    console.log('click folder'); 
-
                     const folderID = folderHeader.getAttribute('data-folder-id');
                     this.menuController.ToggleFolder(folderID);
     
@@ -61,7 +55,7 @@ export default class Manager
                 if (project) 
                 {
                     const projectName = project.getAttribute('data-project-name');
-                    const index = JSON.projects.indexOf(projectName);
+                    const index = PROJECTS.projects.indexOf(projectName);
     
                     if (index == this.currentEngine.indexProject || this.currentEngine.allowProjectLoading == false) return; 
 

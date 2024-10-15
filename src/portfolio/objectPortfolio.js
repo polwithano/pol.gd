@@ -2,9 +2,8 @@ import * as THREE from 'three';
 
 import Helpers from '../helpers';
 import Loader from '../loader';
-import Master from '../../data/masterJSON';
+import PROJECTS from '../ledgers/projects';
 import Voxel from '../voxel';
-import gsap from 'gsap';
 
 export default class ObjectPortfolio 
 {
@@ -80,7 +79,7 @@ export default class ObjectPortfolio
     {
         try 
         {
-            this.data = await Master.LoadProjectData(projectName);
+            this.data = await PROJECTS.LoadProjectData(projectName);
             
             const project_data = this.data.project; 
             const voxel_data = this.data.voxel; 

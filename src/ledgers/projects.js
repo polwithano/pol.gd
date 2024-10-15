@@ -1,7 +1,4 @@
-import jsyaml from 'js-yaml';
-
-const projects = 
-[
+const projects = [
     "Space Architect",
     "Zer0 Day",
     "Brutal Fighters",
@@ -14,25 +11,11 @@ const projects =
     "Raycaster"
 ]
 
-const posts = 
-[
-    
-]
-
-const links = 
-[
-    "github-link",
-    "linkedin-link",
-    "reddit-link",
-    "resume-link",
-    "mail-link"
-]
-
 async function LoadProjectData(key) 
 {
     const [project, voxel] = await Promise.all([
-        import(`./projects/${key}_data.json`),
-        import(`./voxels/${key}_voxel.json`),
+        import(`../../data/projects/${key}_data.json`),
+        import(`../../data/voxels/${key}_voxel.json`),
     ]);
     return {project, voxel}; 
 }
@@ -70,7 +53,7 @@ async function LoadProjectAssets(projectData)
                         //console.warn('Failed to load image:', src);
                         // If it's the last extension and none worked, reject
                         if (ext === possibleExtensions[possibleExtensions.length - 1] && !imageLoaded) {
-                            resolve('../public/media/placeholder-image.jpg'); // Resolve with placeholder as fallback
+                            resolve('../public/media/placeholder.jpg'); // Resolve with placeholder as fallback
                         }
                     };
                 }
@@ -139,7 +122,7 @@ async function FetchProjectsMetadata()
     
     for (let i = 0; i < projects.length; i++) 
     {
-        const projectData = await import(`./projects/${projects[i]}_data.json`); 
+        const projectData = await import(`../../data/projects/${projects[i]}_data.json`); 
         metadatas.push(projectData.metadata); 
     }
 
@@ -150,75 +133,4 @@ async function FetchProjectsMetadata()
     return metadatas; 
 }
 
-async function FetchLinks() 
-{
-    let data = [];
-
-    for (let i = 0; i < links.length; i++) 
-    {
-        const link = await import(`./links/${links[i]}.json`);
-        data.push(link);  
-    }
-
-    return data; 
-}
-
-async function LoadPost(name)
-{ 
-    const response = await fetch(`./data/posts/${name}.md`);
-    
-    console.log(`Fetched URL: ${response.url}`);
-    
-    if (!response.ok) {
-        console.error(`Failed to load file: ${response.status} ${response.statusText}`);
-        return;
-    }
-
-    const content = await response.text(); 
-    //console.log(`Content Loaded: ${content.substring(0, 100)}`);  // Output a snippet of content for debugging
-
-    const parts = content.split('---'); 
-    const metadata = ParseYAML(parts[1]); 
-    const markdown = parts[2];  
-
-    return {metadata, markdown}
-}
-
-// Assuming you're including js-yaml via script tag or npm import
-
-async function FetchPostsMetadata() 
-{
-    const time = performance.now(); 
-    let metadatas = [];
-
-    for (let i = 0; i < posts.length; i++) {
-        const url = `./data/posts/${posts[i]}.md`;
-        const response = await fetch(url); 
-        const content = await response.text();
-        
-        // Split the YAML metadata from the markdown content
-        const parts = content.split('---');
-        
-        // Use js-yaml to parse the metadata correctly
-        const metadata = jsyaml.load(parts[1].trim()); // Trim to remove unnecessary whitespace
-        
-        metadatas.push(metadata);
-    }
-
-    const timeEnd = performance.now(); 
-    const duration  = (timeEnd - time);
-    console.log(`Time taken to fetch and process posts metadata: ${duration} milliseconds`);
-    return metadatas;
-}
-
-function ParseYAML(yamlString) 
-{
-    // A simple YAML parser, or use a library like js-yaml
-    return yamlString.split('\n').reduce((acc, line) => {
-        const [key, value] = line.split(':').map(str => str.trim());
-        if (key && value) acc[key] = value;
-        return acc;
-    }, {});
-}
-
-export default {projects, LoadProjectData, LoadProjectAssets, FetchAssetURL, FetchProjectsMetadata, FetchPostsMetadata, LoadPost, FetchLinks}
+export default {projects, LoadProjectData, LoadProjectAssets, FetchAssetURL, FetchProjectsMetadata}

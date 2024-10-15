@@ -1,5 +1,5 @@
 import ICON from '../ledgers/icons';
-import JSON from '../../data/masterJSON'
+import PROJECTS from '../ledgers/projects'
 import gsap from 'gsap';
 
 export default class ProjectPageFactory 
@@ -32,7 +32,7 @@ export default class ProjectPageFactory
 
         const data = object.content; 
 
-        const urls = JSON.FetchAssetURL(object.data.project); 
+        const urls = PROJECTS.FetchAssetURL(object.data.project); 
 
         this.container.innerHTML = ''; 
         this.videoElements = []; 

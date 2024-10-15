@@ -1,7 +1,9 @@
 import FolderEntry from './blog/folderEntry';
 import ICON from './ledgers/icons';
-import JSON from '../data/masterJSON';
+import LINKS from './ledgers/links';
 import LinkEntry from './blog/linkEntry';
+import POSTS from './ledgers/posts';
+import PROJECTS from './ledgers/projects';
 import PostEntry from './blog/postEntry';
 import ProjectEntry from './blog/projectEntry';
 
@@ -35,7 +37,7 @@ export default class MenuController
 
     async InitializePortfolioProjects() 
     {
-        const metadatas = await JSON.FetchProjectsMetadata();
+        const metadatas = await PROJECTS.FetchProjectsMetadata();
         const icon = await ICON.LoadIcon('folder');
         const title = document.createElement('h1');
         
@@ -80,7 +82,7 @@ export default class MenuController
         this.postContainer.appendChild(title);
         
         const currentDay = new Date(); 
-        const metadatas = await JSON.FetchPostsMetadata(); 
+        const metadatas = await POSTS.FetchPostsMetadata(); 
         const tagSet = new Set();   
 
         for (const metadata of metadatas) 
@@ -114,7 +116,7 @@ export default class MenuController
         
         this.linkEntries = []; 
 
-        const datas = await JSON.FetchLinks(); 
+        const datas = await LINKS.FetchLinks(); 
 
         for (const data of datas) 
         {
@@ -159,7 +161,7 @@ export default class MenuController
 
     UpdateSelectedProject(index) 
     {
-        const currentProjectName = JSON.projects[index]; 
+        const currentProjectName = PROJECTS.projects[index]; 
 
         document.querySelectorAll('.project').forEach(project => 
         {
