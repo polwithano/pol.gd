@@ -20,82 +20,13 @@ async function LoadProjectData(key)
     return {project, voxel}; 
 }
 
-async function LoadProjectAssets(projectData) 
-{
-    try 
-    {
-        const { content, metadata } = projectData;
-        const contentFolder = metadata.contentFolder || 'default-folder'; 
-        const mediaBasePath = `../media/projects/${contentFolder}`;
-
-        async function loadImageWithFallback(basePath, imageName) {
-            const possibleExtensions = ['.jpg', '.gif', '.png', '.webp'];
-            
-            return new Promise((resolve, reject) => {
-                let imageLoaded = false;
-        
-                for (const ext of possibleExtensions) {
-                    const src = `${basePath}/${imageName}${ext}`;
-                    
-                    // Create an image element and check for load/error events
-                    const img = new Image();
-                    img.src = src;
-        
-                    img.onload = () => {
-                        if (!imageLoaded) {
-                            console.log(`${ext} file loaded sucessfully: ${src}`);
-                            imageLoaded = true;
-                            resolve(src); // Resolve with the correct image path
-                        }
-                    };
-        
-                    img.onerror = () => {
-                        //console.warn('Failed to load image:', src);
-                        // If it's the last extension and none worked, reject
-                        if (ext === possibleExtensions[possibleExtensions.length - 1] && !imageLoaded) {
-                            resolve('../public/media/placeholder.jpg'); // Resolve with placeholder as fallback
-                        }
-                    };
-                }
-            });
-        }
-        
-        // Load header image with fallback for various extensions
-        const header = await loadImageWithFallback(mediaBasePath, content.header || 'header-image');
-
-        // Filter and load images for each section
-        const images = await Promise.all(
-            content.sections
-                .filter(section => 
-                    (section.type === 'text-image' || section.type === 'gif') 
-                    && section.content.image && section.content.image.imageIndex)
-                .map(async (section) => {
-                    const index = section.content.image.imageIndex; 
-                    const image = await loadImageWithFallback(mediaBasePath, index);
-
-                    return {
-                        ...section.content.image, 
-                        src: image
-                    };
-                })
-        );
-
-        return { header, images };
-    } 
-    catch (error) 
-    {
-        console.error('Error loading project assets:', error);
-        return null;  
-    }
-}
-
 function FetchAssetURL(projectData) 
 {
     let urls = [];
 
     const { content, metadata } = projectData;
     const contentFolder = metadata.contentFolder || 'default-folder'; 
-    const mediaBasePath = `./public/media/projects/${contentFolder}/`;
+    const mediaBasePath = `./media/projects/${contentFolder}/`;
 
     // Add the header image URL
     if (content.header) {
@@ -133,4 +64,4 @@ async function FetchProjectsMetadata()
     return metadatas; 
 }
 
-export default {projects, LoadProjectData, LoadProjectAssets, FetchAssetURL, FetchProjectsMetadata}
+export default {projects, LoadProjectData, FetchAssetURL, FetchProjectsMetadata}
