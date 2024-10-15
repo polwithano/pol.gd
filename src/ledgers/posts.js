@@ -26,14 +26,13 @@ async function LoadPost(name)
 }
 
 // Assuming you're including js-yaml via script tag or npm import
-
 async function FetchPostsMetadata() 
 {
     const time = performance.now(); 
     let metadatas = [];
 
     for (let i = 0; i < posts.length; i++) {
-        const url = `./data/posts/${posts[i]}.md`;
+        const url = `../../data/posts/${posts[i]}.md`;
         const response = await fetch(url); 
         const content = await response.text();
         
