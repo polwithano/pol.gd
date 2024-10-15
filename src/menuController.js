@@ -200,7 +200,7 @@ export default class MenuController
         else console.warn('No element found with ID:', folderID);  // Warn if no element is found
     }
 
-    ToggleFolderWithProjectName(name) 
+    OpenFolderWithProjectName(name) 
     {
         // Find the project element with the matching name
         const project = document.querySelector(`.project[data-project-name="${name}"]`);
@@ -211,8 +211,11 @@ export default class MenuController
             
             if (folder && folderHeader) 
             {
-                const folderID = folderHeader.getAttribute('data-folder-id');
-                this.ToggleFolderWithID(folderID);
+                if (!folderHeader.classList.contains('open')) 
+                {
+                    const folderID = folderHeader.getAttribute('data-folder-id');
+                    this.ToggleFolderWithID(folderID);   
+                }
             }
             else console.warn('No parent folder found for the project:', name);
         }

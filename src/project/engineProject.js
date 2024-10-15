@@ -146,7 +146,7 @@ export default class EngineProject extends Engine
         else this.currentProject = await this.LoadProjectUsingName(PROJECTS.projects[this.indexProject]);
 
         this.menuController.UpdateSelectedProject(this.indexProject); 
-        this.menuController.ToggleFolderWithProjectName(PROJECTS.projects[this.indexProject]); 
+        this.menuController.OpenFolderWithProjectName(PROJECTS.projects[this.indexProject]); 
         
         this.cameraController = new CameraProject(this.camera);
         this.cameraController.Initialize(this.currentProject); 
