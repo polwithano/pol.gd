@@ -48,7 +48,7 @@ export default class Manager
                 if (folderHeader) 
                 {
                     const folderID = folderHeader.getAttribute('data-folder-id');
-                    this.menuController.ToggleFolder(folderID);
+                    this.menuController.ToggleFolderWithID(folderID);
     
                     return; 
                 }

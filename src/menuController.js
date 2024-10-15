@@ -172,7 +172,7 @@ export default class MenuController
         });
     }
 
-    ToggleFolder(folderID) 
+    ToggleFolderWithID(folderID) 
     {
         if (!folderID) 
         {
@@ -198,6 +198,25 @@ export default class MenuController
             //console.log('Toggled folder content:', folderContent);
         } 
         else console.warn('No element found with ID:', folderID);  // Warn if no element is found
+    }
+
+    ToggleFolderWithProjectName(name) 
+    {
+        // Find the project element with the matching name
+        const project = document.querySelector(`.project[data-project-name="${name}"]`);
+        if (project) 
+        {
+            const folder = project.closest('.folder');
+            const folderHeader = folder.querySelector('.folder-header');
+            
+            if (folder && folderHeader) 
+            {
+                const folderID = folderHeader.getAttribute('data-folder-id');
+                this.ToggleFolderWithID(folderID);
+            }
+            else console.warn('No parent folder found for the project:', name);
+        }
+        else console.warn('No project element found with name:', name);
     }
 
     SwitchMode(menuMode) 

@@ -1,7 +1,7 @@
 import jsyaml from 'js-yaml';
 
 const posts = [
-    
+    'hello-world',
 ]
 
 async function LoadPost(name)

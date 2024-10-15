@@ -44,7 +44,7 @@ export default class EngineProject extends Engine
         this.allowPageLoading = false;  
 
         this.currentProject = null; 
-        this.indexProject = 0; 
+        this.indexProject = 9; 
     }
 
     // #region Initialize Methods
@@ -147,6 +147,7 @@ export default class EngineProject extends Engine
         else this.currentProject = await this.LoadProjectUsingName(PROJECTS.projects[this.indexProject]);
 
         this.menuController.UpdateSelectedProject(this.indexProject); 
+        this.menuController.ToggleFolderWithProjectName(PROJECTS.projects[this.indexProject]); 
         
         this.cameraController = new CameraProject(this.camera);
         this.cameraController.Initialize(this.currentProject); 
