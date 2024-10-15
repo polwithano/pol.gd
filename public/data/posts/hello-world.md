@@ -2,7 +2,7 @@
 title: "hello world"
 date: "2024-08-01"
 tags: ["web-development", "misc"]
-id: 0
+id: "0"
 ---
 
 # The first blog post. 
