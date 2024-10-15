@@ -3,6 +3,8 @@ import './style.css';
 import Manager from './src/manager';
 
 const canvasID = '#bg'; 
-const manager = new Manager(canvasID);
+const path = window.location.pathname.toLowerCase();
+const urlParams = new URLSearchParams(window.location.search);
 
-manager.Initialize(); 
+const manager = new Manager(canvasID, path, urlParams);
+manager.Initialize();

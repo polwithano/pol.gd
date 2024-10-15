@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 
+import EngineBlog from './blog/engineBlog';
 import EngineProject from './project/engineProject';
 import JSON from '../data/masterJSON';
 import MenuController from './menuController';
@@ -7,21 +8,28 @@ import gsap from 'gsap';
 
 export default class Manager 
 {
-    constructor(canvasID) 
+    constructor(canvasID, path, urlParams) 
     {
         this.introductionPanelOpen = true;        
         this.canvasID = canvasID; 
         this.canvas = document.querySelector(canvasID); 
         this.currentEngine = null; 
+
+        this.path = path; 
+        this.urlParams = urlParams; 
+
+        console.log('URL path:', this.path);
+        console.log('URL parameters:', this.urlParams);
     }
 
     async Initialize() 
     {
+        await this.InitializeMenu();
+        
         this.DefineListeners(); 
         this.AddEventListeners(); 
         
-        await this.InitializeMenu();
-        await this.LoadEngine('EngineProject'); 
+        await this.LoadEngineUsingURLParams(); 
     }
 
     async InitializeMenu() 
@@ -32,13 +40,19 @@ export default class Manager
         // Menu Listeners
         document.querySelector('.explorer').addEventListener('click', (event) => 
         {
+            console.log('click'); 
+            console.log('engine: ' + this.currentEngine); 
             if (this.IsCurrentEngine('EngineProject')) 
             {
                 const folderHeader = event.target.closest('.folder-header');
-                const project = event.target.closest('.project'); 
+                const project = event.target.closest('.project');
+                
+                console.log('click EngineProject'); 
     
                 if (folderHeader) 
                 {
+                    console.log('click folder'); 
+
                     const folderID = folderHeader.getAttribute('data-folder-id');
                     this.menuController.ToggleFolder(folderID);
     
@@ -64,8 +78,32 @@ export default class Manager
         });
     }
 
+    async LoadEngineUsingURLParams() 
+    {
+        if (this.path.includes('/portfolio')) 
+        {
+            await this.LoadEngine('EngineProject', this.urlParams);
+            this.menuController.SwitchMode("Portfolio");  
+        }
+        else if (this.path.includes('/blog')) 
+        {
+            await this.LoadEngine('EngineBlog', this.urlParams); 
+            this.menuController.SwitchMode("Blog");
+        }
+        else if (this.path.includes('/links')) 
+        {
+            await this.LoadEngine('EngineProject');  
+            this.menuController.SwitchMode("Links");
+        }
+        else 
+        {
+            await this.LoadEngine('EngineProject'); 
+            this.menuController.SwitchMode("Portfolio");
+        }
+    }
+
     // #region Engine Methods
-    async LoadEngine(engineName) 
+    async LoadEngine(engineName, params) 
     {
         if (this.currentEngine != null) 
         {
@@ -73,7 +111,7 @@ export default class Manager
             this.currentEngine = null; 
         }
 
-        this.currentEngine = this.GetEngine(engineName);
+        this.currentEngine = this.GetEngine(engineName, params);
         await this.currentEngine.Initialize();  
 
         const context = this.currentEngine.renderer.getContext();
@@ -83,21 +121,31 @@ export default class Manager
         console.log("Renderer size:", this.currentEngine.renderer.getSize(new THREE.Vector2()));
     }
 
-    GetEngine(engineName) 
+    GetEngine(engineName, params) 
     {
         switch (engineName) 
         {
             case 'EngineProject': 
-                return new EngineProject(this.canvasID); 
+                return new EngineProject(this.canvasID, params, this.menuController); 
+            case 'EngineBlog':
+                return new EngineBlog(this.canvasID, params); 
             default:
                 throw new Error(`Unknown engine class: ${engineName}`);
         }
     }
 
-    IsCurrentEngine(name) 
+    IsCurrentEngine(engineClass) 
     {
-        return this.currentEngine && this.currentEngine.constructor.name === name; 
+        switch (engineClass) {
+            case 'EngineProject':
+                return this.currentEngine instanceof EngineProject;
+            case 'EngineBlog':
+                return this.currentEngine instanceof EngineBlog;
+            default:
+                return false;
+        }
     }
+    
     // #endregion
 
     CloseIntroductionPanel() 
@@ -132,6 +180,40 @@ export default class Manager
         document.getElementById('arrow-down').addEventListener('click', () => 
         {
             if (this.introductionPanelOpen) this.CloseIntroductionPanel(); 
+        })
+
+        // Menu-related listeners
+        const togglePortfolio = document.getElementById('toggle-projects');
+        const toggleBlog = document.getElementById('toggle-blog');
+        const toggleLinks = document.getElementById('toggle-links');  
+
+        togglePortfolio.addEventListener('click', () => 
+        {
+            this.menuController.SwitchMode("Portfolio");
+            if (!this.IsCurrentEngine('EngineProject')) 
+            {
+                this.LoadEngine('EngineProject');
+                // Update URL to /portfolio
+                history.pushState({}, '', '/portfolio');
+            } 
+        });
+
+        toggleBlog.addEventListener('click', () => 
+        {
+            this.menuController.SwitchMode("Blog");
+            if (!this.IsCurrentEngine('EngineBlog')) 
+            {
+                this.LoadEngine('EngineBlog');
+                // Update URL to /blog
+                history.pushState({}, '', '/blog');
+            } 
+        });
+
+        toggleLinks.addEventListener('click', () => 
+        {                 
+            this.menuController.SwitchMode("Links");
+            // Update URL to /links
+            history.pushState({}, '', '/links'); 
         })
     }
     // #endregion

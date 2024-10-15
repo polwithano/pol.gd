@@ -4,7 +4,7 @@ import Background from '../portfolio/helpers/backgrounds';
 import CameraProject from './cameraProject';
 import Engine from '../engine';
 import Helpers from '../helpers';
-import ICON from '../../public/media/portfolio-icons/masterICON'
+import ICON from '../ledgers/icons'
 import JSON from '../../data/masterJSON';
 import ObjectPortfolio from '../portfolio/objectPortfolio';
 import ProjectPageFactory from '../portfolio/projectPageFactory';
@@ -18,14 +18,6 @@ import gsap from 'gsap';
 const SIMPLEX = new SimplexNoise(); 
 const TOGGLE_DEBUG = false; 
 const LOFI_RENDER_SCALE = 4; 
-const CARROUSEL_TIMER = 15; 
-
-const CAMERA_PARAMS = {
-    orbitalRadius:     7,
-    orbitalSpeed:    .25,
-    orbitalMinHeight:  0,
-    orbitalMaxHeight:  3 
-}
 
 const GRID_PARAMS = {
     type:        "circ",
@@ -39,9 +31,11 @@ const GRID_PARAMS = {
 
 export default class EngineProject extends Engine 
 {
-    constructor(canvasID) 
+    constructor(canvasID, urlParams, menuController) 
     {
         super(canvasID); 
+        this.urlParams = urlParams; 
+        this.menuController = menuController; 
 
         this.renderModeLofi = false;
         this.renderModeGrid = true;
@@ -50,7 +44,6 @@ export default class EngineProject extends Engine
         this.allowPageLoading = false;  
 
         this.currentProject = null; 
-        this.nextProject = null; 
         this.indexProject = 0; 
     }
 
@@ -59,6 +52,7 @@ export default class EngineProject extends Engine
     {
         super.Initialize(); 
 
+        await this.CreateHTML(); 
         await this.InitializeLogic(); 
         this.InitializeScene();
         this.InitializeHTML(); 
@@ -125,11 +119,38 @@ export default class EngineProject extends Engine
         super.InitializeLogic();
 
         this.pageFactory = new ProjectPageFactory(document.getElementById('project-container'));
-        await this.pageFactory.Initialize(); 
-        this.currentProject = await this.LoadProject(JSON.projects[this.indexProject]);
+        await this.pageFactory.Initialize();
+         
+        if (this.urlParams != null && this.urlParams != undefined) 
+        {
+            const projectID = parseInt(this.urlParams.get('project-id'), 10);
+            const projects = await JSON.FetchProjectsMetadata(); 
+            const project = projects.find(p => p.ID === projectID); 
+            console.log(project); 
+
+            if (project) 
+            {
+                try 
+                {
+                    this.currentProject = await this.LoadProjectUsingName(project.projectName);
+                    this.indexProject = projects.indexOf(project); 
+                }
+                catch (error) 
+                {
+                    // Handle error (e.g., loading the project failed)
+                    console.error("Failed to load specified project, loading default project instead.", error);
+                    this.currentProject = await this.LoadProjectUsingName(JSON.projects[this.indexProject]); 
+                }
+            }
+            else this.currentProject = await this.LoadProjectUsingName(JSON.projects[this.indexProject]);
+        }
+        else this.currentProject = await this.LoadProjectUsingName(JSON.projects[this.indexProject]);
+
+        this.menuController.UpdateSelectedProject(this.indexProject); 
         
         this.cameraController = new CameraProject(this.camera);
         this.cameraController.Initialize(this.currentProject); 
+        this.cameraController.ProjectTransition(this.currentProject.voxelizedMesh.position.y, 0.5); 
     }
 
     InitializeScene() 
@@ -206,11 +227,11 @@ export default class EngineProject extends Engine
     // #endregion
 
     // #region Projects Methods
-    async LoadProject(path) 
+    async LoadProjectUsingName(name) 
     {
         try 
         {
-            const object = new ObjectPortfolio("Load", path);
+            const object = new ObjectPortfolio("Load", name);
             await object.Load(); 
 
             if (object.voxelizedMesh != null) 
@@ -220,7 +241,10 @@ export default class EngineProject extends Engine
                 object.voxelizedMesh.rotation.y = object.voxelMetadata.startingRotation * (Math.PI / 180); 
 
                 this.scene.add(object.voxelizedMesh);        
-                await this.pageFactory.CreatePage(object);  
+                await this.pageFactory.CreatePage(object);
+                
+                const id = encodeURIComponent(object.metadata.ID);
+                history.pushState(null, '', `/portfolio?project-id=${id}`);
                 
                 return object; 
             }
@@ -234,7 +258,7 @@ export default class EngineProject extends Engine
         if (!this.allowProjectLoading) return; 
 
         let index = this.indexProject + 1; 
-        if (index > JSON.projects.length) index = 0; 
+        if (index >= JSON.projects.length) index = 0; 
 
         this.TransitionProject(index); 
     }
@@ -258,7 +282,7 @@ export default class EngineProject extends Engine
         const perpendicular = this.camera.position.clone().applyAxisAngle(this.camera.up, direction * Math.PI / 2);
         const distance = window.innerWidth * 0.005;
         const position = perpendicular.multiplyScalar(distance);
-        const project = await this.LoadProject(JSON.projects[index]); 
+        const project = await this.LoadProjectUsingName(JSON.projects[index]); 
         const lookAt = (project.MinY() + project.MaxY()) / 2;   
 
         this.allowProjectLoading = false; 
@@ -305,6 +329,103 @@ export default class EngineProject extends Engine
     // #endregion
 
     // #region HTML/Elements Methods
+    async CreateHTML() 
+    {
+        const container = document.getElementById('canvas-container'); 
+        const elements = container.querySelectorAll(':not(#bg)'); 
+        const iconGrid = await ICON.LoadIcon('grid'); 
+        const iconLofi = await ICON.LoadIcon('lofi'); 
+        const iconLeft = await ICON.LoadIcon('left'); 
+        const iconRight = await ICON.LoadIcon('right'); 
+        
+        elements.forEach(element => element.remove()); 
+
+        const overlay = document.createElement('div'); 
+        overlay.id = 'darkOverlay';
+
+        const arrowLeft = document.createElement('div'); 
+        arrowLeft.id = 'leftArrowSwitch'; 
+        arrowLeft.className = 'arrow-switch left'; 
+        arrowLeft.innerHTML = `<img src="${iconLeft.default}" alt="Arrow">`;
+
+        const arrowRight = document.createElement('div'); 
+        arrowRight.id = 'rightArrowSwitch'; 
+        arrowRight.className = 'arrow-switch right'; 
+        arrowRight.innerHTML = `<img src="${iconRight.default}" alt="Arrow">`;
+
+        const createSwitch = (id, imgSrc) => {
+            const label = document.createElement('label');
+            label.className = `switch ${id}`;
+            label.innerHTML = `
+                <img src="${imgSrc}" class="switch-img">
+                <input type="checkbox" id="${id}-switch">
+                <span class="slider round"></span>
+            `;
+            return label;
+        };
+
+        const portfolioInfo = document.createElement('div');
+        portfolioInfo.id = 'portfolio-info';
+        portfolioInfo.innerHTML = `
+            <div id="project-tag"></div>
+            <div class="info-row">
+                <div class="project-info-container">
+                    <h1 id="project-name"></h1>
+                </div>
+                <div class="project-info-container">
+                    <h1 id="project-year"></h1>
+                </div>
+            </div>
+            <div class="info-row">
+                <h1 id="company-name"></h1>
+                <h1 id="author-name"></h1>
+            </div>
+        `;
+
+        const portfolioIcons = document.createElement('div');
+        portfolioIcons.id = 'portfolio-icons';
+
+        const arrowDown = document.createElement('div');
+        arrowDown.id = 'arrow-down';
+        arrowDown.className = 'arrow-down';
+        arrowDown.innerHTML = '&#x25BC;';
+
+        const projectDescription = document.createElement('p');
+        projectDescription.id = 'project-description';
+
+        const projectWrapper = document.createElement('div');
+        projectWrapper.id = 'project-wrapper';
+        const projectContainer = document.createElement('div');
+        projectContainer.id = 'project-container';
+        projectContainer.className = 'hidden';
+        projectContainer.innerHTML = `
+            <div class="project-header">
+                <h1 class="project-title"></h1>
+                <p class="project-tagline"></p>
+            </div>
+        `;
+
+        const carouselDots = document.createElement('div');
+        carouselDots.id = 'carousel-dots';
+
+        const copyrightModel = document.createElement('div');
+        copyrightModel.id = 'copyright-model';  
+
+        container.appendChild(overlay); 
+        container.appendChild(arrowLeft); 
+        container.appendChild(arrowRight);
+        container.appendChild(createSwitch('lofi', iconLofi.default));
+        container.appendChild(createSwitch('grid', iconGrid.default));
+        container.appendChild(portfolioInfo);
+        container.appendChild(portfolioIcons);
+        container.appendChild(arrowDown);
+        container.appendChild(projectDescription);
+        projectWrapper.appendChild(projectContainer); 
+        container.appendChild(projectWrapper); 
+        container.appendChild(carouselDots); 
+        container.appendChild(copyrightModel); 
+    }
+
     InitializeHTML() 
     {
         const elements = this.FetchHTMLElements(); 

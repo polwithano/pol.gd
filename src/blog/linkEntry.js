@@ -1,4 +1,4 @@
-import ICON from "../../public/media/portfolio-icons/masterICON";
+import ICON from "../ledgers/icons";
 import MenuEntry from "./menuEntry";
 
 export default class LinkEntry extends MenuEntry 

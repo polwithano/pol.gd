@@ -1,5 +1,5 @@
 import FolderEntry from './blog/folderEntry';
-import ICON from '../public/media/portfolio-icons/masterICON';
+import ICON from './ledgers/icons';
 import JSON from '../data/masterJSON';
 import LinkEntry from './blog/linkEntry';
 import PostEntry from './blog/postEntry';
@@ -30,7 +30,6 @@ export default class MenuController
         await this.InitializeBlogPosts();  
         await this.InitializeLinks(); 
 
-        this.UpdateSelectedProject(0); 
         this.SwitchMode(this.menuMode); 
     }
 
@@ -138,35 +137,8 @@ export default class MenuController
     
     InitializeListeners() 
     {
-        const projectsButton = document.getElementById('toggle-projects');
-        const blogButton = document.getElementById('toggle-blog');
-        const linksButton = document.getElementById('toggle-links'); 
         const searchBar = document.querySelector('.search-bar input'); 
         const languageToggle = document.getElementById('language-select'); 
-
-        projectsButton.addEventListener('click', () => 
-        {
-            projectsButton.classList.add('active');
-            blogButton.classList.remove('active');
-            linksButton.classList.remove('active'); 
-            this.SwitchMode("Portfolio");
-        });
-
-        blogButton.addEventListener('click', () => 
-        {
-            projectsButton.classList.remove('active');
-            blogButton.classList.add('active');
-            linksButton.classList.remove('active'); 
-            this.SwitchMode("Blog");
-        });
-
-        linksButton.addEventListener('click', () => 
-        {
-            projectsButton.classList.remove('active');
-            blogButton.classList.remove('active');
-            linksButton.classList.add('active'); 
-            this.SwitchMode("Links"); 
-        })
 
         searchBar.addEventListener('input', (event) =>
         {
@@ -228,15 +200,35 @@ export default class MenuController
 
     SwitchMode(menuMode) 
     {
+        const togglePortfolio = document.getElementById('toggle-projects');
+        const toggleBlog = document.getElementById('toggle-blog');
+        const toggleLinks = document.getElementById('toggle-links');  
+
         this.menuMode = menuMode; 
         
         this.projectContainer.style.display = 'none'; 
         this.postContainer.style.display = 'none'; 
         this.linkContainer.style.display = 'none'; 
+        
+        togglePortfolio.classList.remove('active');
+        toggleBlog.classList.remove('active');
+        toggleLinks.classList.remove('active');
 
-        if (menuMode == "Portfolio") this.projectContainer.style.display = 'block'; 
-        if (menuMode == "Blog") this.postContainer.style.display = 'block'; 
-        if (menuMode == "Links") this.linkContainer.style.display = 'block'; 
+        if (menuMode == "Portfolio") 
+        {
+            togglePortfolio.classList.add('active'); 
+            this.projectContainer.style.display = 'block';
+        } 
+        if (menuMode == "Blog") 
+        {
+            toggleBlog.classList.add('active');
+            this.postContainer.style.display = 'block';
+        } 
+        if (menuMode == "Links") 
+        {
+            toggleLinks.classList.add('active');
+            this.linkContainer.style.display = 'block';
+        } 
     }
 
     FilterProjects(query) 

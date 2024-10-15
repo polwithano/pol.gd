@@ -1,12 +1,13 @@
 {
   "metadata": {
+    "ID": 5,
     "tag": "video_game",
     "projectName": "Because I Love You",
     "companyName": "Isart Digital",
     "yearString": "2020",
     "yearID": "2020",
     "tasks": "GD • ND",
-    "description": "A V.R. narrative game about domestic abuse.",
+    "description": "A V.R. serious game about domestic abuse.",
     "isFavorite": true,
     "contentFolder": "because-i-love-you",
     "voxelPath": "../data/voxels/Because I Love You_voxel.json",
