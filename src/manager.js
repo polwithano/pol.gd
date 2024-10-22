@@ -147,16 +147,15 @@ export default class Manager
         const panel = document.getElementById('intro-section');
         this.introductionPanelOpen = false; 
         
-        // Limit the scroll position so that it doesn't move beyond a certain point
-        const maxScroll = window.innerHeight; // Adjust based on how far you want to move it
+        const maxScroll = window.innerHeight; 
     
-        // Use GSAP to animate the position and opacity smoothly
         gsap.to(panel, {
-            y: -maxScroll * 0.90,   // equivalent to `translateY`
-            duration: 1.5,       // adjust for how smooth/fast you want it
-            ease: "elastic.inOut",   // easing function for a smoother animation
+            y: -maxScroll * 1.2,   
+            duration: 1.5,       
+            ease: "elastic.inOut",   
             onComplete: () => {
                 panel.style.pointerEvents = 'none';  // Disable pointer events after fade out 
+                panel.style.opacity = '0'; 
             }
         });
     }
@@ -171,7 +170,7 @@ export default class Manager
     {
         window.addEventListener('wheel', this.scrollListener, false);
 
-        document.getElementById('arrow-down').addEventListener('click', () => 
+        document.getElementById('scroll-indicator').addEventListener('click', () => 
         {
             if (this.introductionPanelOpen) this.CloseIntroductionPanel(); 
         })

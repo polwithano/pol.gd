@@ -24,7 +24,8 @@ async function LoadPost(name)
     return {metadata, markdown}
 }
 
-async function FetchPostsMetadata() {
+async function FetchPostsMetadata() 
+{
     const time = performance.now(); 
     let metadatas = [];
 
