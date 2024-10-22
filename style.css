@@ -37,13 +37,13 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  min-height: 100vh;
-  background-color: #000; /* Dark background */
+  min-height: 120vh;
+  background-color: #000000; /* Dark background */
   color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99; /* Make sure it's above all other content */
+  z-index: 10001;
   pointer-events: auto;
   cursor: pointer;
 }
@@ -57,11 +57,16 @@ body {
 }
 
 #scroll-indicator {
-  position: fixed; 
-  bottom: 1%; 
-  left: 50%; 
-  font-size: 2rem;
+  position: absolute;
+  color: white;
+  font-size: 24px; /* Adjust size of the arrow */
+  top: calc(100% - 275px); /* Positions it above the project description */
+  left: 50%;
   transform: translateX(-50%);
+  z-index: 998;
+  cursor: pointer;
+  pointer-events: auto; /* Allows interaction with the arrow */
+  animation: bounce 2s ease-in-out infinite; /* Apply the bounce animation */
 }
 
 #info-scroll {
