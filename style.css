@@ -60,7 +60,7 @@ body {
   position: absolute;
   color: white;
   font-size: 24px; /* Adjust size of the arrow */
-  top: calc(100% - 275px); /* Positions it above the project description */
+  bottom: 25%; /* Positions it above the project description */
   left: 50%;
   transform: translateX(-50%);
   z-index: 998;
