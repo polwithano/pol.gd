@@ -74,20 +74,28 @@ export default class Manager
 
     async LoadEngineUsingURLParams() 
     {
-        if (this.path.includes('/portfolio')) 
+        if (this.path != null && this.path != "/") 
         {
-            await this.LoadEngine('EngineProject', this.urlParams);
-            this.menuController.SwitchMode("Portfolio");  
-        }
-        else if (this.path.includes('/blog')) 
-        {
-            await this.LoadEngine('EngineBlog', this.urlParams); 
-            this.menuController.SwitchMode("Blog");
-        }
-        else if (this.path.includes('/links')) 
-        {
-            await this.LoadEngine('EngineProject');  
-            this.menuController.SwitchMode("Links");
+            if (this.urlParams != null && this.urlParams != "") 
+            {
+                this.DisableIntroductionPanel(); 
+            }
+                    
+            if (this.path.includes('/portfolio')) 
+            {
+                await this.LoadEngine('EngineProject', this.urlParams);
+                this.menuController.SwitchMode("Portfolio");  
+            }
+            else if (this.path.includes('/blog')) 
+            {
+                await this.LoadEngine('EngineBlog', this.urlParams); 
+                this.menuController.SwitchMode("Blog");
+            }
+            else if (this.path.includes('/links')) 
+            {
+                await this.LoadEngine('EngineProject');  
+                this.menuController.SwitchMode("Links");
+            }   
         }
         else 
         {
@@ -158,6 +166,15 @@ export default class Manager
                 panel.style.opacity = '0'; 
             }
         });
+    }
+
+    DisableIntroductionPanel() 
+    {
+        const panel = document.getElementById('intro-section'); 
+        this.introductionPanelOpen = false; 
+
+        panel.style.pointerEvents = 'none';
+        panel.style.opacity = '0'; 
     }
 
     // #region Listener Methods
